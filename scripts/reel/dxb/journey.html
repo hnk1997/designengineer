@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Dubai Airports journey</title>
+<!-- The Dubai Airports reel: Express Maps, from choosing "I'm departing" to a step-by-step route.
+     One continuous take on the map. The bottom sheet is pulled up once, then its content changes in place:
+     the old content clears, the new cascades in top to bottom; the sheet itself never slides sideways.
+     The Figma screens are exported SVGs served next to this file (not in the repo). -->
+<div id="stage"></div>
+<script>window.STAGE = { w: 402, h: 874 };</script>
+<script src="../journey.js"></script>
+<script>
+async function build() {
+  const S = {};
+  for (const n of ['1', '4', '5', '6', '7', 'd', 's']) S[n] = await load(n);
+  await Promise.all([...stage.querySelectorAll('image')].map((im) => new Promise((r) => { im.addEventListener('load', r, { once: true }); setTimeout(r, 6000); })));
+  // the sheet screens share the base screen's map, search and status bar: keep only their sheets
+  const sheetOnly = (s, keep) => s.layers.forEach((l, i) => { if (l && !keep.includes(i)) l.outer.style.display = 'none'; });
+  sheetOnly(S['5'], [9]); sheetOnly(S['6'], [9]); sheetOnly(S['7'], [9, 10, 11]); sheetOnly(S.d, [9]); sheetOnly(S.s, [9]);
+  const sheet = (s) => (s === S['7'] ? L(s, 9, 10, 11) : L(s, 9));
+  // a sheet's content: its items, without the sheet's own surface and handle
+  const items = (s) => {
+    if (s === S['7']) { const g = L(s, 11)[0].firstElementChild; return [...g.children].slice(1).flatMap((c, i) => (i === 3 ? [...c.firstElementChild.children] : [c])); }
+    const content = L(s, 9)[0].firstElementChild.children[2];
+    return [...content.children].slice(1);
+  };
+  const lift = (els) => els.forEach((e) => { e.style.transformBox = 'fill-box'; });
+
+  // content cascades in by its height in the sheet: a top-to-bottom wave, not a slide
+  const cascade = (els, at, top) => { lift(els); els.forEach((e) => {
+    const y = e.getBBox().y, d = Math.max(0, Math.min(1, (y - top) / 700)) * 0.28;
+    A(e, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], at + d, 0.45, OUT);
+  }); };
+  const clear = (els, at) => els.forEach((e) => A(e, [{ opacity: 1 }, { opacity: 0 }], at, 0.16, 'cubic-bezier(.4,0,1,1)'));
+  // change what the sheet shows: same surface, old content out, new content in
+  const change = (next, prev, at, top = 89) => {
+    clear(items(prev), at);
+    show(next, at + 0.16, 1e9); endSpan(prev, at + 0.16);
+    cascade(items(next), at + 0.16, top);
+    return at + 0.16;
+  };
+
+  let t = 0, s, p;
+  // 1 · home: how can we guide your journey today?
+  s = S['1']; show(s, 0, 1e9);
+  const home = [...L(s, 13)[0].firstElementChild.children];
+  lift(home);
+  fadeUp([home[2]], 0.15, { dy: 14, dur: 0.8 });
+  home.slice(3).forEach((c, k) => A(c, [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], 0.3 + k * 0.06, 0.8, OUT));
+  t = 1.9; tap(108, 470, t, [home[4]]);
+  t += 0.3;
+
+  // 2 · the map, set up for departing; the sheet peeks up
+  p = s; s = S['4']; t = pushIn(s, p, t);
+  endSpan(p, t);
+  fadeUp(L(s, 8), t - 0.3, { dy: -10, dur: 0.7 });
+  A(L(s, 9)[0], [{ transform: 'translateY(170px)' }, { transform: 'none' }], t - 0.25, 0.8, IOS);
+  t += 1.0;
+
+  // 3 · pull the sheet up: everything for departures
+  s = S['5']; show(s, t, 1e9);
+  drag(201, 732, 201, 160, t, 0.65);
+  sheet(s).forEach((e) => A(e, [{ transform: 'translateY(657px)' }, { transform: 'none' }], t, 0.65, IOS));
+  t += 0.65 + 1.0;
+  const fi = items(S['5'])[1];          // Flight info
+  tap(109, 196, t, [fi]);
+  t += 0.3;
+
+  // 4 · flight info: today's departures
+  p = s; s = S['6']; t = change(s, p, t);
+  t += 1.35;
+  tap(201, 190, t, [items(S['6'])[3]]);   // the IndiGo flight to New Delhi
+  t += 0.3;
+
+  // 5 · the flight: on time, gate D20, 105 minutes to go
+  p = s; s = S['7']; t = change(s, p, t);
+  t += 1.4;
+  tap(201, 407, t, []);                   // Get directions
+  t += 0.3;
+
+  // 6 · directions: from gate B17 to gate 20, step by step
+  p = s; s = S.d; t = change(s, p, t);
+  t += 1.6;
+  const nextBtn = items(S.d)[21];         // Next
+  tap(292, 500, t, [nextBtn]);
+  t += 0.35;
+
+  // 7 · the sheet lowers to its resting height: the route is on the map
+  p = s; s = S.s; show(s, t + 0.65, 1e9);
+  sheet(p).forEach((e) => A(e, [{ transform: 'none' }, { transform: 'translateY(657px)' }], t, 0.65, IOS));
+  endSpan(p, t + 0.65);
+  t += 0.65 + 1.6;
+
+  // back to white, so the loop opens on the home screen again
+  const end = document.createElement('div'); end.style.cssText = 'position:absolute;inset:0;background:#fff;z-index:20;opacity:0';
+  stage.appendChild(end);
+  A(end, [{ opacity: 0 }, { opacity: 1 }], t, 0.5, INOUT, { fill: 'forwards' });
+  return t + 0.5;
+}
+run(build);
+</script>

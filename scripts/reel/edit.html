@@ -1,0 +1,129 @@
+<!doctype html><body style="margin:0;background:#000"><video id="a" muted playsinline></video><video id="b" muted playsinline></video>
+<script>
+/* A small frame-accurate editor. Pass 1 renders every output frame by seeking the source
+   (so speed changes, zooms and transitions are exact), keeping each frame as a JPEG.
+   Pass 2 plays those frames back in real time into a canvas that MediaRecorder encodes.
+
+   shots: [{ from, to, speed, zoom: [start, end], focus: [x, y] (0..1 in the crop) }]
+   transitions between shot i and i+1: { type: 'zoom' | 'wipe' | 'black', dur } */
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const out = (t) => 1 - Math.pow(1 - t, 3);
+
+async function source(el, url) {
+  el.src = url;
+  await new Promise((r) => el.addEventListener('loadeddata', r, { once: true }));
+}
+function seek(el, t) {
+  return new Promise((r) => {
+    if (Math.abs(el.currentTime - t) < 0.001) return r();
+    el.addEventListener('seeked', r, { once: true });
+    el.currentTime = t;
+  });
+}
+
+window.edit = async ({ shots, transitions, crop, W, H, fps = 30, bitrate = 700000, blue = '#2563EB', fadeIn = 0, fadeOut = 0 }) => {
+  const url = URL.createObjectURL(await (await fetch('src.mp4')).blob());
+  const A = document.getElementById('a'), B = document.getElementById('b');
+  await source(A, url); await source(B, url);
+
+  // Timeline: each shot's on-screen length, overlapping the next by its transition
+  const len = shots.map((s) => (s.to - s.from) / s.speed);
+  const starts = []; let t = 0;
+  shots.forEach((s, i) => { starts.push(t); t += len[i] - (i < shots.length - 1 ? transitions[i].dur : 0); });
+  const total = t;
+
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d', { alpha: false });
+  const layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+  const lg = layer.getContext('2d', { alpha: false });
+
+  // edge colours of the current frame, so the space around a full-width shot continues the page
+  const probe = document.createElement('canvas'); probe.width = 48; probe.height = 24;
+  const pg = probe.getContext('2d', { willReadFrequently: true });
+  const avg = (d) => { let r = 0, gr = 0, b = 0, n = d.length / 4; for (let i = 0; i < d.length; i += 4) { r += d[i]; gr += d[i + 1]; b += d[i + 2]; } return `rgb(${r / n | 0},${gr / n | 0},${b / n | 0})`; };
+
+  // draw shot i at local time u (seconds since it started) into ctx: the whole width of the
+  // site, never cropped, centred, with its own top and bottom edge colours filling above and below
+  const paint = async (ctx, el, i, u) => {
+    const s = shots[i];
+    await seek(el, Math.min(s.to, s.from + u * s.speed));
+    const sw = el.videoWidth, sh = el.videoHeight;
+    const dh = W * sh / sw, dy = (H - dh) / 2;
+    // above and below: the frame's own first and last rows, stretched to fill and softened,
+    // so flat pages continue seamlessly and detailed edges fade off instead of ending in a bar
+    const band = Math.ceil(dy) + 2;
+    ctx.filter = 'blur(14px) contrast(1.04) saturate(1.06)';
+    ctx.drawImage(el, 0, 0, sw, 6, -20, -20, W + 40, band + 20);
+    ctx.drawImage(el, 0, sh - 6, sw, 6, -20, H - band, W + 40, band + 20);
+    ctx.filter = 'contrast(1.04) saturate(1.06)';
+    ctx.drawImage(el, 0, 0, sw, sh, 0, dy, W, dh);
+    ctx.filter = 'none';
+  };
+
+  const frames = [];
+  const n = Math.ceil(total * fps);
+  for (let f = 0; f < n; f++) {
+    const time = f / fps;
+    let i = shots.length - 1; while (i > 0 && time < starts[i]) i--;
+    // inside a transition from shot i-1 into shot i?
+    const tr = i > 0 ? transitions[i - 1] : null;
+    const into = tr ? (time - starts[i]) / tr.dur : 1;
+    if (tr && into < 1) {
+      const p = ease(Math.max(0, into));
+      await paint(g, A, i - 1, time - starts[i - 1]);
+      await paint(lg, B, i, time - starts[i]);
+      if (tr.type === 'black') {
+        // dip through black: out, then in
+        if (p < 0.5) { g.fillStyle = `rgba(0,0,0,${p * 2})`; g.fillRect(0, 0, W, H); }
+        else { g.drawImage(layer, 0, 0); g.fillStyle = `rgba(0,0,0,${(1 - p) * 2})`; g.fillRect(0, 0, W, H); }
+      } else if (tr.type === 'wipe') {
+        // the site's own move: the next shot wipes up from the bottom behind a blue rule
+        const y = Math.round(H * (1 - p));
+        g.drawImage(layer, 0, y, W, H - y, 0, y, W, H - y);
+        if (p > 0 && p < 1) { g.fillStyle = blue; g.fillRect(0, y - 1, W, 2); }
+      } else if (tr.type === 'fade') {
+        g.globalAlpha = p; g.drawImage(layer, 0, 0); g.globalAlpha = 1;
+      } else {
+        // zoom through: the outgoing shot pushes in as the next one settles from slightly large
+        g.save(); g.globalAlpha = 1;
+        const zo = 1 + 0.08 * p;
+        g.drawImage(c, (W - W * zo) / 2, (H - H * zo) / 2, W * zo, H * zo);
+        g.globalAlpha = p;
+        const zi = 1.06 - 0.06 * out(p);
+        g.drawImage(layer, (W - W * zi) / 2, (H - H * zi) / 2, W * zi, H * zi);
+        g.restore();
+      }
+    } else {
+      await paint(g, A, i, time - starts[i]);
+    }
+    // ease in from black at the start and out to black at the end, so the loop closes softly
+    const edge = Math.min(fadeIn ? time / fadeIn : 1, fadeOut ? (total - time) / fadeOut : 1);
+    if (edge < 1) { g.fillStyle = `rgba(0,0,0,${1 - ease(Math.max(0, edge))})`; g.fillRect(0, 0, W, H); }
+    frames.push(await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.93)));
+  }
+
+  // Pass 2: play the frames back in real time and record them
+  const types = ['video/mp4;codecs=avc1.4D401F', 'video/mp4;codecs=avc1.42E01F', 'video/mp4'];
+  const type = types.find((x) => MediaRecorder.isTypeSupported(x));
+  const rec = new MediaRecorder(c.captureStream(fps), { mimeType: type, videoBitsPerSecond: bitrate });
+  const parts = []; rec.ondataavailable = (e) => parts.push(e.data);
+  const bitmaps = [];
+  for (const b of frames) bitmaps.push(await createImageBitmap(b));
+  g.drawImage(bitmaps[0], 0, 0); rec.start();
+  const t0 = performance.now();
+  await new Promise((done) => {
+    const tick = () => {
+      const k = Math.floor(((performance.now() - t0) / 1000) * fps);
+      if (k >= bitmaps.length) return done();
+      g.drawImage(bitmaps[k], 0, 0);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  const stopped = new Promise((r) => (rec.onstop = r)); rec.stop(); await stopped;
+  const blob = new Blob(parts, { type }); const buf = new Uint8Array(await blob.arrayBuffer());
+  let s = ''; for (let i = 0; i < buf.length; i += 32768) s += String.fromCharCode.apply(null, buf.subarray(i, i + 32768));
+  const first = c.toDataURL('image/webp', 0.75);
+  return JSON.stringify({ type, total, frames: frames.length, data: btoa(s) });
+};
+</script></body>

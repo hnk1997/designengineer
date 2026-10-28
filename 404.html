@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Page not found | Hasan Nawaz</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <!-- Cloudflare Pages serves this for any address that doesn't exist, so every path here is absolute -->
+  <style>
+    .lost { min-height: 100vh; min-height: 100svh; display: grid; align-content: center; gap: 28px; padding: 96px var(--gutter); background: var(--dark); color: var(--ink); }
+    .lost-title { margin: 0; max-width: 14ch; font-size: clamp(44px, 7vw, 104px); font-weight: 500; line-height: 1; letter-spacing: -0.05em; }
+    .lost-title span { color: var(--blue); }
+    .lost .btn { justify-self: start; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <main class="lost">
+    <p class="label sec-label"><span class="sq"></span>404</p>
+    <h1 class="lost-title">This page didn’t ship. <span>The rest of the site did.</span></h1>
+    <a class="btn" href="/" data-roll-host>
+      <span class="btn-label"><span>Back to the home page</span></span>
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+      </span>
+    </a>
+  </main>
+</body>
+</html>

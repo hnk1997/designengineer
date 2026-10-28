@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kuraimi film</title>
+<!-- The Kuraimi Islamic Microfinance Bank film for the Currently building card (16:10): a teaser, not a tour.
+     The flower mark blooms, lifts, and the top of the home screen rises into view beneath it, its lower half
+     lost in the dark. The Figma screens are exported SVGs served next to this file (not in the repo). -->
+<style>
+  #stage { background: radial-gradient(70% 90% at 50% 38%, #2b0e5a 0%, #12061f 55%, #07030c 100%) !important; }
+  .bloom { position: absolute; left: 50%; top: 50%; }
+  .bloom img { width: 100%; height: 100%; display: block; }
+  .phone { position: absolute; width: 390px; height: 864px; border-radius: 58px; padding: 11px;
+    background: linear-gradient(145deg, #3b3346, #120f17 40%, #2a2531); transform-origin: 50% 0;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12), 0 60px 120px -30px rgba(0,0,0,.8), 0 0 160px -20px rgba(124,58,237,.4); }
+  .phone .glass { position: relative; width: 390px; height: 864px; border-radius: 48px; overflow: hidden; background: #000; }
+  .phone .island { position: absolute; left: 50%; top: 22px; width: 104px; height: 30px; margin-left: -52px; border-radius: 20px; background: #000; z-index: 60; }
+  /* the phone's lower half dissolves into the stage, so only the top of home shows */
+  .veil { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; z-index: 30; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(8,3,14,0), rgba(8,3,14,.7) 55%, #08030e 100%); }
+</style>
+<div id="stage"></div>
+<script>window.STAGE = { w: 1440, h: 900 };</script>
+<script src="../journey.js"></script>
+<script>
+const el = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
+async function build() {
+  // the mark, large and faint, turning behind everything
+  const back = el(`<div class="bloom" style="width:1200px;height:1200px;margin:-600px 0 0 -600px;opacity:0"><img src="flower.svg" alt=""></div>`);
+  stage.appendChild(back);
+  // the phone, top edge only: home, cropped by the frame and the veil
+  const K = 1.25;
+  const hero = el(`<div class="phone"><div class="glass"></div><div class="island"></div></div>`);
+  hero.style.left = 720 - 206 + 'px'; hero.style.top = '292px';
+  stage.appendChild(hero);
+  const home = await load('home', { fit: false });
+  hero.querySelector('.glass').appendChild(home.wrap);
+  home.svg.style.width = '390px'; home.svg.style.height = '864px';
+  stage.appendChild(el('<div class="veil"></div>'));
+  const mark = el(`<div class="bloom" style="width:300px;height:300px;margin:-150px 0 0 -150px;z-index:40"><img src="flower.svg" alt="" style="filter:drop-shadow(0 0 40px rgba(139,92,246,.55))"></div>`);
+  stage.appendChild(mark);
+  await Promise.all([...document.querySelectorAll('image, img')].map((im) => new Promise((r) => { if (im.complete) return r(); im.addEventListener('load', r, { once: true }); setTimeout(r, 6000); })));
+
+  // 1 · the mark blooms, centre stage
+  A(mark, [{ opacity: 0, transform: 'scale(.55) rotate(-50deg)' }, { opacity: 1, transform: 'none' }], 0.2, 1.7, SOFT);
+  A(back, [{ opacity: 0, transform: 'rotate(0deg)' }, { opacity: 0.06, transform: 'rotate(8deg)' }], 0.6, 1.8, OUT);
+  ADD(back, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(24deg)' }], 2.4, 9, 'linear');
+
+  // 2 · it lifts and shrinks; the top of home rises in beneath it
+  A(mark, [{ transform: 'none' }, { transform: 'translateY(-298px) scale(.4)' }], 2.3, 1.2, IOS);
+  show(home, 0, 1e9);
+  A(hero, [{ opacity: 0, transform: `translateY(260px) scale(${K})` }, { opacity: 1, transform: `translateY(0) scale(${K})` }], 2.45, 1.4, IOS);
+  // the cards deal in once it lands, then the balance card breathes
+  const s = home;
+  A(L(s, 7)[0], [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'none' }], 3.3, 0.9, OUT);
+  A(L(s, 9)[0], [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'none' }], 3.4, 0.9, OUT);
+  const card = Array.from({ length: 22 }, (_, k) => 11 + k).filter((i) => s.layers[i] && i !== 12);
+  L(s, card).forEach((e) => A(e, [{ opacity: 0, transform: 'translateY(36px)' }, { opacity: 1, transform: 'none' }], 3.5, 1.0, OUT));
+  ADD(hero, [{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }, { transform: 'translateY(0)' }], 4.8, 3.6, INOUT);
+  let t = 8.6;
+
+  // 3 · it all sinks back to the dark, so the loop opens on the bloom again
+  A(hero, [{ opacity: 1 }, { opacity: 0 }], t, 0.7, INOUT);
+  A(mark, [{ opacity: 1 }, { opacity: 0 }], t, 0.7, INOUT);
+  A(back, [{ opacity: 0.06 }, { opacity: 0 }], t, 0.7, INOUT);
+  return t + 0.8;
+}
+run(build);
+</script>

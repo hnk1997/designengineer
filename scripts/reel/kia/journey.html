@@ -1,0 +1,234 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kia Tasman journey</title>
+<!-- The Kia Tasman configurator reel: pick a model, turn it around, then build it: colour, wheels, interior, tow hitch.
+     The 1920 x 1080 Figma frames are re-laid to the laptop screen's 1.54:1 the way the page would
+     respond: header and options panel keep their size, the car viewer narrows and stays centred.
+     The screens are exported SVGs served next to this file (not in the repo). -->
+<div id="stage"></div>
+<script>window.STAGE = { w: 1663, h: 1080 };</script>
+<script src="../journey.js"></script>
+<script>
+const CUT = 1920 - 1663;            // the width the page loses
+const shrink = (el) => { el.style.transformBox = 'view-box'; el.style.transformOrigin = '735px 812px'; el.style.transform = 'scale(.85)'; };
+const NS = 'http://www.w3.org/2000/svg';
+async function build() {
+  const S = {};
+  for (const n of ['713', '1', '2', '3', '4', '6', '5']) S[n] = await load(n);
+  for (const s of Object.values(S)) { s.svg.setAttribute('viewBox', `0 0 1663 1080`); s.svg.setAttribute('width', 1663); }
+
+  // the model picker: header controls follow the right edge, the title and arrows the centre
+  S['713'].layers.forEach((l, i) => {
+    if (!l) return;
+    if ([3, 4, 5].includes(i)) l.outer.style.display = 'none';            // its cards: the full strip replaces them
+    else if (l.bt.x >= 1460) l.outer.setAttribute('transform', `translate(${-CUT} 0)`);
+    else if ([2, 6, 7].includes(i)) l.outer.setAttribute('transform', `translate(${-CUT / 2} 0)`);
+  });
+  // the configurator: panel and header controls move in, the viewer narrows around its centre
+  const viewerOf = (s) => s.layers.findIndex((l) => l && l.b.x === 0 && Math.round(l.b.y) === 90 && l.b.width > 1400);
+  let clipN = 0;
+  for (const n of ['1', '2', '3', '4', '6', '5']) {
+    const s = S[n], v = viewerOf(s);
+    s.layers.forEach((l, i) => {
+      if (!l) return;
+      if (i === v) {
+        const id = 'vclip' + clipN++;
+        s.svg.insertAdjacentHTML('afterbegin', `<defs><clipPath id="${id}"><rect x="${CUT / 2}" y="90" width="${1470 - CUT}" height="991"/></clipPath></defs>`);
+        l.outer.setAttribute('transform', `translate(${-CUT / 2} 0)`); l.outer.setAttribute('clip-path', `url(#${id})`);
+      } else if (!(l.bt.x < 200 && l.bt.width < 200)) l.outer.setAttribute('transform', `translate(${-CUT} 0)`);
+    });
+    s.viewer = v;
+    // the truck a touch smaller in its viewer, scaled about where its wheels meet the ground
+    [...L(s, v)[0].firstElementChild.children].forEach((c) => { if (c.tagName === 'rect' && +c.getAttribute('width') === 1470 && +c.getAttribute('height') === 735 && n !== '5') shrink(c); });
+    // no fullscreen control: the viewer's only button left is the angle carousel
+    L(s, v)[0].querySelectorAll('g').forEach((c) => { const b = c.getBBox(); if (Math.round(b.width) === 40 && Math.round(b.height) === 40) c.style.display = 'none'; });
+  }
+  await Promise.all([...stage.querySelectorAll('image')].map((im) => new Promise((r) => { im.addEventListener('load', r, { once: true }); setTimeout(r, 6000); })));
+
+  // the full model strip, laid over the picker where its 3 cards were
+  const strip = document.createElement('div');
+  strip.style.cssText = 'position:absolute;left:96px;top:146px;width:3861px;height:844px';
+  strip.innerHTML = await (await fetch('Container.svg')).text();
+  strip.querySelector('svg').style.cssText = 'width:3861px;height:844px';
+  S['713'].exit.appendChild(strip);
+  const cards = [...strip.querySelector('svg').children].filter((e) => e.tagName === 'g');
+  cards.forEach((c) => { c.style.transformBox = 'fill-box'; });
+
+  // the options panel at full length, scrolled inside the real panel; its sticky price bar stays put
+  const panel = document.createElement('div');
+  panel.style.cssText = `position:absolute;left:${1470 - CUT}px;top:90px;width:450px;height:899px;overflow:hidden;background:#fff`;
+  panel.innerHTML = await (await fetch('Wrapper.svg')).text();
+  const psvg = panel.querySelector('svg'); psvg.style.cssText = 'position:absolute;left:-53.6px;top:0.5px;width:559px;height:5202px;display:block';
+  [...psvg.children][140].style.display = 'none';     // the copy of the price bar, captured mid-page
+  // the selection ring, lifted out of the first swatch so it can travel between swatches
+  const sw0 = [...psvg.children][46];
+  const ringParts = [...sw0.querySelectorAll(':scope > path')];
+  const ring = document.createElementNS(NS, 'g'); ringParts.forEach((p) => ring.appendChild(p)); psvg.appendChild(ring);
+  ring.style.transformBox = 'view-box';
+  S['1'].exit.appendChild(panel);
+  // only the viewer of each other configurator frame is needed: the base frame carries the rest
+  for (const n of ['2', '3', '4', '6', '5']) S[n].layers.forEach((l, i) => { if (l && i !== S[n].viewer) l.outer.style.display = 'none'; });
+  const view = (n) => L(S[n], S[n].viewer)[0];
+  // wrapper coordinates to the stage: the panel scrolls by `scroll`
+  let scroll = 0;
+  const P = (x, y) => [x - 53.6 + 1470 - CUT, y + 0.5 + 90 - scroll];
+
+  const m = cursor(1250, 760);
+  let t = 0, s, p;
+  // 1 · select your model: the range cascades in, straight to building the LX
+  s = S['713']; show(s, 0, 1e9);
+  fadeUp(L(s, 2), 0.1, { dy: 14 });
+  cards.forEach((c, k) => A(c, [{ opacity: 0, transform: 'translateX(120px)' }, { opacity: 1, transform: 'none' }], 0.15 + k * 0.07, 0.9, OUT));
+  m.show(0.3).move(613, 878, 0.95, 0.85).click(1.9, [cards[0]]);
+  // the LX card lifts as the pointer arrives, the way a hover would
+  A(cards[0], [{ transform: 'none', filter: 'drop-shadow(0 0 0 rgba(5,20,31,0))' }, { transform: 'translateY(-10px)', filter: 'drop-shadow(0 18px 28px rgba(5,20,31,.16))' }], 1.5, 0.4, OUT);
+  t = 2.2;
+
+  // instant changes (a new angle, a new screen) as one stepped animation per element, built once the timeline is known
+  const plan = new Map();
+  const set = (el, at, v) => { if (!plan.has(el)) plan.set(el, []); plan.get(el).push([at, v]); };
+  // a new paint or part dissolves in place; a new angle cuts, the way the configurator's own viewer does
+  const swap = (n, at, from, dur = 0.45) => { show(S[n], at, 1e9); A(view(n), [{ opacity: 0 }, { opacity: 1 }], at, dur, INOUT); if (from) endSpan(S[from], at + dur + 0.05); };
+  const cut = (n, at, from) => { show(S[n], at, 1e9); endSpan(S[from], at); };
+  const scrollTo = (y, at, dur = 0.9) => { A(psvg, [{ transform: `translateY(${-scroll}px)` }, { transform: `translateY(${-y}px)` }], at, dur, 'cubic-bezier(.3,0,.1,1)'); scroll = y; };
+  const W$ = (i) => [...psvg.children][i];
+
+  // the LX from every side: the angle renders sit exactly where the viewer's car does
+  const vg = L(S['1'], S['1'].viewer)[0].firstElementChild;
+  const carRect = [...vg.children][2];
+  const angle = {};
+  for (const [k, f] of [['frontQ', 'side'], ['front', 'front'], ['backQ', 'back']]) {
+    const im = document.createElementNS(NS, 'image');
+    im.setAttribute('href', `lx/${f}.svg`); im.setAttribute('x', 0); im.setAttribute('y', 218); im.setAttribute('width', 1470); im.setAttribute('height', 735);
+    carRect.after(im); angle[k] = im; set(im, 0, 0); shrink(im);
+  }
+  await Promise.all(Object.values(angle).map((im) => new Promise((r) => { im.addEventListener('load', r, { once: true }); setTimeout(r, 6000); })));
+  set(carRect, 0, 1);
+  const dots = [...vg.querySelectorAll('circle')];
+  const ON = { fill: '#05141F', fillOpacity: 1 }, OFF = { fill: '#C7C8CA', fillOpacity: 1 };   // the carousel's own two dot colours
+  dots.forEach((d, k) => set(d, 0, k === 0 ? ON : OFF));
+  const turn = (to, at) => {   // to: 'side' | 'frontQ' | 'front' | 'backQ'
+    const k = ['side', 'frontQ', 'front', 'backQ'].indexOf(to);
+    set(carRect, at, to === 'side' ? 1 : 0);
+    for (const a of Object.keys(angle)) set(angle[a], at, a === to ? 1 : 0);
+    dots.forEach((d, i) => set(d, at, i === k ? ON : OFF));
+  };
+  const next = [833 - CUT / 2, 980], firstDot = [693 - CUT / 2, 980];   // the viewer's carousel, after the re-layout
+
+  // viewer coordinates: the 1920 frame's, shrunk about the truck's ground point like the truck itself
+  const shrunk = (x, y) => [735 + (x - 735) * 0.85, 812 + (y - 812) * 0.85];
+  const carOf = (n) => { const g = L(S[n], S[n].viewer)[0].firstElementChild; return [g, [...g.children].find((c) => c.tagName === 'rect' && +c.getAttribute('width') === 1470 && +c.getAttribute('height') === 735)]; };
+  // a band of light across the paint, masked to the truck's own side silhouette
+  const sheen = (at) => {
+    const box = document.createElement('div');
+    box.style.cssText = `position:absolute;left:0;top:90px;width:${1470 - CUT}px;height:990px;overflow:hidden;z-index:35;pointer-events:none`;
+    const [x0, y0] = shrunk(0, 218);
+    const band = document.createElement('div');
+    band.style.cssText = `position:absolute;left:${x0 - CUT / 2}px;top:${y0 - 90}px;width:${1470 * 0.85}px;height:${735 * 0.85}px;` +
+      `-webkit-mask:url(lx/three.svg) 0 0/100% 100% no-repeat;mask:url(lx/three.svg) 0 0/100% 100% no-repeat;` +
+      `background:linear-gradient(100deg, rgba(255,255,255,0) 42%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 58%) 0 0/320% 100% no-repeat;mix-blend-mode:screen`;
+    box.appendChild(band); stage.appendChild(box);
+    A(band, [{ backgroundPosition: '100% 0' }, { backgroundPosition: '0% 0' }], at, 0.95, 'cubic-bezier(.45,0,.25,1)');
+    A(band, [{ opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }], at, 0.95, 'linear');
+  };
+  // each wheel, cut out of the truck and turned: two full turns, so it lands exactly on the still photo
+  const spinWheels = (at) => {
+    const [g, car] = carOf('4'); car.id = 'kia-car4';
+    [[318, 718], [1056, 718]].forEach(([x, y], i) => {
+      const [cx, cy] = shrunk(x, y), r = 86 * 0.85;
+      g.insertAdjacentHTML('beforeend', `<clipPath id="kia-wheel${i}"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath><g clip-path="url(#kia-wheel${i})"><g class="spin"><use href="#kia-car4"/></g></g>`);
+      const spin = g.lastElementChild.firstElementChild;
+      spin.style.transformBox = 'view-box'; spin.style.transformOrigin = `${cx}px ${cy}px`;
+      A(spin, [{ transform: 'rotate(0deg)', filter: 'blur(0px)' }, { transform: 'rotate(-420deg)', filter: 'blur(1.2px)', offset: 0.35 }, { transform: 'rotate(-720deg)', filter: 'blur(0px)' }], at, 1.25, 'cubic-bezier(.2,.7,.2,1)');
+    });
+  };
+  // a pulsing point on the hitch
+  const hotspot = (at) => {
+    const [g] = carOf('6'), [cx, cy] = shrunk(1225, 712);
+    g.insertAdjacentHTML('beforeend', `<g class="hs"><circle cx="${cx}" cy="${cy}" r="30" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="9" fill="#fff"/></g>`);
+    const hs = g.lastElementChild, [ring, dotc] = hs.children;
+    [ring, dotc].forEach((e) => { e.style.transformBox = 'fill-box'; e.style.transformOrigin = '50% 50%'; });
+    A(dotc, [{ opacity: 0, transform: 'scale(0)' }, { opacity: 1, transform: 'none' }], at, 0.5, POP);
+    A(ring, [{ opacity: 0.9, transform: 'scale(.35)' }, { opacity: 0, transform: 'scale(1.6)' }], at + 0.1, 1.1, OUT, { iterations: 3 });
+  };
+
+  // 2 · the configurator: the LX in Clear White
+  p = s; s = S['1']; t = fadeIn(s, p, t, 0.6);
+  endSpan(p, t);
+  A(view('1'), [{ opacity: 0, transform: 'translateX(70px)' }, { opacity: 1, transform: 'none' }], t - 0.3, 1.0, OUT);
+  t += 0.35;
+
+  // 3 · around it: the carousel turns the truck to its front and rear three-quarters, then back to its side
+  const dot = (k) => [693 + 28 * k - CUT / 2, 980];
+  m.move(next[0] + 2, next[1] + 4, t, 0.75).click(t + 0.8); turn('frontQ', t + 0.85);
+  t += 0.8 + 1.1; m.move(dot(3)[0] + 1, dot(3)[1] + 3, t, 0.4).click(t + 0.45); turn('backQ', t + 0.5);
+  t += 0.45 + 1.1; m.move(firstDot[0] + 1, firstDot[1] + 3, t, 0.45).click(t + 0.5); turn('side', t + 0.55);
+  t += 0.9;
+
+  // 4 · Aurora Black: from the side, the truck recolours, the ring follows
+  m.move(1440, 560, t, 0.5);
+  scrollTo(870, t + 0.3);
+  t += 1.25;
+  const black = P(406.1, 1091);
+  m.move(black[0] + 2, black[1] + 4, t, 0.5).click(t + 0.55);
+  A(ring, [{ transform: 'none' }, { transform: 'translate(254px, 0px)' }], t + 0.55, 0.35, OUT);
+  swap('3', t + 0.6);   // over the base frame, which carries the header and panel
+  sheen(t + 0.55);
+  t += 1.6;
+
+  // 5 · wheels: 17" steel for the alloys, and the truck's wheels change with them
+  m.move(1440, 600, t, 0.4);
+  scrollTo(1790, t + 0.2);
+  t += 1.15;
+  const steel = P(371, 2070);
+  m.move(steel[0], steel[1], t, 0.6).click(t + 0.65);
+  const on = { stroke: '#05141F', strokeWidth: '1px' }, off = { stroke: '#939598', strokeWidth: '0.5px' };
+  A(W$(72), [on, off], t + 0.65, 0.15, 'linear'); A(W$(79), [off, on], t + 0.65, 0.15, 'linear');
+  A(W$(75), [{ stroke: '#05141F' }, { stroke: '#939598' }], t + 0.65, 0.15, 'linear'); A(W$(83), [{ stroke: '#939598' }, { stroke: '#05141F' }], t + 0.65, 0.15, 'linear');
+  W$(76).style.transformBox = 'view-box';
+  A(W$(76), [{ transform: 'none' }, { transform: 'translateX(185px)' }], t + 0.65, 0.01, 'linear');
+  swap('4', t + 0.7, '3', 0.3);
+  spinWheels(t + 0.7);
+  t += 1.5;
+
+  // 6 · the interior: the viewer goes inside only while the panel is on Interior
+  m.move(1440, 640, t, 0.5);
+  scrollTo(2480, t + 0.3);
+  cut('5', t + 0.95, '4');
+  t += 2.1;
+
+  // 7 · options: back outside as the panel leaves Interior, then the tow hitch, and the truck turns to show it
+  scrollTo(2733, t, 0.7);
+  cut('4', t + 0.35, '5');
+  m.move(1300, 520, t, 0.6);
+  t += 1.0;
+  const hitch = P(186, 2975);
+  m.move(hitch[0], hitch[1], t, 0.55).click(t + 0.6);
+  A(W$(102), [off, { stroke: '#05141F', strokeWidth: '1.5px' }], t + 0.6, 0.15, 'linear');
+  psvg.insertAdjacentHTML('beforeend', '<g id="hitch-check"><rect x="232.5" y="2888.5" width="19" height="19" rx="1" fill="#fff"/><path d="M236.6 2898.4l3.6 3.6 7.2-8" fill="none" stroke="#05141F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>');
+  A(psvg.querySelector('#hitch-check'), [{ opacity: 0 }, { opacity: 1 }], t + 0.6, 0.12, 'linear');
+  cut('6', t + 0.75, '4');
+  hotspot(t + 0.95);
+  t += 2.3;
+
+  // 8 · and reserve it
+  const reserve = [1821 - CUT, 1031];
+  m.move(reserve[0], reserve[1] + 4, t, 0.7).click(t + 0.8);
+  t += 1.5;
+
+  const end = document.createElement('div'); end.style.cssText = 'position:absolute;inset:0;background:#fff;z-index:46;opacity:0';
+  stage.appendChild(end);
+  A(end, [{ opacity: 0 }, { opacity: 1 }], t, 0.5, INOUT, { fill: 'forwards' });
+  const T = t + 0.5;
+  for (const [el, steps] of plan) {
+    steps.sort((x, y) => x[0] - y[0]);
+    const val = (v) => (typeof v === 'number' ? { opacity: v } : v);   // a number is an opacity, an object any CSS values
+    const frames = steps.map(([at, v]) => ({ offset: Math.min(1, at / T), ...val(v), easing: 'step-end' }));
+    if (frames[0].offset > 0) frames.unshift({ ...frames[0], offset: 0 });
+    frames.push({ ...frames[frames.length - 1], offset: 1, easing: 'linear' });
+    A(el, frames, 0, T, 'linear', { fill: 'both' });
+  }
+  return T;
+}
+run(build);
+</script>

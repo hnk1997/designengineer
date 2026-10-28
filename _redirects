@@ -1,0 +1,20 @@
+# The portfolio moved to product.hasannawaz.com. Old links (CVs, LinkedIn, shared case studies)
+# keep working: each old page sends people to the same page there, permanently.
+/about.html          https://product.hasannawaz.com/about.html          301
+/aramco.html         https://product.hasannawaz.com/aramco.html         301
+/cadillac.html       https://product.hasannawaz.com/cadillac.html       301
+/designsystem.html   https://product.hasannawaz.com/designsystem.html   301
+/dxb.html            https://product.hasannawaz.com/dxb.html            301
+/kfh.html            https://product.hasannawaz.com/kfh.html            301
+/kia.html            https://product.hasannawaz.com/kia.html            301
+/sastaticket.html    https://product.hasannawaz.com/sastaticket.html    301
+/wallet.html         https://product.hasannawaz.com/wallet.html         301
+/about               https://product.hasannawaz.com/about.html          301
+/aramco              https://product.hasannawaz.com/aramco.html         301
+/cadillac            https://product.hasannawaz.com/cadillac.html       301
+/designsystem        https://product.hasannawaz.com/designsystem.html   301
+/dxb                 https://product.hasannawaz.com/dxb.html            301
+/kfh                 https://product.hasannawaz.com/kfh.html            301
+/kia                 https://product.hasannawaz.com/kia.html            301
+/sastaticket         https://product.hasannawaz.com/sastaticket.html    301
+/wallet              https://product.hasannawaz.com/wallet.html         301

@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hasan Nawaz | Design Engineering Partner</title>
+  <meta name="description" content="Design engineering partner. Enterprise-grade digital products, from idea to launch.">
+  <meta name="theme-color" content="#050505">
+  <link rel="canonical" href="https://hasannawaz.com/">
+  <meta property="og:url" content="https://hasannawaz.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hasan Nawaz">
+  <meta property="og:title" content="Hasan Nawaz | Design Engineering Partner">
+  <meta property="og:description" content="I design it. Then I build it. Enterprise-grade digital products, from idea to launch.">
+  <meta property="og:image" content="https://hasannawaz.com/assets/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <script>
+    // Everyone gets the live 3D. Only a browser without WebGL can't run it (the glow stays on its own).
+    // Modest hardware or data saver starts on a lighter budget (.perf-low): lower render
+    // resolution and fewer page effects, same scene and motion. main.js tightens it
+    // further at runtime if frames still drop.
+    (function () {
+      var root = document.documentElement, n = navigator, c = n.connection || {};
+      if (!window.WebGLRenderingContext) { root.classList.add('three-off'); return; }
+      root.classList.add('full');
+      if (c.saveData || /2g/.test(c.effectiveType || '')
+        || (n.deviceMemory && n.deviceMemory < 4)
+        || (n.hardwareConcurrency && n.hardwareConcurrency < 4)) root.classList.add('perf-low');
+      // The 3D library is served from this site (assets/vendor). Opened straight from disk
+      // (file://) browsers refuse local module files, so it comes from the CDN instead.
+      var three = location.protocol === 'file:'
+        ? { core: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js', addons: 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/' }
+        : { core: './assets/vendor/three@0.160.0/three.module.min.js', addons: './assets/vendor/three@0.160.0/addons/' };
+      var map = document.createElement('script');
+      map.type = 'importmap';
+      map.textContent = JSON.stringify({ imports: { three: three.core, 'three/addons/': three.addons } });
+      document.currentScript.after(map);
+      // Start downloading it now, alongside the page, rather than after it
+      [three.core, three.addons + 'environments/RoomEnvironment.js', three.addons + 'geometries/RoundedBoxGeometry.js']
+        .forEach(function (href) {
+          var l = document.createElement('link');
+          l.rel = 'modulepreload';
+          l.crossOrigin = 'anonymous';
+          l.href = href;
+          document.head.appendChild(l);
+        });
+    })();
+  </script>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Inter Tight is served from this site (assets/fonts, @font-face in styles.css).
+       Preloading the Latin file means text usually renders in it on the first paint. -->
+  <link rel="preload" href="assets/fonts/inter-tight-v9-latin.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+
+  <header class="nav" data-nav>
+    <a class="logo intro" style="--d:.1s" href="#top" aria-label="Hasan Nawaz, back to top">
+      <!-- Primary lockup: the mark (keeps its colours) + assets/logo.svg inlined so the letters follow the nav colour -->
+      <svg class="logo-mark" aria-hidden="true" focusable="false" viewBox="0 0 89 89"><rect width="88.8989" height="88.8989" rx="20" fill="#2563EB"/><path d="M43.4643 21C44.4265 21.4684 46.7513 24.7281 47.4126 25.707C51.6066 31.9151 53.1683 39.4463 51.4425 46.7637C51.0049 48.6191 48.0731 56.4833 49.6516 57.8234L49.9179 57.7685C50.9536 56.9243 52.2333 53.517 52.3788 52.0742C52.4289 51.577 52.5545 50.1632 52.7321 49.8426L52.8793 49.8483C53.7934 51.23 54.9022 54.4875 55.0895 56.1744C55.4531 59.4474 55.0062 61.7776 53.0297 64.3775C51.4194 66.1621 48.9499 67.4614 46.5243 67.771C43.0776 68.2109 39.9053 66.4998 37.2759 64.4209C32.6242 60.7158 33.3121 53.397 35.6832 48.6239C37.8604 44.2412 40.6547 41.1829 42.171 36.3794C43.895 30.9178 43.9897 26.5763 43.4643 21Z" fill="#F97316"/><path d="M28.7522 28.5156C30.762 28.3118 31.6346 30.3528 30.2178 31.8491C28.8573 33.2861 27.4086 34.5387 25.9572 35.881C23.8087 37.8681 21.8025 40.1141 19.4879 41.905C22.9044 44.784 25.9347 48.1846 29.3478 51.0424C31.45 52.8025 31.7357 55.3491 28.6623 55.3389C27.2529 54.6393 24.3879 51.5239 22.973 50.1946C20.4725 47.8427 17.0883 45.1069 15.0817 42.3993C14.1472 41.1382 21.5131 34.9851 22.58 33.9933C24.3208 32.3754 26.7758 29.5313 28.7522 28.5156Z" fill="#F7F6F5"/><path d="M59.0312 28.5046C60.6052 28.4657 63.9848 32.5021 65.3123 33.6672C67.7548 35.8108 70.2375 38.1232 72.4707 40.4826C72.7989 40.8294 73.3325 41.5824 73.2931 42.0869C72.3874 44.2068 66.967 48.4799 65.1016 50.3897C63.9898 51.528 61.22 54.301 60.0131 55.068C58.4784 55.8248 57.1362 54.5332 57.3024 53.3842C57.5058 51.9774 61.0928 49.0745 62.1068 48.1409C64.2957 46.1255 66.4581 43.658 68.7691 41.9381C65.1675 38.992 62.0085 35.37 58.4481 32.3257C56.7364 30.8622 56.7731 29.289 59.0312 28.5046Z" fill="#F7F6F5"/></svg><svg class="wordmark" aria-hidden="true" focusable="false" viewBox="5 7.5 490 63.5"><mask id="logo-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="525" height="84"><path fill="#fff" d="M367.432 25.1884L378.593 25.1379C381.422 32.4296 383.772 40.0099 386.579 47.3219C387.55 49.8492 388.776 52.6045 389.421 55.2073C390.617 51.7477 391.67 47.7548 392.734 44.2069L398.424 25.196C402.363 25.1247 406.302 25.1393 410.238 25.2397C409.747 28.2518 408.03 33.1226 407.045 36.1539L396.424 69.9009L383.383 69.9075C380.53 60.4303 375.933 50.8133 373.316 40.9822C371.774 43.8247 370.317 48.5071 369.174 51.712L362.672 69.8996L349.799 69.9525C346.932 62.1941 344.277 52.5417 341.663 44.5583C339.858 39.0549 336.988 30.6584 335.727 25.2624C338.755 25.0136 344.37 25.1494 347.591 25.1371C348.718 28.294 349.56 31.8255 350.666 34.9857C352.986 41.6178 354.939 48.174 356.912 54.9101C358.445 51.1938 359.721 47.1175 361.068 43.3002C363.226 37.2765 365.35 31.2392 367.432 25.1884Z"/><path fill="#fff" d="M141.475 39.4926C144.699 25.3222 157.449 22.9065 169.838 25.1578C173.583 25.8385 178.852 28.802 180.608 32.1913C184.258 39.2372 182.827 50.3811 182.996 58.2333L187.89 58.3553C188.107 62.143 188.04 66.0956 188.035 69.9003L175.763 69.9041C175.773 67.8775 175.866 65.0835 175.563 63.1595C173.747 62.1905 169.245 68.0838 166.916 69.0163C161.252 71.2852 153.465 71.6293 148.036 68.7417C144.591 66.8951 142.006 63.7713 140.837 60.0407C140.779 59.8519 140.729 59.661 140.686 59.4684C140.794 58.7512 140.683 55.3452 140.605 54.5729C145.408 39.4164 159.33 43.5237 171.49 42.7061C171.147 40.1634 170.806 37.0924 168.436 35.6709C162.376 32.0363 156.456 33.8429 153.255 39.6378C149.877 39.6476 144.749 39.7994 141.475 39.4926Z"/><path fill="#fff" d="M408.683 39.4042C410.851 28.0241 419.31 24.4801 429.926 24.4398C437.577 24.0954 447.597 27.4842 449.125 36.0925C450.28 42.593 449.789 51.4271 449.765 58.2392L454.795 58.3311C454.946 59.5182 454.944 60.8557 454.971 62.0642L455.522 62.1182L455.531 69.853L454.974 69.949C451.781 69.7334 446.284 69.9046 442.92 69.906C442.948 68.1979 443.085 64.8168 442.827 63.2892L442.621 63.1693C442.076 62.8505 440.896 63.2867 440.517 63.76C428.105 79.1905 396.97 67.9054 411.789 47.2838C415.977 41.4566 431.808 42.9 438.918 42.7965C438.732 41.675 438.509 40.1159 438.15 39.0552C435.909 32.4609 425.825 32.5441 421.744 37.1729C421.187 37.8069 420.665 38.8791 420.284 39.6418C416.844 39.6769 412.03 39.7609 408.683 39.4042Z"/><path fill="#fff" d="M69.8426 24.6658C70.9549 24.5506 72.0722 24.4883 73.1903 24.479C78.9473 24.3761 85.302 25.0046 89.6595 29.2217C94.7238 34.1227 94.3192 41.2473 94.3162 47.7206C94.2934 51.2243 94.3121 54.7283 94.3724 58.2318L99.2552 58.294C99.6642 61.2707 99.5079 66.7432 99.4963 69.8848L87.3769 69.9005C87.3939 68.7227 87.5986 63.8428 87.0551 63.0801C84.7067 62.9876 82.3682 66.6815 80.0857 68.0077C72.9977 72.1252 63.9264 71.8675 57.0118 67.2637C56.9156 67.1789 56.8209 67.0925 56.7277 67.0044C51.1693 61.7325 50.9685 52.7162 56.1505 47.3033C61.9421 41.2536 75.2945 42.8997 83.1536 42.8034C83.0864 41.7392 83.0173 40.5027 82.7495 39.4774C80.9975 32.7693 70.3925 32.3111 66.3407 36.9391C65.7215 37.6467 65.0717 38.828 64.5999 39.6689C62.6279 39.6807 54.8091 39.9798 53.4995 39.2097C52.6514 37.6302 55.3863 32.8096 56.4001 31.4658C59.7747 26.9934 64.5264 25.4222 69.8426 24.6658Z"/><path fill="#fff" d="M309.535 24.6641C315.924 23.9118 324.76 24.5763 329.511 29.3393C334.55 34.3937 333.982 41.3776 333.955 47.92C333.941 51.3708 333.944 54.8216 333.966 58.2723L338.969 58.3297C339.2 62.2301 339.139 65.9827 339.112 69.8851L327.061 69.8996C327.07 68.1802 327.234 64.7547 326.886 63.2482C324.697 62.1083 322.39 66.631 320.464 67.7372C313.285 71.8618 303.698 72.0475 296.728 67.251C296.621 67.1577 296.517 67.0628 296.415 66.966C290.885 61.7437 290.698 52.649 295.902 47.3085C301.857 41.2001 315.019 42.926 323.026 42.7789C322.56 39.9605 322.19 36.5986 319.348 35.2552C313.551 32.5144 307.237 33.789 304.42 39.6456C300.832 39.6692 296.366 39.7515 292.86 39.4555C294.588 29.9698 300.368 25.9933 309.535 24.6641Z"/><path fill="#fff" d="M5.3821 7.65381C9.3062 7.51005 13.0655 7.55422 16.9887 7.59428L16.9972 21.6926C16.9986 24.1256 16.8877 28.0252 17.2153 30.3207L17.4353 30.4389C21.5651 25.7343 25.3709 24.7544 31.4414 24.5368C39.9544 24.2317 47.0899 28.8027 49.1039 37.3155C50.2505 42.1627 49.9142 47.8766 49.9079 52.9047L49.8761 69.87L38.1196 69.9202L38.107 52.4169C38.1174 48.1685 38.6454 40.5866 35.3556 38.0631C27.3418 31.9163 17.0334 35.0916 17.0537 46.0849C17.0685 54.3184 17.0038 62.0345 16.9958 69.8903L5.20643 69.9103L5.23098 29.6817C5.22799 22.6759 5.0072 14.5277 5.3821 7.65381Z"/><path fill="#fff" d="M267.5 24.6665C276.297 23.4313 286.375 27.6478 288.488 36.9585C289.67 42.167 289.335 47.5561 289.327 52.8656L289.302 69.8879L277.279 69.9047L277.285 54.1679C277.296 49.6669 278.088 40.0819 274.023 37.2729C269.261 33.9826 262.175 34.1669 258.313 38.987C256.07 42.553 256.586 49.7487 256.599 54.0601L256.61 69.8855L244.635 69.9074C244.417 59.1504 244.612 47.7344 244.613 36.925L239.053 36.9022C239.029 33.0053 239.043 29.1082 239.093 25.2113C243.2 25.1482 247.306 25.1446 251.412 25.2006C251.395 26.9916 250.977 31.2018 252.133 32.3132C254.492 32.2059 256.451 28.2629 259.756 26.7916C263.264 25.2305 263.72 25.1356 267.5 24.6665Z"/><path fill="#fff" d="M215.139 24.6725C215.872 24.5921 216.609 24.5518 217.346 24.5521C222.687 24.523 227.618 25.4893 231.576 29.3908C237.868 35.5931 236.83 45.3481 236.816 53.4769L236.819 69.8902L224.974 69.9171C224.837 64.5052 224.954 58.5351 224.986 52.8412C225.041 43.1802 225.647 34.3165 212.713 35.1546C210.049 35.3272 207.575 36.5568 205.871 38.7176C203.258 43.0653 203.814 49.9748 203.831 54.9748L203.853 69.8973L192.156 69.8803C191.871 59.3359 192.145 47.5638 192.157 36.9228L186.955 36.9127L186.969 25.1499C190.909 25.1263 194.849 25.1515 198.788 25.2256C198.806 26.5096 198.508 31.3406 199.192 32.0915C202.128 32.4605 204.248 28.0887 207.073 26.7384C210.187 25.2498 211.815 25.0676 215.139 24.6725Z"/><path fill="#fff" d="M111.564 55.0469C113.487 60.9095 117.687 61.8703 123.508 61.6085C125.781 61.5065 130.284 59.8848 129.806 56.9736C129.258 53.6406 123.786 52.77 121.107 52.3218C116.361 51.4178 110.176 50.6139 106.163 47.6847C103.824 45.99 102.275 43.4163 101.873 40.556C99.2857 23.3583 124.454 20.8507 134.717 28.315C138.733 31.2363 139.809 34.9652 140.437 39.5982C136.805 39.7011 132.811 39.6385 129.155 39.6465C129.116 39.5318 129.074 39.4179 129.03 39.3049C126.772 33.4881 121.94 32.4456 116.114 34.0796C114.566 34.5134 112.133 36.9397 113.2 38.5559C114.931 41.1793 119.649 41.5713 122.502 42.176C130.049 43.5922 136.426 44.0685 140.105 51.9045L140.605 54.5728C140.683 55.3451 140.794 58.7512 140.686 59.4683L140.037 60.718C139.833 62.881 137.649 65.712 135.965 67.0009C130.566 71.1466 123.286 71.0928 116.869 70.6234C109.319 70.0711 99.0973 64.2876 100.181 55.5034C101.188 54.6118 109.537 55.026 111.564 55.0469Z"/><path fill="#fff" d="M456.638 25.1841C467.918 25.1429 482.849 24.7542 493.936 25.2831L493.961 32.8582C491.095 35.1175 482.237 46.7519 479.442 49.9634C477.793 51.8578 471.98 58.7885 470.793 60.5536C478.687 60.504 486.585 60.4988 494.48 60.5383C494.515 63.6524 494.518 66.7671 494.485 69.8813L468.656 69.906C465.235 69.9073 458.783 70.0815 455.53 69.8522L455.522 62.1174C456.874 60.465 458.268 59.0159 459.697 57.4348C465.734 50.7555 471.1 43.5096 476.989 36.703C477.491 36.1219 477.974 35.5452 478.416 34.9172C471.147 34.8267 463.877 34.8091 456.608 34.8643C456.605 31.7196 456.537 28.307 456.638 25.1841Z"/><path fill="#000" d="M164.138 51.3164C166.573 51.3537 169.009 51.3526 171.444 51.3123C170.228 58.3184 166.771 60.7834 159.813 61.5472C157.313 61.4125 155.654 61.2213 153.729 59.4811C151.892 57.8207 151.469 55.4926 153.326 53.6506C156.022 50.9765 160.625 51.3641 164.138 51.3164Z"/><path fill="#000" d="M431.605 51.3165C434.013 51.3505 436.422 51.3242 438.83 51.2375C437.522 58.4263 433.925 60.831 426.84 61.563C424.467 61.3646 422.736 61.2776 420.915 59.5797C419.225 58.0027 418.243 55.5217 420.127 53.6606C422.909 50.9143 427.976 51.3785 431.605 51.3165Z"/><path fill="#000" d="M75.5569 51.3162L83.304 51.3472C81.8598 58.3351 78.5543 60.7316 71.5429 61.5555C67.638 61.581 60.6529 58.9091 64.6464 53.6978C66.6475 51.0863 72.3159 51.3554 75.5569 51.3162Z"/><path fill="#000" d="M315.828 51.3144C318.203 51.3701 320.579 51.3528 322.955 51.262C321.599 58.4884 318.083 60.7134 310.915 61.5444C308.534 61.4736 306.855 61.2536 305.086 59.5995C303.445 58.0651 302.455 55.3767 304.285 53.5915C307.039 50.9067 312.24 51.3588 315.828 51.3144Z"/></mask><rect width="525" height="84" fill="currentColor" mask="url(#logo-cut)"/></svg>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a class="pill intro" style="--d:.18s" href="#work" data-roll-host><span data-roll>Work</span></a>
+      <a class="pill intro" style="--d:.22s" href="#why" data-roll-host><span data-roll>Why</span></a>
+      <a class="pill intro" style="--d:.26s" href="#services" data-roll-host><span data-roll>What</span></a>
+      <a class="pill intro" style="--d:.30s" href="#process" data-roll-host><span data-roll>How</span></a>
+      <a class="nav-cta intro" style="--d:.34s" href="#contact" data-roll-host>
+        <span class="pill pill--light"><span data-roll>Get in touch</span></span>
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+          <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+        </span>
+      </a>
+    </nav>
+
+    <button class="pill menu-btn intro" style="--d:.2s" type="button" aria-expanded="false" aria-controls="menu" data-menu-btn>
+      <span data-menu-label>Menu</span>
+    </button>
+
+    <!-- The nav scrolls away with the page; this copy of its Get in touch button stays,
+         fading in at the same spot once the nav has gone (ui.js initCtaFloat) -->
+    <a class="cta-float" href="#contact" data-cta-float data-roll-host aria-hidden="true" tabindex="-1">
+      <span class="pill pill--light"><span data-roll>Get in touch</span></span>
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+        <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+      </span>
+    </a>
+  </header>
+
+  <div class="menu" id="menu" data-menu hidden>
+    <a href="#work">Work</a>
+    <a href="#why">Why me</a>
+    <a href="#services">What I do</a>
+    <a href="#process">How I work</a>
+    <a class="menu-cta" href="#contact">Get in touch</a>
+  </div>
+
+  <main>
+    <section class="hero" id="top" tabindex="-1" aria-labelledby="hero-title">
+      <!-- The grid scrolls at normal speed; the stage drifts up slower while the frame shrinks -->
+      <div class="hero-backdrop" aria-hidden="true"></div>
+      <div class="hero-stage" data-stage>
+        <p class="hero-caption label" aria-hidden="true" data-caption>Idea to launch, 1 partner</p>
+
+        <div class="hero-frame" data-frame>
+          <!-- Layers, back to front: CSS glow → live 3D -->
+          <div class="hero-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+          <canvas class="hero-canvas" data-canvas aria-hidden="true"></canvas>
+          <div class="hero-shade" aria-hidden="true"></div>
+          <svg class="ann-svg" data-ann-svg aria-hidden="true"></svg>
+          <div class="ann-labels" data-ann-labels aria-hidden="true"></div>
+          <div class="grain" aria-hidden="true"></div>
+
+          <div class="hero-content">
+            <p class="eyebrow label intro" style="--d:.15s"><span class="sq"></span>Design engineering partner</p>
+            <h1 class="hero-title" id="hero-title">
+              <span class="line"><span style="--d:.25s">I design it.</span></span>
+              <span class="line"><span style="--d:.36s">Then I build it.</span></span>
+            </h1>
+            <div class="hero-ctas">
+              <a class="btn intro" style="--d:.55s" href="#contact" data-roll-host>
+                <span class="btn-label"><span data-roll>Get in touch</span></span>
+                <span class="ico" aria-hidden="true">
+                  <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+                  <svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div class="hero-foot">
+            <div class="status intro" style="--d:.7s">
+              <p class="label"><span class="dot" aria-hidden="true"></span>Taking on new projects</p>
+              <p class="label muted">Based in Dubai</p>
+            </div>
+
+            <p class="hero-intro intro" style="--d:.78s">
+              Enterprise-grade digital products, from idea to launch. I design it, build the front end and QA every screen myself, so what you approved is what ships.
+            </p>
+
+            <!-- Testimonials: one short, high-impact line per client (trimmed from LinkedIn recommendations,
+                 their exact words; … marks a cut). Add, remove or reorder <li>s freely; the first shows without
+                 JavaScript, the rest rotate every 7s (paused on hover/focus). -->
+            <figure class="card quotes intro" style="--d:.86s" data-quotes>
+              <figcaption class="card-top label">
+                <span>In their words</span>
+                <span class="quotes-nav">
+                  <button class="ico" type="button" data-quotes-next data-roll-host aria-label="Next testimonial">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+                  </button>
+                </span>
+              </figcaption>
+              <ul class="quotes-list" role="list">
+                <li class="quote is-active">
+                  <blockquote>“…engineering never had to compensate for their work. That was true every single time when working with Hasan.”</blockquote>
+                  <p class="quote-by label">Simon Geer<span>Technology Director, MRM (MENAT)</span></p>
+                </li>
+                <li class="quote">
+                  <blockquote>“He took my brief (often very simple, and scribbled on a whiteboard) and spun it into gold.”</blockquote>
+                  <p class="quote-by label">Tom McNulty<span>CTO, whileyouwait</span></p>
+                </li>
+                <li class="quote">
+                  <blockquote>“Hasan’s ability to translate complex concepts into intuitive, user-friendly designs is truly remarkable.”</blockquote>
+                  <p class="quote-by label">Aatir Sohail<span>Design Manager, Sastaticket.pk</span></p>
+                </li>
+                <li class="quote">
+                  <blockquote>“…very easy to work with, understands things quickly, and is great at exploring new ways to make his work stand out.”</blockquote>
+                  <p class="quote-by label">Maximilian Hylkema<span>Founder &amp; CEO, whileyouwait</span></p>
+                </li>
+              </ul>
+              <span class="quotes-progress" aria-hidden="true"><span data-quotes-bar></span></span>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Track record: proof in numbers, straight after the hero.
+         Each number's final value is in the HTML (data-count drives the count-up). -->
+    <section class="stats" aria-labelledby="stats-lede" data-stats data-reveal>
+      <div class="stats-head">
+        <p class="label stats-label reveal"><span class="sq"></span>Track record</p>
+        <p class="stats-lede reveal" id="stats-lede" style="--d:.08s">
+          7+ years designing and building for teams where “good enough” doesn’t ship.
+          <span>Banks, airports, fashion houses, car makers. Different rooms, same standard.</span>
+        </p>
+      </div>
+
+      <ol class="stats-grid" role="list">
+        <li class="stat reveal" style="--d:.15s">
+          <p class="stat-num"><span data-count="6">6</span><span class="stat-suf">x</span></p>
+          <p class="stat-text">Awards, including Cannes Lions and the Loeries</p>
+        </li>
+        <li class="stat reveal" style="--d:.25s">
+          <p class="stat-num"><span data-count="10">10</span><span class="stat-suf">+</span></p>
+          <p class="stat-text">Industries, from banking and aviation to luxury fashion</p>
+        </li>
+        <li class="stat reveal" style="--d:.35s">
+          <p class="stat-num"><span data-count="2">2</span><span class="stat-suf">M+</span></p>
+          <p class="stat-text">People using products I’ve worked on</p>
+        </li>
+        <li class="stat reveal" style="--d:.45s">
+          <p class="stat-num"><span data-count="15">15</span><span class="stat-suf">+</span></p>
+          <p class="stat-text">Enterprise brands, including Gucci, NEOM and McDonald’s</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 03 Selected work: text on the left scrolls at normal speed. On the right, each project's
+         device sits on its own layer; the next one is revealed by an upward wipe tied to scroll, and the
+         active screen scrolls through its page. Frames: assets/devices/ (MacBook split into base + notch
+         so screens slot between them; iPhone screen is a transparent hole). Screens are placeholders. -->
+    <section class="showcase" id="work" tabindex="-1" aria-label="Selected work" data-showcase>
+      <p class="showcase-head label"><span class="sq"></span>Selected work</p>
+      <div class="showcase-grid">
+        <ol class="showcase-steps" role="list">
+          <li class="showcase-step is-active" data-step>
+            <div class="showcase-media" aria-hidden="true" data-play><div class="mock mock--laptop"><img class="mock-frame" src="assets/devices/macbook-base.svg" alt="" width="1216" height="735" decoding="async"><div class="mock-screen" style="--ph-bg:#0d0d0e;--ph-ink:rgba(255,255,255,.09);--ph-accent:#e9e4d8"><!-- a 12 second highlight reel of thebirdwatcher.ai, recorded at the screen's own shape so it fills it edge to edge; HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/birdwatcher-poster.webp"><source src="assets/work/birdwatcher-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/birdwatcher.mp4" type="video/mp4"></video></div><img class="mock-over" src="assets/devices/macbook-notch.svg" alt="" width="1216" height="735" decoding="async"></div></div>
+            <h3 class="showcase-name">The Birdwatcher</h3>
+            <p class="showcase-body">An award-winning interactive experience that follows 1 monitored bird’s flight, to show nature and industry moving as one.</p>
+            <button class="showcase-cta" type="button" disabled>Case study coming soon</button>
+          </li>
+          <li class="showcase-step" data-step>
+            <div class="showcase-media" aria-hidden="true" data-play><div class="mock mock--phone"><div class="mock-screen" style="--ph-bg:#ffc72c;--ph-ink:rgba(0,0,0,.10);--ph-accent:#da291c"><!-- the McNomNoms journey, from launch to levelling up: the Figma screens animated piece by piece (scripts/reel/mcnomnoms), at the screen's own shape; HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/mcnomnoms-poster.webp"><source src="assets/work/mcnomnoms-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/mcnomnoms.mp4" type="video/mp4"></video></div><img class="mock-frame" src="assets/devices/iphone.svg" alt="" width="1520" height="3068" decoding="async"></div></div>
+            <h3 class="showcase-name">McNomNoms</h3>
+            <p class="showcase-body">A rewards experience for the McDonald’s KSA app, with characters that unlock offers as you level up.</p>
+            <button class="showcase-cta" type="button" disabled>Case study coming soon</button>
+          </li>
+          <li class="showcase-step" data-step>
+            <div class="showcase-media" aria-hidden="true" data-play><div class="mock mock--laptop"><img class="mock-frame" src="assets/devices/macbook-base.svg" alt="" width="1216" height="735" decoding="async"><div class="mock-screen" style="--ph-bg:#ffffff;--ph-ink:rgba(5,20,31,.08);--ph-accent:#05141f"><!-- the Kia Tasman configurator: pick a model, turn it around, then build it: colour, wheels, interior, tow hitch, reserve (scripts/reel/kia); HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/kia-tasman-poster.webp"><source src="assets/work/kia-tasman-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/kia-tasman.mp4" type="video/mp4"></video></div><img class="mock-over" src="assets/devices/macbook-notch.svg" alt="" width="1216" height="735" decoding="async"></div></div>
+            <h3 class="showcase-name">Kia Tasman Configurator</h3>
+            <p class="showcase-body">Launching the Tasman, Kia’s first pickup truck, across the Middle East, with a configurator to build yours.</p>
+            <button class="showcase-cta" type="button" disabled>Case study coming soon</button>
+          </li>
+          <li class="showcase-step" data-step>
+            <div class="showcase-media" aria-hidden="true" data-play><div class="mock mock--phone"><div class="mock-screen" style="--ph-bg:#f0f1fd;--ph-ink:rgba(44,45,100,.1);--ph-accent:#2c2d64"><!-- Dubai Airports Express Maps in one take: "I'm departing", the map, the flight, then the route; the sheet is pulled up once and its content changes in place (scripts/reel/dxb). HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/dubai-airports-poster.webp"><source src="assets/work/dubai-airports-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/dubai-airports.mp4" type="video/mp4"></video></div><img class="mock-frame" src="assets/devices/iphone.svg" alt="" width="1520" height="3068" decoding="async"></div></div>
+            <h3 class="showcase-name">Dubai Airports Wayfinding</h3>
+            <p class="showcase-body">Wayfinding for the world’s busiest international airport, rebuilt around what each traveller came to do: arrive, depart, transit or connect.</p>
+            <button class="showcase-cta" type="button" disabled>Case study coming soon</button>
+          </li>
+        </ol>
+        <div class="showcase-aside" aria-hidden="true">
+          <div class="showcase-stage">
+            <div class="stage-layers">
+              <div class="stage-layer" data-layer style="--reveal:1">
+                <div class="mock mock--laptop"><img class="mock-frame" src="assets/devices/macbook-base.svg" alt="" width="1216" height="735" decoding="async"><div class="mock-screen" style="--ph-bg:#0d0d0e;--ph-ink:rgba(255,255,255,.09);--ph-accent:#e9e4d8"><!-- a 12 second highlight reel of thebirdwatcher.ai, recorded at the screen's own shape so it fills it edge to edge; HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/birdwatcher-poster.webp"><source src="assets/work/birdwatcher-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/birdwatcher.mp4" type="video/mp4"></video></div><img class="mock-over" src="assets/devices/macbook-notch.svg" alt="" width="1216" height="735" decoding="async"></div>
+                <span class="wipe-edge"></span>
+              </div>
+              <div class="stage-layer" data-layer style="--reveal:0">
+                <div class="mock mock--phone"><div class="mock-screen" style="--ph-bg:#ffc72c;--ph-ink:rgba(0,0,0,.10);--ph-accent:#da291c"><!-- the McNomNoms journey, from launch to levelling up: the Figma screens animated piece by piece (scripts/reel/mcnomnoms), at the screen's own shape; HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/mcnomnoms-poster.webp"><source src="assets/work/mcnomnoms-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/mcnomnoms.mp4" type="video/mp4"></video></div><img class="mock-frame" src="assets/devices/iphone.svg" alt="" width="1520" height="3068" decoding="async"></div>
+                <span class="wipe-edge"></span>
+              </div>
+              <div class="stage-layer" data-layer style="--reveal:0">
+                <div class="mock mock--laptop"><img class="mock-frame" src="assets/devices/macbook-base.svg" alt="" width="1216" height="735" decoding="async"><div class="mock-screen" style="--ph-bg:#ffffff;--ph-ink:rgba(5,20,31,.08);--ph-accent:#05141f"><!-- the Kia Tasman configurator: pick a model, turn it around, then build it: colour, wheels, interior, tow hitch, reserve (scripts/reel/kia); HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/kia-tasman-poster.webp"><source src="assets/work/kia-tasman-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/kia-tasman.mp4" type="video/mp4"></video></div><img class="mock-over" src="assets/devices/macbook-notch.svg" alt="" width="1216" height="735" decoding="async"></div>
+                <span class="wipe-edge"></span>
+              </div>
+              <div class="stage-layer" data-layer style="--reveal:0">
+                <div class="mock mock--phone"><div class="mock-screen" style="--ph-bg:#f0f1fd;--ph-ink:rgba(44,45,100,.1);--ph-accent:#2c2d64"><!-- Dubai Airports Express Maps in one take: "I'm departing", the map, the flight, then the route; the sheet is pulled up once and its content changes in place (scripts/reel/dxb). HEVC where the browser plays it, H.264 everywhere else --><video class="screen-video" muted loop playsinline preload="none" poster="assets/work/dubai-airports-poster.webp"><source src="assets/work/dubai-airports-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/work/dubai-airports.mp4" type="video/mp4"></video></div><img class="mock-frame" src="assets/devices/iphone.svg" alt="" width="1520" height="3068" decoding="async"></div>
+                <span class="wipe-edge"></span>
+              </div>
+            </div>
+            <p class="showcase-caption label"><span data-caption-name>The Birdwatcher</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Why me: bento grid. Each card's animation acts out its claim and only plays
+         while the card is on screen (ui.js initBento); reduced motion shows a still state. -->
+    <section class="why" id="why" tabindex="-1" aria-labelledby="why-lede" data-reveal>
+      <div class="why-head">
+        <p class="label why-label reveal"><span class="sq"></span>Why me</p>
+        <p class="why-lede reveal" id="why-lede" style="--d:.08s">
+          You get the designer and the developer.
+          <span>They just happen to be the same person.</span>
+        </p>
+      </div>
+
+      <div class="bento">
+        <!-- 01: what's designed is what ships. The build arrives off-spec, then snaps onto the design -->
+        <article class="tile tile--drift reveal" style="--d:.1s" data-play>
+          <div class="tile-visual">
+            <div class="drift" aria-hidden="true">
+              <div class="drift-board">
+                <!-- the design: outlines, selection handles, a frame label and spec marks -->
+                <div class="drift-layer drift-design">
+                <span class="ui-nav"><i class="ui-logo"></i><i></i><i></i><i></i></span>
+                <span class="ui-hero">
+                  <span class="ui-text"><i class="ui-h1"></i><i class="ui-h1 ui-h1--short"></i><i class="ui-p"></i><i class="ui-p ui-p--short"></i><i class="ui-btn"></i></span>
+                  <i class="ui-img"></i>
+                </span>
+                </div>
+                <span class="drift-select"><b class="drift-frame-label">Hero · 1440</b><i></i><i></i><i></i><i></i></span>
+                <span class="drift-spec drift-spec--w"><span>1440</span></span>
+                <span class="drift-spec drift-spec--h"><span>720</span></span>
+                <!-- the build: same layout, arrives off-spec and snaps onto the design -->
+                <div class="drift-layer drift-build">
+                <span class="ui-nav"><i class="ui-logo"></i><i></i><i></i><i></i></span>
+                <span class="ui-hero">
+                  <span class="ui-text"><i class="ui-h1"></i><i class="ui-h1 ui-h1--short"></i><i class="ui-p"></i><i class="ui-p ui-p--short"></i><i class="ui-btn"></i></span>
+                  <i class="ui-img"></i>
+                </span>
+                </div>
+              </div>
+              <p class="drift-readout label"><i class="drift-led"></i><span>Drift</span><b class="drift-num">px</b><span class="drift-ok">Matched to spec</span></p>
+            </div>
+          </div>
+          <div class="tile-copy">
+            <h3 class="tile-title">1 partner, no drift</h3>
+            <p class="tile-body">The person who designs it builds the front end and tests it. Nothing gets lost between the design and what ships.</p>
+          </div>
+        </article>
+
+        <!-- 02: an activity log where every entry is by the same person -->
+        <article class="tile tile--log reveal" style="--d:.18s" data-play>
+          <div class="tile-visual">
+            <div class="log" aria-hidden="true">
+              <p class="log-head label"><span>Activity</span><span><i class="log-dot"></i>1 contributor</span></p>
+              <ul class="log-list" data-log></ul>
+            </div>
+          </div>
+          <div class="tile-copy">
+            <h3 class="tile-title">Hands-on, start to finish</h3>
+            <p class="tile-body">You work with me directly, and I do the work myself. Nothing gets passed to juniors or outsourced.</p>
+          </div>
+        </article>
+
+        <!-- 03: logo wall in brand colours; one cell at a time rolls to the next client. Logos: assets/logos/ (trimmed; white parts set to black for the light tile) -->
+        <article class="tile tile--brands reveal" style="--d:.12s" data-play>
+          <div class="tile-visual">
+            <div class="brands">
+              <p class="brands-head label"><span>Trusted by</span><span>15+ enterprise brands</span></p>
+              <div class="logo-wall" data-logos>
+                <span class="logo-cell"><img src="assets/logos/gucci.svg" alt="Gucci" style="--h:18.7px" width="109" height="19" decoding="async"></span>
+                <span class="logo-cell"><img src="assets/logos/neom.webp" alt="NEOM" style="--h:35.4px" width="103" height="35" decoding="async"></span>
+                <span class="logo-cell"><img src="assets/logos/mcdonalds.webp" alt="McDonald’s" style="--h:33.9px" width="49" height="34" decoding="async"></span>
+                <span class="logo-cell"><img src="assets/logos/aramco.webp" alt="Aramco" style="--h:23.7px" width="78" height="24" decoding="async"></span>
+                <span class="logo-cell"><img src="assets/logos/cadillac.svg" alt="Cadillac" style="--h:24.6px" width="85" height="25" decoding="async"></span>
+                <span class="logo-cell"><img src="assets/logos/dubai-airports.webp" alt="Dubai Airports" style="--h:20.5px" width="91" height="20" decoding="async"></span>
+                <template data-logos-extra><img src="assets/logos/kia.webp" alt="Kia" style="--h:19.0px" width="79" height="19" decoding="async"><img src="assets/logos/chevrolet.webp" alt="Chevrolet" style="--h:27.2px" width="61" height="27" decoding="async"><img src="assets/logos/kinder.webp" alt="Kinder" style="--h:22.9px" width="73" height="23" decoding="async"></template>
+              </div>
+            </div>
+          </div>
+          <div class="tile-copy">
+            <h3 class="tile-title">Proven at enterprise scale</h3>
+            <p class="tile-body">7+ years with brands whose guidelines are longer than most websites.</p>
+          </div>
+        </article>
+
+        <!-- 04: a slowly turning award badge -->
+        <article class="tile tile--award reveal" style="--d:.2s" data-play>
+          <div class="tile-visual">
+<svg class="wreath" viewBox="0 0 220 200" aria-hidden="true">
+              <defs><linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f97316"/></linearGradient></defs>
+              <g class="wreath-branch"><path class="wreath-stem" pathLength="1" d="M85.4 171.7 A72 72 0 0 1 80.7 38.2"/><g transform="translate(85.4 171.7) rotate(338.0) scale(1.00)"><path class="leaf" style="--i:0" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(85.4 171.7) rotate(422.0) scale(1.00)"><path class="leaf" style="--i:0" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(70.2 164.0) rotate(351.6) scale(0.96)"><path class="leaf" style="--i:1" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(70.2 164.0) rotate(435.6) scale(0.96)"><path class="leaf" style="--i:1" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(57.2 152.9) rotate(365.2) scale(0.93)"><path class="leaf" style="--i:2" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(57.2 152.9) rotate(449.2) scale(0.93)"><path class="leaf" style="--i:2" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(47.1 139.1) rotate(378.8) scale(0.90)"><path class="leaf" style="--i:3" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(47.1 139.1) rotate(462.8) scale(0.90)"><path class="leaf" style="--i:3" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(40.7 123.4) rotate(392.4) scale(0.86)"><path class="leaf" style="--i:4" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(40.7 123.4) rotate(476.4) scale(0.86)"><path class="leaf" style="--i:4" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(38.0 106.5) rotate(406.0) scale(0.82)"><path class="leaf" style="--i:5" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(38.0 106.5) rotate(490.0) scale(0.82)"><path class="leaf" style="--i:5" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(39.5 89.5) rotate(419.6) scale(0.79)"><path class="leaf" style="--i:6" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(39.5 89.5) rotate(503.6) scale(0.79)"><path class="leaf" style="--i:6" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(44.9 73.3) rotate(433.2) scale(0.76)"><path class="leaf" style="--i:7" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(44.9 73.3) rotate(517.2) scale(0.76)"><path class="leaf" style="--i:7" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(53.9 58.9) rotate(446.8) scale(0.72)"><path class="leaf" style="--i:8" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(53.9 58.9) rotate(530.8) scale(0.72)"><path class="leaf" style="--i:8" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(66.1 47.0) rotate(460.4) scale(0.69)"><path class="leaf" style="--i:9" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(66.1 47.0) rotate(544.4) scale(0.69)"><path class="leaf" style="--i:9" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(474.0) scale(0.65)"><path class="leaf" style="--i:10" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(558.0) scale(0.65)"><path class="leaf" style="--i:10" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(516.0) scale(0.62)"><path class="leaf" style="--i:11" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g></g>
+              <g class="wreath-branch" transform="translate(220 0) scale(-1 1)"><path class="wreath-stem" pathLength="1" d="M85.4 171.7 A72 72 0 0 1 80.7 38.2"/><g transform="translate(85.4 171.7) rotate(338.0) scale(1.00)"><path class="leaf" style="--i:0" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(85.4 171.7) rotate(422.0) scale(1.00)"><path class="leaf" style="--i:0" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(70.2 164.0) rotate(351.6) scale(0.96)"><path class="leaf" style="--i:1" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(70.2 164.0) rotate(435.6) scale(0.96)"><path class="leaf" style="--i:1" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(57.2 152.9) rotate(365.2) scale(0.93)"><path class="leaf" style="--i:2" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(57.2 152.9) rotate(449.2) scale(0.93)"><path class="leaf" style="--i:2" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(47.1 139.1) rotate(378.8) scale(0.90)"><path class="leaf" style="--i:3" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(47.1 139.1) rotate(462.8) scale(0.90)"><path class="leaf" style="--i:3" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(40.7 123.4) rotate(392.4) scale(0.86)"><path class="leaf" style="--i:4" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(40.7 123.4) rotate(476.4) scale(0.86)"><path class="leaf" style="--i:4" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(38.0 106.5) rotate(406.0) scale(0.82)"><path class="leaf" style="--i:5" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(38.0 106.5) rotate(490.0) scale(0.82)"><path class="leaf" style="--i:5" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(39.5 89.5) rotate(419.6) scale(0.79)"><path class="leaf" style="--i:6" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(39.5 89.5) rotate(503.6) scale(0.79)"><path class="leaf" style="--i:6" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(44.9 73.3) rotate(433.2) scale(0.76)"><path class="leaf" style="--i:7" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(44.9 73.3) rotate(517.2) scale(0.76)"><path class="leaf" style="--i:7" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(53.9 58.9) rotate(446.8) scale(0.72)"><path class="leaf" style="--i:8" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(53.9 58.9) rotate(530.8) scale(0.72)"><path class="leaf" style="--i:8" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(66.1 47.0) rotate(460.4) scale(0.69)"><path class="leaf" style="--i:9" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(66.1 47.0) rotate(544.4) scale(0.69)"><path class="leaf" style="--i:9" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(474.0) scale(0.65)"><path class="leaf" style="--i:10" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(558.0) scale(0.65)"><path class="leaf" style="--i:10" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g><g transform="translate(80.7 38.2) rotate(516.0) scale(0.62)"><path class="leaf" style="--i:11" d="M0 0C5-7 17-8 23-2C17 6 5 6 0 0Z"/></g></g>
+              <path class="wreath-spark" d="M110 32 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4z"/>
+              <text class="wreath-num" x="110" y="112">6x</text>
+              <text class="wreath-cap" x="110" y="134">Awards</text>
+              <rect class="wreath-sq" x="106" y="176" width="8" height="8"/>
+            </svg>
+          </div>
+          <div class="tile-copy">
+            <h3 class="tile-title">6x award-winning</h3>
+            <p class="tile-body">Judged by people who are very hard to impress.</p>
+          </div>
+        </article>
+
+        <!-- 05: rotating testimonials, trimmed from LinkedIn recommendations (their exact words; … marks a cut) -->
+        <article class="tile tile--quotes quotes reveal" style="--d:.28s" data-quotes>
+          <div class="tile-visual">
+            <ul class="quotes-list" role="list">
+              <li class="quote is-active">
+                <blockquote>“His design systems were clean and well organized and edge cases already designed for before dev even asked.”</blockquote>
+                <p class="quote-by label">Simon Geer<span>Technology Director, MRM (MENAT)</span></p>
+              </li>
+              <li class="quote">
+                <blockquote>“Hasan brings a depth of research and clarity of design principles that elevate every project he touches.”</blockquote>
+                <p class="quote-by label">Aatir Sohail<span>Design Manager, Sastaticket.pk</span></p>
+              </li>
+              <li class="quote">
+                <blockquote>“He regularly went above and beyond to produce fantastic work, and quickly became my go-to guy for anything senior.”</blockquote>
+                <p class="quote-by label">Tom McNulty<span>CTO, whileyouwait</span></p>
+              </li>
+              <li class="quote">
+                <blockquote>“…very easy to work with, understands things quickly, and is great at exploring new ways to make his work stand out. Would love to work with him again!”</blockquote>
+                <p class="quote-by label">Maximilian Hylkema<span>Founder &amp; CEO, whileyouwait</span></p>
+              </li>
+              <li class="quote">
+                <blockquote>“…a sharp business acumen that enables him to suggest design solutions that bridge the gap between customer problems and product solutions.”</blockquote>
+                <p class="quote-by label">Mohib Hassan<span>Cofounder, Openfarming</span></p>
+              </li>
+              <li class="quote">
+                <blockquote>“Always starts with understanding customer needs, manages to find ways to deliver the wow experience.”</blockquote>
+                <p class="quote-by label">Faisal Khushnood<span>Product Manager, KAYAK for Business</span></p>
+              </li>
+            </ul>
+          </div>
+          <div class="tile-copy tile-copy--row">
+            <h3 class="tile-title">In their words</h3>
+            <span class="quotes-nav">
+              <button class="ico" type="button" data-quotes-next data-roll-host aria-label="Next testimonial"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+            </span>
+          </div>
+          <span class="quotes-progress" aria-hidden="true"><span data-quotes-bar></span></span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 05a What I do: one row per discipline. Each row reveals on its own as it enters.
+         Each has a small diagram of the work that plays on hover (or while on screen on
+         touch devices); at rest it shows the finished state. -->
+    <section class="services" id="services" tabindex="-1" aria-labelledby="services-lede">
+      <div class="sec-head" data-reveal>
+        <p class="label sec-label reveal"><span class="sq"></span>What I do</p>
+        <p class="sec-lede reveal" id="services-lede" style="--d:.08s">
+          Research, design, build, QA and launch.
+          <span>Agencies split that across 5 people. I don’t.</span>
+        </p>
+      </div>
+
+      <ol class="svc-list" role="list">
+        <li class="svc" data-reveal>
+          <div class="svc-row reveal">
+            <span class="svc-viz sv-research" aria-hidden="true">
+              <i class="rs-head" style="left:8%"></i><i class="rs-head" style="left:54%"></i>
+              <i class="rs-note" style="left:8%;top:30%;--dx:22cqw;--dy:18cqh;--r:-8deg"></i>
+              <i class="rs-note rs-note--b" style="left:8%;top:52%;--dx:58cqw;--dy:-10cqh;--r:6deg"></i>
+              <i class="rs-note" style="left:8%;top:74%;--dx:36cqw;--dy:-40cqh;--r:-4deg"></i>
+              <i class="rs-note" style="left:54%;top:30%;--dx:-30cqw;--dy:34cqh;--r:9deg"></i>
+              <i class="rs-note rs-note--b" style="left:54%;top:52%;--dx:-46cqw;--dy:-16cqh;--r:-7deg"></i>
+              <i class="rs-note" style="left:54%;top:74%;--dx:-12cqw;--dy:-48cqh;--r:5deg"></i>
+            </span>
+            <h3 class="svc-title">Research</h3>
+            <div class="svc-copy">
+              <p class="svc-body">I talk to your users and read your data before I draw anything. You get answers, not assumptions.</p>
+              <ul class="svc-tags" role="list"><li>Interviews</li><li>Audits</li><li>User flows</li></ul>
+            </div>
+          </div>
+        </li>
+        <li class="svc" data-reveal>
+          <div class="svc-row reveal">
+            <span class="svc-viz sv-design" aria-hidden="true">
+              <i class="dz-bar" style="top:14%;width:46%"></i>
+              <i class="dz-bar dz-bar--thin" style="top:30%;width:60%"></i>
+              <i class="dz-bar dz-bar--thin" style="top:40%;width:52%"></i>
+              <i class="dz-img"></i>
+              <i class="dz-guide"></i>
+              <span class="dz-sel"><i class="dz-btn"></i><i class="dz-h"></i><i class="dz-h"></i><i class="dz-h"></i><i class="dz-h"></i></span>
+            </span>
+            <h3 class="svc-title">Design</h3>
+            <div class="svc-copy">
+              <p class="svc-body">Interfaces and design systems made for real content, real users and the next 10 features.</p>
+              <ul class="svc-tags" role="list"><li>UX and UI</li><li>Design systems</li><li>Prototypes</li></ul>
+            </div>
+          </div>
+        </li>
+        <li class="svc" data-reveal>
+          <div class="svc-row reveal">
+            <span class="svc-viz sv-build" aria-hidden="true">
+              <i class="bd-code" style="--n:0;top:16%;left:7%;width:30%"></i>
+              <i class="bd-code" style="--n:1;top:30%;left:13%;width:24%"></i>
+              <i class="bd-code bd-code--b" style="--n:2;top:44%;left:13%;width:20%"></i>
+              <i class="bd-code" style="--n:3;top:58%;left:13%;width:27%"></i>
+              <i class="bd-code" style="--n:4;top:72%;left:7%;width:14%"></i>
+              <i class="bd-pane"></i>
+              <i class="bd-ui bd-ui--nav" style="--n:0"></i>
+              <i class="bd-ui bd-ui--h" style="--n:1"></i>
+              <i class="bd-ui bd-ui--p" style="--n:2"></i>
+              <i class="bd-ui bd-ui--img" style="--n:3"></i>
+              <i class="bd-ui bd-ui--btn" style="--n:4"></i>
+            </span>
+            <h3 class="svc-title">Build</h3>
+            <div class="svc-copy">
+              <p class="svc-body">Websites and leaner products, built end to end. On bigger platforms, the front end, alongside your engineers.</p>
+              <ul class="svc-tags" role="list"><li>Websites</li><li>Front end</li><li>Performance</li></ul>
+            </div>
+          </div>
+        </li>
+        <li class="svc" data-reveal>
+          <div class="svc-row reveal">
+            <span class="svc-viz sv-qa" aria-hidden="true">
+              <i class="qa-dev qa-dev--lap" style="--n:0"><b></b></i>
+              <i class="qa-dev qa-dev--tab" style="--n:1"><b></b></i>
+              <i class="qa-dev qa-dev--ph" style="--n:2"><b></b><em></em></i>
+              <i class="qa-scan"></i>
+            </span>
+            <h3 class="svc-title">QA</h3>
+            <div class="svc-copy">
+              <p class="svc-body">Every screen checked on every breakpoint before it reaches you. The bugs meet me first.</p>
+              <ul class="svc-tags" role="list"><li>Cross-browser</li><li>Devices</li><li>Accessibility</li></ul>
+            </div>
+          </div>
+        </li>
+        <li class="svc" data-reveal>
+          <div class="svc-row reveal">
+            <span class="svc-viz sv-launch" aria-hidden="true">
+              <span class="ln-win">
+                <i class="ln-top"><b></b><b></b><b></b><i class="ln-url"></i></i>
+                <i class="ln-load"></i>
+                <i class="ln-blk ln-h" style="--n:0"></i><i class="ln-blk ln-p" style="--n:1"></i><i class="ln-blk ln-btn" style="--n:2"></i><i class="ln-blk ln-img" style="--n:3"></i>
+              </span>
+              <span class="ln-live"><b class="ln-dot"></b>Live</span>
+              <span class="ln-users"><i style="--n:0"></i><i style="--n:1"></i><i style="--n:2"></i></span>
+            </span>
+            <h3 class="svc-title">Launch</h3>
+            <div class="svc-copy">
+              <p class="svc-body">I put websites and leaner products live myself. On bigger platforms, I launch with your team, then fix what real users find.</p>
+              <ul class="svc-tags" role="list"><li>Release</li><li>Handover</li><li>Iteration</li></ul>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 05b How I work: dark band. The blue line across the steps fills 1:1 with scroll
+         position (ui.js initProcess), lighting each step as it passes. No easing, no pinning.
+         The cards below are information only; their diagrams loop only while on screen (ui.js initBento). -->
+    <section class="process" id="process" tabindex="-1" aria-labelledby="process-lede" data-dark>
+      <div class="sec-head" data-reveal>
+        <p class="label sec-label reveal"><span class="sq"></span>How I work</p>
+        <p class="sec-lede reveal" id="process-lede" style="--d:.08s">
+          No account managers. No handoffs.
+          <span>You talk to the person doing the work.</span>
+        </p>
+      </div>
+
+      <div class="steps" data-steps>
+        <span class="steps-line" aria-hidden="true"><span></span></span>
+        <ol class="steps-list" role="list">
+          <li class="step" data-proc-step>
+            <span class="step-dot" aria-hidden="true"></span>
+            <h3 class="step-title">We talk</h3>
+            <p class="step-body">A short call about the problem, not a pitch. If I’m not the right fit, I’ll tell you.</p>
+          </li>
+          <li class="step" data-proc-step>
+            <span class="step-dot" aria-hidden="true"></span>
+            <h3 class="step-title">We agree</h3>
+            <p class="step-body">Scope, timeline and cost in writing before anything starts. No surprises later.</p>
+          </li>
+          <li class="step" data-proc-step>
+            <span class="step-dot" aria-hidden="true"></span>
+            <h3 class="step-title">You watch it take shape</h3>
+            <p class="step-body">Weekly check-ins with real builds you can click, not slides about progress.</p>
+          </li>
+          <li class="step" data-proc-step>
+            <span class="step-dot" aria-hidden="true"></span>
+            <h3 class="step-title">It ships</h3>
+            <p class="step-body">Tested, launched and handed over properly. I’m still a message away after.</p>
+          </li>
+        </ol>
+      </div>
+
+      <div class="ways" data-reveal>
+        <p class="label ways-label reveal"><span class="sq"></span>Ways to work together</p>
+        <div class="ways-grid">
+          <article class="way reveal" style="--d:.08s" data-play>
+            <!-- one run, start to launch -->
+            <span class="way-viz viz-project" aria-hidden="true">
+              <span class="vp-track"><i style="--n:0"></i><i style="--n:1"></i><i style="--n:2"></i><i style="--n:3"></i><i style="--n:4"></i></span>
+              <span class="vp-ends label"><b>Kick-off</b><b>Launch</b></span>
+            </span>
+            <div class="way-copy">
+              <h3 class="way-title">A project</h3>
+              <p class="way-body">A clear scope, from first call to launch. For a new product, a website, or the rebuild that’s overdue.</p>
+            </div>
+            <p class="label way-foot">Fixed scope</p>
+          </article>
+          <article class="way reveal" style="--d:.16s" data-play>
+            <!-- a release every week -->
+            <span class="way-viz viz-partner" aria-hidden="true">
+              <span class="vb"><i style="--h:.45;--n:0"></i><i style="--h:.7;--n:1"></i><i style="--h:.55;--n:2"></i><i style="--h:.9;--n:3"></i><i style="--h:.6;--n:4"></i><i style="--h:.8;--n:5"></i><i style="--h:.5;--n:6"></i><i style="--h:1;--n:7"></i><i style="--h:.65;--n:8"></i><i style="--h:.85;--n:9"></i><i style="--h:.7;--n:10"></i><i style="--h:.95;--n:11"></i></span>
+              <span class="vp-ends label"><b>Week 1</b><b>Week 12</b></span>
+            </span>
+            <div class="way-copy">
+              <h3 class="way-title">A partnership</h3>
+              <p class="way-body">Ongoing design and front end for teams that ship every week. Booked by the month.</p>
+            </div>
+            <p class="label way-foot">Monthly</p>
+          </article>
+          <article class="way reveal" style="--d:.24s" data-play>
+            <!-- your name on the work -->
+            <span class="way-viz viz-white" aria-hidden="true">
+              <span class="vw-slot"><span class="label vw-ph">Your logo here</span><span class="vw-logo"><i></i>Your agency</span></span>
+            </span>
+            <div class="way-copy">
+              <h3 class="way-title">White-label</h3>
+              <p class="way-body">For agencies. I join your team under your name. Your client sees your logo, not mine.</p>
+            </div>
+            <p class="label way-foot">For agencies</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Thought leadership: the latest articles, each read on its own page here (thoughts/),
+         never sent off-site. Everything between the "articles" markers is generated by
+         scripts/build-articles.py from the Medium RSS feed; edit the script, not the output. -->
+    <section class="thoughts" id="thought-leadership" tabindex="-1" aria-labelledby="thoughts-lede">
+      <div class="sec-head" data-reveal>
+        <p class="label sec-label reveal"><span class="sq"></span>Thought leadership</p>
+        <p class="sec-lede reveal" id="thoughts-lede" style="--d:.08s">
+          Notes from 7+ years of shipping.
+          <span>Mostly the things I learned the hard way.</span>
+        </p>
+      </div>
+      <!-- articles:start -->
+      <div class="posts" data-reveal>
+        <a class="post reveal" style="--d:0.08s" href="thoughts/mlp-over-mvp.html">
+          <span class="post-media"><span class="cover cover--1 post-cover" aria-hidden="true" data-play><span class="cover-stage"><span class="cv cv--mlp-over-mvp"><i class="cv-card ml-a"><i class="cv-h"></i><i class="cv-l"></i><i class="cv-l cv-l--s"></i><i class="cv-btn cv-btn--mute"></i></i><i class="cv-card ml-b"><i class="cv-h"></i><i class="cv-l"></i><i class="cv-l cv-l--s"></i><i class="cv-btn"></i><i class="ml-ring"></i></i><i class="ml-meter ml-a" style="--to:.3"><b></b></i><i class="ml-meter ml-b" style="--to:.86"><b></b></i><i class="cv-tag ml-ta">MVP</i><i class="cv-tag ml-tb">MLP</i><i class="cv-cur"></i></span></span><span class="label cover-cap">Viable vs lovable</span></span><span class="post-read" aria-hidden="true"><span class="pill pill--light">Read</span><span class="ico"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span></span></span>
+          <span class="label post-meta"><time datetime="2026-07-25">Jul 2026</time> · 4 min read</span>
+          <span class="post-title"><span>MLP over MVP: why lovable is the better business bet</span></span>
+        </a>
+        <a class="post reveal" style="--d:0.16s" href="thoughts/dark-patterns.html">
+          <span class="post-media"><span class="cover cover--2 post-cover" aria-hidden="true" data-play><span class="cover-stage"><span class="cv cv--dark-patterns"><i class="cv-card dk-modal"><i class="dk-trick"><i class="cv-h"></i><i class="cv-l"></i><i class="cv-l cv-l--s"></i><i class="dk-box dk-box--on"></i><i class="dk-opt"></i><i class="cv-btn dk-stay"></i><i class="dk-link"></i></i><i class="dk-trust"><i class="cv-h"></i><i class="cv-l"></i><i class="cv-l cv-l--s"></i><i class="dk-box"></i><i class="dk-opt"></i><i class="dk-eq"></i><i class="dk-eq dk-eq--r"></i></i></i><i class="cv-chip dk-chip"><b class="dk-c1">Trick</b><b class="dk-c2">Trust</b></i><i class="cv-cur"></i></span></span><span class="label cover-cap">Trick vs trust</span></span><span class="post-read" aria-hidden="true"><span class="pill pill--light">Read</span><span class="ico"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span></span></span>
+          <span class="label post-meta"><time datetime="2025-09-11">Sep 2025</time> · 2 min read</span>
+          <span class="post-title"><span>The Hidden Cost of Dark Patterns in Product Design</span></span>
+        </a>
+        <a class="post reveal" style="--d:0.24s" href="thoughts/design-systems.html">
+          <span class="post-media"><span class="cover cover--3 post-cover" aria-hidden="true" data-play><span class="cover-stage"><span class="cv cv--design-systems"><i class="cv-card ds-kit"><i class="ds-t ds-t--btn"></i><i class="ds-t ds-t--in"></i><i class="ds-t ds-t--card"></i></i><i class="cv-card ds-screen" style="left:30%"><i class="ds-s ds-s--card" style="--n:0"></i><i class="ds-s ds-s--in" style="--n:1"></i><i class="ds-s ds-s--btn" style="--n:2"></i></i><i class="cv-card ds-screen" style="left:53%"><i class="ds-s ds-s--card" style="--n:3"></i><i class="ds-s ds-s--in" style="--n:4"></i><i class="ds-s ds-s--btn" style="--n:5"></i></i><i class="cv-card ds-screen" style="left:76%"><i class="ds-s ds-s--card" style="--n:6"></i><i class="ds-s ds-s--in" style="--n:7"></i><i class="ds-s ds-s--btn" style="--n:8"></i></i><i class="cv-cur"></i></span></span><span class="label cover-cap">1 system, every screen</span></span><span class="post-read" aria-hidden="true"><span class="pill pill--light">Read</span><span class="ico"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span></span></span>
+          <span class="label post-meta"><time datetime="2025-09-03">Sep 2025</time> · 2 min read</span>
+          <span class="post-title"><span>Design Systems: The Secret to Product Momentum</span></span>
+        </a>
+      </div>
+      <p class="label posts-more">More writing</p>
+      <ol class="post-list" role="list">
+        <li data-reveal><a class="post-row reveal" href="thoughts/accessibility.html" data-roll-host>
+          <span class="label post-row-date"><time datetime="2025-09-02">Sep 2025</time></span>
+          <span class="post-row-title">Accessibility is Not Optional in Product Design</span>
+          <span class="label post-row-mins">2 min read</span>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span>
+        </a></li>
+        <li data-reveal><a class="post-row reveal" href="thoughts/empty-states.html" data-roll-host>
+          <span class="label post-row-date"><time datetime="2025-08-31">Aug 2025</time></span>
+          <span class="post-row-title">The Power of Empty States: Why the First Blank Screen Matters</span>
+          <span class="label post-row-mins">2 min read</span>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span>
+        </a></li>
+        <li data-reveal><a class="post-row reveal" href="thoughts/designing-for-habit.html" data-roll-host>
+          <span class="label post-row-date"><time datetime="2025-08-31">Aug 2025</time></span>
+          <span class="post-row-title">Designing for Habit: How Small UX Decisions Drive Long-Term Engagement</span>
+          <span class="label post-row-mins">2 min read</span>
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg></span>
+        </a></li>
+      </ol>
+      <!-- articles:end -->
+    </section>
+
+
+    <!-- Currently building: a peek at work in progress. Each clip is recorded from the real
+         project (BrokerConnector's hero film, a short exchange with GrowthMotive's Motive),
+         loops silently, and only loads and plays while on screen (ui.js initBento). -->
+    <section class="building" aria-labelledby="building-title" data-reveal>
+      <div class="sec-head">
+        <p class="label sec-label reveal"><span class="sq"></span>Currently building</p>
+        <p class="sec-lede reveal" id="building-title" style="--d:.08s">
+          On the bench right now.
+          <span>A peek, before the reveal.</span>
+        </p>
+      </div>
+      <ul class="build-list" role="list">
+        <li class="build reveal" style="--d:.12s" data-play>
+          <div class="build-media">
+            <video muted loop playsinline preload="none" poster="assets/building/brokerconnector-poster.webp" aria-label="BrokerConnector’s hero: a night-time 3D city of Dubai">
+              <source src="assets/building/brokerconnector-hevc.mp4" type='video/mp4; codecs="hvc1"'>
+              <source src="assets/building/brokerconnector.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="build-meta">
+            <p class="build-name"><img class="build-logo build-logo--bc" src="assets/building/brokerconnector-logo.png" alt="BrokerConnector" width="521" height="56" loading="lazy" decoding="async"></p>
+            <p class="label build-status"><i class="build-dot"></i>In progress</p>
+          </div>
+          <p class="build-line">Where Dubai’s brokers share stock, request stock and agree the agent-to-agent split.</p>
+        </li>
+        <li class="build reveal" style="--d:.2s" data-play>
+          <div class="build-media">
+            <video muted loop playsinline preload="none" poster="assets/building/growthmotive-poster.webp" aria-label="Motive, GrowthMotive’s AI growth assistant, on a phone: an answer, 3 goals picked, then its first question">
+              <source src="assets/building/growthmotive-hevc.mp4" type='video/mp4; codecs="hvc1"'>
+              <source src="assets/building/growthmotive.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="build-meta">
+            <p class="build-name"><img class="build-logo build-logo--gm" src="assets/building/growthmotive-logo.svg" alt="GrowthMotive" width="778" height="126" loading="lazy" decoding="async"></p>
+            <p class="label build-status"><i class="build-dot"></i>In progress</p>
+          </div>
+          <p class="build-line">A Dubai growth consultancy, with Motive: an AI assistant that finds where growth is stuck in 3 minutes.</p>
+        </li>
+        <li class="build reveal" style="--d:.28s" data-play>
+          <div class="build-media">
+            <video muted loop playsinline preload="none" poster="assets/building/kuraimi-poster.webp" aria-label="Kuraimi’s flower mark, and a glimpse of the new app’s home screen">
+              <source src="assets/building/kuraimi-hevc.mp4" type='video/mp4; codecs="hvc1"'>
+              <source src="assets/building/kuraimi.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="build-meta">
+            <p class="build-name build-name--kur"><img class="build-logo build-logo--kur" src="assets/building/kuraimi-mark.png" alt="" width="88" height="88" loading="lazy" decoding="async">Kuraimi Islamic Microfinance Bank</p>
+            <p class="label build-status"><i class="build-dot"></i>In progress</p>
+          </div>
+          <p class="build-line">An Islamic microfinance bank in Yemen. Leading the design of its new banking app.</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Hiring note: for product design hiring managers, who want the full case studies.
+         The whole banner links to the portfolio at product.hasannawaz.com, the one place this page sends people
+         elsewhere on purpose. On hover it fills with blue, edge to edge. -->
+    <section class="hiring" aria-labelledby="hiring-title" data-reveal>
+      <a class="hire reveal" href="https://product.hasannawaz.com/" target="_blank" rel="noopener" data-roll-host>
+        <span class="hire-row">
+          <span class="label hire-label"><span class="sq"></span>For hiring managers</span>
+          <span class="hire-main">
+            <span class="hire-text" id="hiring-title">
+              Hiring a product designer?
+              <span>The in-depth case studies live on my portfolio.</span>
+            </span>
+            <span class="hire-cta">
+              <span class="pill pill--light"><span data-roll>See case studies</span></span>
+              <span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span>
+            </span>
+          </span>
+        </span>
+      </a>
+    </section>
+  </main>
+
+  <!-- 07 Get in touch, which is also the site footer: the end of every path on the page. One email, big; clicking it
+       copies it (ui.js initCopy), then the socials. Dark, with the hero's glow, to close the loop. -->
+  <footer class="contact" id="contact" tabindex="-1" aria-labelledby="contact-lede" data-dark data-reveal>
+    <div class="sec-head">
+      <p class="label sec-label reveal"><span class="sq"></span>Get in touch</p>
+      <p class="sec-lede reveal" id="contact-lede" style="--d:.08s">
+        Got something worth building?
+        <span>Tell me about it.</span>
+      </p>
+    </div>
+
+    <!-- Clicking the address copies it; the line underneath confirms -->
+    <div class="contact-mail reveal" style="--d:.16s">
+      <button class="mail" type="button" data-copy="heyhasannawaz@gmail.com" aria-describedby="copy-hint">heyhasannawaz@gmail.com<span class="mail-badge" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5"/></svg>Copied</span></button>
+      <p class="label copy-hint" id="copy-hint" role="status" aria-live="polite" data-copy-status>
+        <span class="sq"></span><span class="copy-msg" data-copy-msg>Click to copy</span>
+      </p>
+      <a class="wa-line" href="https://wa.me/971547945306?text=Hi%20Hasan%2C%20I%20found%20your%20website%20and%20have%20a%20project%20I%27d%20like%20to%20talk%20about." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span> +971 54 794 5306</a>
+    </div>
+
+    <!-- Dribbble and Instagram links still to come: href="#" until then -->
+    <ul class="socials" role="list" aria-label="Elsewhere">
+        <li><a class="social reveal" style="--d:0.30s" href="https://www.linkedin.com/in/hnk001/" target="_blank" rel="noopener" data-roll-host><span data-roll>LinkedIn</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span></a></li>
+        <li><a class="social reveal" style="--d:0.35s" href="https://www.behance.net/hnk001" target="_blank" rel="noopener" data-roll-host><span data-roll>Behance</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span></a></li>
+        <li><a class="social reveal" style="--d:0.40s" href="https://dribbble.com/HNK001" target="_blank" rel="noopener" data-roll-host><span data-roll>Dribbble</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span></a></li>
+        <li><a class="social reveal" style="--d:0.45s" href="https://www.instagram.com/hasan.dsign" target="_blank" rel="noopener" data-roll-host><span data-roll>Instagram</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span></a></li>
+        <li><a class="social reveal" style="--d:0.50s" href="https://medium.com/@hasannawaz97" target="_blank" rel="noopener" data-roll-host><span data-roll>Medium</span><span class="ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg><svg viewBox="0 0 16 16"><path d="M4 12L12 4M6 4h6v6"/></svg></span></a></li>
+    </ul>
+
+    <div class="foot">
+      <p class="label">© 2026 Hasan Nawaz</p>
+      <p class="label">Based in Dubai</p>
+      <a class="label foot-top" href="#top">Back to top</a>
+    </div>
+  </footer>
+
+  <!-- WhatsApp, always a thumb away -->
+  <a class="wa-float" href="https://wa.me/971547945306?text=Hi%20Hasan%2C%20I%20found%20your%20website%20and%20have%20a%20project%20I%27d%20like%20to%20talk%20about." target="_blank" rel="noopener" aria-label="Message me on WhatsApp"><span class="wa-tip" aria-hidden="true">Chat on WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+  <!-- Plain scripts, not modules, so the page also works opened straight from disk (file://) -->
+  <script src="js/ui.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/annotations.js"></script>
+  <script src="js/main.js"></script>
+  <script type="module">
+    // The 3D starts once the page is parsed and the browser has a quiet moment. Its files
+    // were already requested from <head> (modulepreload), so this mostly picks them up.
+    const load3D = async () => {
+      const [THREE, { RoomEnvironment }, { RoundedBoxGeometry }] = await Promise.all([
+        import('three'),
+        import('three/addons/environments/RoomEnvironment.js'),
+        import('three/addons/geometries/RoundedBoxGeometry.js'),
+      ]);
+      window.THREE = { ...THREE, RoomEnvironment, RoundedBoxGeometry };
+      window.HC.start3D();
+    };
+    const failed = (err) => {
+      console.warn(err);
+      document.documentElement.classList.add('three-off'); // the glow carries the hero on its own
+    };
+    const whenIdle = () => ('requestIdleCallback' in window
+      ? requestIdleCallback(() => load3D().catch(failed), { timeout: 400 })
+      : setTimeout(() => load3D().catch(failed), 50));
+
+    if (document.documentElement.classList.contains('full')) {
+      if (document.readyState !== 'loading') whenIdle();
+      else addEventListener('DOMContentLoaded', whenIdle, { once: true });
+    }
+  </script>
+</body>
+</html>

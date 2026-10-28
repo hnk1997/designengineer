@@ -1,0 +1,157 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>McNomNoms journey</title>
+<!-- The McNomNoms reel: the Figma screens (exported SVGs, served next to this file, not in the repo),
+     animated on the shared timeline in ../journey.js. -->
+<style>
+  #status { position: absolute; left: 0; right: 0; top: 0; height: 54px; z-index: 50; pointer-events: none;
+    font: 600 17px/1 -apple-system, "SF Pro Text", system-ui, sans-serif; color: #000; }
+  #status .time { position: absolute; left: 50px; top: 19px; letter-spacing: -0.2px; }
+  #status svg { position: absolute; top: 20px; }
+</style>
+<div id="stage">
+  <div id="status"><span class="time">9:41</span>
+    <svg style="right:82px" width="19" height="12" viewBox="0 0 19 12"><rect x="0" y="8" width="3.2" height="4" rx="1"/><rect x="5" y="5.5" width="3.2" height="6.5" rx="1"/><rect x="10" y="3" width="3.2" height="9" rx="1"/><rect x="15" y="0" width="3.2" height="12" rx="1"/></svg>
+    <svg style="right:57px" width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.3c2.4 0 4.6.9 6.3 2.5l1.2-1.3A10.6 10.6 0 0 0 8.5.5 10.6 10.6 0 0 0 1 3.5l1.2 1.3a8.8 8.8 0 0 1 6.3-2.5Zm0 3.6c1.4 0 2.7.5 3.7 1.4l1.2-1.3a7.2 7.2 0 0 0-9.8 0l1.2 1.3a5.4 5.4 0 0 1 3.7-1.4Zm0 3.5c-.6 0-1.2.3-1.6.7L8.5 12l1.6-1.9c-.4-.4-1-.7-1.6-.7Z"/></svg>
+    <svg style="right:22px" width="28" height="13" viewBox="0 0 28 13"><rect x=".5" y=".5" width="24" height="12" rx="3.6" fill="none" stroke="currentColor" opacity=".38"/><rect x="2.2" y="2.2" width="20.6" height="8.6" rx="2.2"/><path d="M26 4.4v4.2c.8-.3 1.4-1.1 1.4-2.1S26.8 4.7 26 4.4Z" opacity=".4"/></svg>
+  </div>
+</div>
+<script>window.STAGE = { w: 440, h: 956, short: 782.222 };</script>
+<script src="../journey.js"></script>
+<script>
+// ── the journey ───────────────────────────────────────────────────────────
+async function build() {
+  const S = {};
+  for (const n of ['loading', 'banner', '106', '105', '111', '112', '113', '115']) S[n] = await load(n);
+  await Promise.all([...stage.querySelectorAll('image')].map((im) => new Promise((r) => { im.addEventListener('load', r, { once: true }); setTimeout(r, 4000); })));
+
+  // re-layout the shorter artboards
+  relayout(S.loading, { bg: [0, 1], dy: { 2: 86, 3: 86 } });
+  relayout(S.banner, { none: true });
+  // the banner is a real screenshot: cover its own status bar, the shared one sits on top
+  { const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('width', W); r.setAttribute('height', 52); r.setAttribute('fill', '#fff');
+    const root = S.banner.svg.querySelector(':scope > g[clip-path]'); root.insertBefore(r, root.children[1]);
+    // its screenshot is a full-height phone capture, cropped on the artboard: show all of it,
+    // without the artboard's pasted card and tab bar, which the capture already has lower down
+    S.banner.layers[3].outer.style.display = 'none';
+    const base = S.banner.layers[0].outer.querySelector('rect'); base.setAttribute('height', 954.4);
+    S.banner.svg.querySelector('[id^="pattern0_"] use').setAttribute('transform', `scale(${1 / 1290} ${1 / 2796})`); }
+  relayout(S['106'], { bg: [0, 1], dy: { 2: 120, 3: 150, 4: 150, 5: 150, 6: 175 } });
+  relayout(S['105'], { bg: [0, 1], dy: { 6: 50, 7: 50, 13: 64, 14: 64, 8: 112, 9: 112, 10: 112 } });
+
+  let t = 0, s, p;
+  // 1 · launch: the logo lands, sparkles glint
+  s = S.loading; show(s, 0, 1e9); A(s.wrap, [{ opacity: 1 }, { opacity: 1 }], 0, 0.1);
+  pop(L(s, 2), 0.25, { from: 0.4, dur: 1.0 });
+  pop(L(s, 3), 0.45, { from: 0.6, dur: 0.9, ease: SOFT });
+  twinkle(L(s, 3), 1.1);
+  t = 1.6;
+
+  // 2 · home: the McNomNoms banner, tap through
+  p = s; s = S.banner; t = fadeIn(s, p, t, 0.55);
+  // the banner is one screenshot with the designs laid on it, so it arrives whole
+  endSpan(p, t);
+  t += 1.1; tap(398, 466, t, []);
+  t += 0.3;
+
+  // 3 · tap to help it hatch
+  p = s; s = S['106']; t = pushIn(s, p, t);
+  endSpan(p, t);
+  A(L(s, 2)[0], [{ opacity: 0, transform: 'scale(.9) rotate(-4deg)' }, { opacity: 1, transform: 'none' }], t - 0.4, 0.8, OUT);
+  const egg = L(s, 4, 3); egg.forEach((e) => (e.style.transformOrigin = '50% 92%'));
+  A(L(s, 4)[0], [{ transform: 'translateY(-70px)', opacity: 0 }, { transform: 'none', opacity: 1 }], t - 0.3, 0.9, BOUNCE);
+  A(L(s, 3)[0], [{ transform: 'scale(.4)', opacity: 0 }, { transform: 'none', opacity: 1 }], t - 0.3, 0.9, BOUNCE);
+  fadeUp(L(s, 5), t, { dy: 0, dur: 0.6 });
+  fadeUp(L(s, 6), t + 0.1);
+  const [ex, ey] = centre(s, 4);
+  for (let k = 0; k < 3; k++) {
+    const at = t + 0.75 + k * 0.45, a = 3 + k * 2.5;
+    tap(ex, ey + 20, at, []);
+    ADD(L(s, 4)[0], [{ transform: 'rotate(0deg)' }, { transform: `rotate(${-a}deg)` }, { transform: `rotate(${a}deg)` }, { transform: `rotate(${-a / 2}deg)` }, { transform: 'rotate(0deg)' }], at, 0.42, 'ease-in-out');
+    ADD(L(s, 2)[0], [{ opacity: 0 }, { opacity: -0.25 }, { opacity: 0 }], at, 0.3, 'ease-out');
+  }
+  t += 2.15;
+
+  // 4 · it hatched: +5 points
+  p = s; s = S['105']; t = flashTo(s, p, t);
+  endSpan(p, t + 0.05);
+  A(L(s, 3)[0], [{ transform: 'scale(.3) rotate(-30deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], t, 1.0, SOFT);
+  ADD(L(s, 3)[0], [{ transform: 'rotate(0deg)' }, { transform: 'rotate(8deg)' }], t + 0.6, 3, 'linear');
+  L(s, 5)[0].style.transformOrigin = '50% 100%';
+  A(L(s, 5)[0], [{ transform: 'translateY(30px) scale(.85)' }, { transform: 'none' }], t, 0.9, BOUNCE);
+  pop(L(s, 6, 7), t + 0.25, { from: 0.4 });
+  pop(L(s, 13, 14), t + 0.35, { from: 0.6 });
+  fadeUp(L(s, 8, 9, 10), t + 0.55, { stagger: 0 });
+  fadeUp(L(s, 11, 12), t + 0.65, { stagger: 0 });
+  t += 1.55; tap(220, 854, t, L(s, 11, 12));
+  t += 0.3;
+
+  // 5 · tap to tickle me
+  p = s; s = S['111']; t = pushIn(s, p, t);
+  endSpan(p, t);
+  pop(L(s, 2, 3, 4, 5, 6, 7), t - 0.1, { from: 0.4, stagger: 0, origin: '25% 100%' });
+  const kid = L(s, 8)[0]; kid.style.transformOrigin = '50% 100%';
+  fadeUp([kid], t - 0.4, { dy: 30, dur: 0.9 });
+  twinkle(L(s, 9, 10), t + 0.2);
+  const [kx, ky] = centre(s, 8);
+  const tk = t + 0.85; tap(kx, ky - 30, tk, []);
+  ADD(kid, [{ transform: 'scale(1,1) rotate(0deg)' }, { transform: 'scale(1.06,.93) rotate(-3deg)' }, { transform: 'scale(.97,1.04) rotate(3deg)' }, { transform: 'scale(1.03,.97) rotate(-2deg)' }, { transform: 'scale(1,1) rotate(0deg)' }], tk, 0.7, 'ease-in-out');
+  t += 1.7;
+
+  // 6 · congrats, a special offer: same hatchling, the screen changes around it
+  // the bubble and squiggles bow out first, so only the backgrounds blend
+  L(s, 2, 3, 4, 5, 6, 7, 9, 10).forEach((e) => A(e, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.85)' }], t - 0.05, 0.3, 'cubic-bezier(.4,0,1,1)'));
+  p = s; s = S['112']; t = fadeIn(s, p, t, 0.5, { shared: true });
+  endSpan(p, t);
+  // the hatchling sits exactly where it did on the last screen, so it holds still through the fade
+  A(L(s, 2)[0], [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], t - 0.3, 1.0, SOFT);
+  const fill = s.layers[10].inner; // progress: Hatchling to Spark
+  fill.style.transformOrigin = '0 50%';
+  A(fill, [{ transform: 'scaleX(.15)' }, { transform: 'none' }], t, 0.9, OUT);
+  pop(L(s, 9, 11), t - 0.2, { from: 0.5 });
+  pop(L(s, 7), t + 0.05, { from: 0.6 });
+  fadeUp(L(s, 8), t + 0.2);
+  fadeUp(L(s, 4, 5, 6), t + 0.35, { stagger: 0 });
+  t += 1.45; tap(220, 846, t, L(s, 4, 5, 6));
+  t += 0.3;
+
+  // 7 · revealed: free hash browns
+  p = s; s = S['113']; t = riseIn(s, p, t);
+  endSpan(p, t);
+  const peek = L(s, 11)[0]; peek.style.transformOrigin = '50% 100%';
+  pop(L(s, 12, 13, 14), t - 0.2, { from: 0.6, stagger: 0 });
+  A(peek, [{ transform: 'translateY(60px)', opacity: 0 }, { transform: 'none', opacity: 1 }], t - 0.05, 0.8, BOUNCE);
+  twinkle(L(s, 15), t + 0.3);
+  A(L(s, 8)[0], [{ transform: 'translateY(-50px) rotate(-6deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], t - 0.25, 1.0, BOUNCE);
+  t += 1.45; tap(220, 769, t, L(s, 3, 4, 5));
+  t += 0.3;
+
+  // 8 · level 2, the finale
+  p = s; s = S['115']; t = fadeIn(s, p, t, 0.5);
+  endSpan(p, t);
+  A(L(s, 2)[0], [{ opacity: 0, transform: 'scale(.5)' }, { opacity: 1, transform: 'none' }], t - 0.3, 1.1, SOFT);
+  A(L(s, 3)[0], [{ transform: 'scale(0) rotate(-120deg)', opacity: 0 }, { transform: 'none', opacity: 1 }], t - 0.2, 1.0, POP);
+  pop(L(s, 4), t, { from: 0.6 });
+  pop(L(s, 6), t + 0.12, { from: 0.6 });
+  fadeUp(L(s, 7), t + 0.25);
+  const jump = L(s, 5)[0]; jump.style.transformOrigin = '50% 100%';
+  A(jump, [{ transform: 'translateY(40px) scale(.8)', opacity: 0 }, { transform: 'none', opacity: 1 }], t, 0.9, BOUNCE);
+  ADD(jump, [{ transform: 'translateY(0) scale(1,1)' }, { transform: 'translateY(0) scale(1.06,.92)' }, { transform: 'translateY(-26px) scale(.97,1.04)' }, { transform: 'translateY(0) scale(1.04,.95)' }, { transform: 'translateY(0) scale(1,1)' }], t + 1.0, 0.75, 'ease-in-out');
+  fadeUp(L(s, ...Array.from({ length: 10 }, (_, k) => 8 + k)), t + 0.35, { stagger: 0 });
+  fadeUp(L(s, ...Array.from({ length: 8 }, (_, k) => 18 + k).filter((i) => s.layers[i])), t + 0.45, { stagger: 0 });
+  fadeUp(L(s, 26, 27, 28, 29, 30).filter(Boolean), t + 0.55, { stagger: 0 });
+  t += 2.2;
+
+  // back to the launch yellow, so the loop closes on the first frame
+  const end = document.createElement('div'); end.style.cssText = 'position:absolute;inset:0;background:#FFBC0D;z-index:20;opacity:0';
+  stage.appendChild(end);
+  A(end, [{ opacity: 0 }, { opacity: 1 }], t, 0.6, INOUT, { fill: 'forwards' });
+  A(document.getElementById('status'), [{ opacity: 1 }, { opacity: 0 }], t + 0.3, 0.3, 'linear', { fill: 'forwards' });
+  t += 0.6;
+  // the launch screen has no status bar either
+  A(document.getElementById('status'), [{ opacity: 0 }, { opacity: 1 }], 1.6, 0.5, 'linear', { fill: 'backwards' });
+  return t;
+}
+
+run(build);
+</script>
