@@ -300,7 +300,7 @@ large settles, 2.5s for diagram loops, 6–7s for ambient drifts.
 no bundler, no npm. It works opened straight from disk (`file://`), where three.js comes from
 jsDelivr; served, everything is self-hosted.
 
-**3D:** three.js r160, self-hosted in `assets/vendor/three@0.160.0/`, modulepreloaded,
+**3D:** three.js r160, self-hosted in `assets/vendor/three-0.160.0/`, modulepreloaded,
 injected through an import map. Shaders and textures warm up before the canvas is shown.
 Canvas textures wait up to 400ms for Inter Tight, then redraw when it lands.
 

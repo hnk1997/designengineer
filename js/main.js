@@ -37,6 +37,86 @@
   initTitle();
   const ctaFloat = initCtaFloat();
 
+  /* ── First visit: the blueprint (styles.css) ──
+     The headline fills in line by line as the page really gets ready: a little once it's
+     parsed, more when Inter Tight is in, the rest when the 3D has warmed up (heroReady).
+     It never finishes before MIN, and at MAX it finishes regardless; the 3D then fades in
+     whenever it's ready, as it does without the blueprint. */
+  const blueprint = (() => {
+    const done = { ready() {}, released: Promise.resolve() };
+    if (!root.classList.contains('bp')) return done;
+    const MIN = 600;
+    const MAX = 2500;
+    const spans = [...document.querySelectorAll('.hero-title .line > span')];
+    const layer = document.querySelector('[data-bp]');
+    let release;
+    const released = new Promise((r) => { release = r; });
+    let target = 0.15; // parsed
+    let fill = 0;
+    let ready = false;
+    let finished = false;
+    // ?blueprint=slow ignores how fast things really loaded and plays it at its longest
+    const blueprintReady = () => { if (!/[?&]blueprint=slow\b/.test(location.search)) ready = true; };
+    const t0 = performance.now();
+
+    // drafting marks where the grid lines cross (the selection box is CSS, on the headline)
+    for (let row = 1; row < 4; row++) {
+      for (let col = 0; col < 6; col++) {
+        const m = document.createElement('i');
+        m.className = 'bp-mark';
+        m.style.left = `calc(var(--gutter) + ${col} * 100% / 6)`;
+        m.style.top = `${row * 25}%`;
+        layer.appendChild(m);
+      }
+    }
+
+    (document.fonts ? document.fonts.load('500 64px "Inter Tight"') : Promise.resolve())
+      .catch(() => {})
+      .then(() => {
+        target = Math.max(target, 0.45);
+        if (!root.classList.contains('full')) blueprintReady(); // no 3D to wait for
+      });
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      spans.forEach((s) => s.style.setProperty('--fill', '1'));
+      root.classList.add('bp-done');
+      setTimeout(() => {
+        root.classList.add('bp-was'); // the headline is already in: no slide-up after it
+        root.classList.remove('bp', 'bp-done');
+        spans.forEach((s) => s.style.removeProperty('--fill'));
+        try { localStorage.setItem('hn-seen', '1'); } catch (e) { /* fine: it shows again next time */ }
+        release();
+      }, 350);
+    };
+
+    const step = (now) => {
+      if (finished) return;
+      const elapsed = now - t0;
+      // while waiting on the 3D, keep creeping forward so it never looks stuck
+      const creep = 0.45 + 0.4 * Math.min(1, elapsed / MAX);
+      const goal = ready || elapsed >= MAX ? 1 : Math.max(target, Math.min(creep, 0.85));
+      fill += (goal - fill) * 0.12;
+      const shown = Math.min(fill, elapsed / MIN); // never done before MIN
+      spans.forEach((s, i) => s.style.setProperty('--fill', String(Math.min(1, Math.max(0, shown * spans.length - i)))));
+      if (shown > 0.995) finish();
+      else requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(finish, MAX + 800); // a background tab, where frames don't run
+
+    return { ready: blueprintReady, released };
+  })();
+  window.HC.heroReady = blueprint.ready;
+
+  // Once the intro is in and the page has loaded, the first project's reel starts downloading
+  // quietly, so it's ready even for someone who scrolls straight to Selected work
+  const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true }));
+  Promise.all([blueprint.released, loaded]).then(() => setTimeout(() => {
+    window.HC.warmClip?.(document.querySelector('[data-showcase] [data-layer] video'));
+  }, 400));
+
   /* ── Scroll: the hero shrinks into a framed figure on the light grid ──
      The page always scrolls at native speed: no pinning, no easing. While the
      frame shrinks, its stage is only held back part of the way (--drift in
@@ -223,6 +303,7 @@
     } catch (err) {
       console.warn('3D unavailable, keeping the glow.', err);
       stage = null;
+      blueprint.ready();
       return;
     }
     stage.onContextLost(stop3D);
@@ -248,6 +329,9 @@
     // so the first frames anyone sees are cheap ones and the drop-in runs smoothly
     try { await stage.warm(); } catch (err) { /* compiling on first draw instead is fine */ }
     stage.update(clock, 0);
+    // first visit: the blueprint fills in, then the layers drop with the rest of the intro
+    blueprint.ready();
+    await blueprint.released;
 
     if (progress > 0.05) {
       stage.settle(); // arrived mid-scroll: no drop-in

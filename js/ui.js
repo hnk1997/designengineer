@@ -622,5 +622,5 @@
     new IntersectionObserver(([e]) => btn.classList.toggle('is-away', e.isIntersecting), { threshold: 0.15 }).observe(foot);
   }
 
-  Object.assign((window.HC = window.HC || {}), { initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp });
+  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp });
 })();

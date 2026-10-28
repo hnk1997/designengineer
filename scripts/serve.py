@@ -6,6 +6,8 @@ import re
 import sys
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 5174
+# pass 0.0.0.0 as a 2nd argument to open it to phones on the same Wi-Fi
+HOST = sys.argv[2] if len(sys.argv) > 2 else "127.0.0.1"
 
 
 class NoCache(http.server.SimpleHTTPRequestHandler):
@@ -52,4 +54,4 @@ class NoCache(http.server.SimpleHTTPRequestHandler):
             left -= len(chunk)
 
 
-http.server.ThreadingHTTPServer(("127.0.0.1", PORT), NoCache).serve_forever()
+http.server.ThreadingHTTPServer((HOST, PORT), NoCache).serve_forever()

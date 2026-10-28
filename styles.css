@@ -466,6 +466,71 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   animation-delay: var(--d, 0s);
 }
 
+/* ── First visit: the hero opens as a blueprint ──
+   While the font and the 3D load, the frame is a drafting grid and the headline is drawn in
+   outline, selected like a layer in Figma. Each line fills in as loading really progresses
+   (--fill, set by main.js), then the blueprint fades and the usual intro plays. Shown at least
+   0.6s, at most 2.5s; return visits (files cached) skip it. */
+.hero-bp {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s var(--ease-out), visibility 0s 0.7s;
+  background-image:
+    linear-gradient(to right, rgba(243, 243, 243, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(243, 243, 243, 0.07) 1px, transparent 1px);
+  background-size: calc(100% / 6) 100%, 100% calc(100% / 4);
+  background-position: var(--gutter) 0, 0 0;
+}
+.bp .hero-bp { opacity: 1; visibility: visible; transition: none; }
+/* registration marks where the grid lines cross */
+.bp-mark { position: absolute; width: 11px; height: 11px; margin: -5px 0 0 -5px; }
+.bp-mark::before, .bp-mark::after { content: ""; position: absolute; background: rgba(243, 243, 243, 0.32); }
+.bp-mark::before { left: 5px; top: 0; width: 1px; height: 11px; }
+.bp-mark::after { top: 5px; left: 0; height: 1px; width: 11px; }
+/* the headline's selection box (::before) and its 4 corner handles (::after: a blue square
+   with a dark centre at each corner), drawn on the headline itself so they follow it anywhere */
+.bp .hero-title { position: relative; width: fit-content; }
+.bp .hero-title::before, .bp .hero-title::after { content: ""; position: absolute; pointer-events: none; }
+.bp .hero-title::before { inset: -10px -14px -6px; border: 1px solid var(--blue); }
+.bp .hero-title::after {
+  inset: -14px -18px -10px;
+  background:
+    linear-gradient(var(--dark), var(--dark)) 1px 1px / 7px 7px, linear-gradient(var(--blue), var(--blue)) 0 0 / 9px 9px,
+    linear-gradient(var(--dark), var(--dark)) calc(100% - 1px) 1px / 7px 7px, linear-gradient(var(--blue), var(--blue)) 100% 0 / 9px 9px,
+    linear-gradient(var(--dark), var(--dark)) 1px calc(100% - 1px) / 7px 7px, linear-gradient(var(--blue), var(--blue)) 0 100% / 9px 9px,
+    linear-gradient(var(--dark), var(--dark)) calc(100% - 1px) calc(100% - 1px) / 7px 7px, linear-gradient(var(--blue), var(--blue)) 100% 100% / 9px 9px;
+  background-repeat: no-repeat;
+}
+@media (max-width: 767px) {
+  .bp .hero-title::before { inset: -8px -9px -4px; }
+  .bp .hero-title::after { inset: -12px -13px -8px; }
+}
+
+.bp .hero-title .line > span {
+  animation: none;
+  width: fit-content;
+  /* the fill only paints inside the box, so stretch it over the descenders (the g's tail) and
+     the tops of the capitals; the negative margins keep the lines exactly where they were */
+  padding: 0.12em 0 0.22em;
+  margin: -0.12em 0 -0.22em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(243, 243, 243, 0.5);
+  background: linear-gradient(90deg, #fff calc(var(--fill, 0) * 100%), transparent calc(var(--fill, 0) * 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: -webkit-text-stroke-color 0.35s var(--ease-out);
+}
+.bp-done .hero-title .line > span { -webkit-text-stroke-color: transparent; }
+.bp-was .hero-title .line > span { animation: none; }
+/* everything else waits for the blueprint: the intros hold at their first frame */
+.bp .intro, .bp .wa-float { animation-play-state: paused; }
+.hero-glow { transition: opacity 0.9s var(--ease-out); }
+.bp .hero-glow { opacity: 0; }
+
 .sc {
   display: inline-block;
   text-align: center;

@@ -29,6 +29,13 @@
     // further at runtime if frames still drop.
     (function () {
       var root = document.documentElement, n = navigator, c = n.connection || {};
+      // First visit: the hero opens as a blueprint and fills in as its files arrive (main.js).
+      // Return visits have everything cached, so they skip it.
+      // ?blueprint shows it every time (for testing); ?blueprint=slow also plays it at its full 2.5s.
+      var seen = false;
+      try { seen = !!localStorage.getItem('hn-seen'); } catch (e) { /* storage blocked: show it */ }
+      if (/[?&]blueprint\b/.test(location.search)
+        || (!seen && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches)) root.classList.add('bp');
       if (!window.WebGLRenderingContext) { root.classList.add('three-off'); return; }
       root.classList.add('full');
       if (c.saveData || /2g/.test(c.effectiveType || '')
@@ -38,7 +45,7 @@
       // (file://) browsers refuse local module files, so it comes from the CDN instead.
       var three = location.protocol === 'file:'
         ? { core: 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js', addons: 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/' }
-        : { core: './assets/vendor/three@0.160.0/three.module.min.js', addons: './assets/vendor/three@0.160.0/addons/' };
+        : { core: './assets/vendor/three-0.160.0/three.module.min.js', addons: './assets/vendor/three-0.160.0/addons/' };
       var map = document.createElement('script');
       map.type = 'importmap';
       map.textContent = JSON.stringify({ imports: { three: three.core, 'three/addons/': three.addons } });
@@ -121,6 +128,7 @@
           <svg class="ann-svg" data-ann-svg aria-hidden="true"></svg>
           <div class="ann-labels" data-ann-labels aria-hidden="true"></div>
           <div class="grain" aria-hidden="true"></div>
+          <div class="hero-bp" aria-hidden="true" data-bp></div>
 
           <div class="hero-content">
             <h1 class="hero-title" id="hero-title">
@@ -781,6 +789,7 @@
     const failed = (err) => {
       console.warn(err);
       document.documentElement.classList.add('three-off'); // the glow carries the hero on its own
+      window.HC.heroReady?.(); // nothing more to wait for
     };
     const whenIdle = () => ('requestIdleCallback' in window
       ? requestIdleCallback(() => load3D().catch(failed), { timeout: 400 })
