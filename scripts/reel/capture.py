@@ -9,7 +9,9 @@ the overflow, so the last frame runs straight on into the first. Encode with ree
     env: VW/VH (page size, 1280x800), SCALE (pixel ratio, sets the output size), MOBILE (1: touch phone),
          WARM (seconds run before recording, 4), LOOP (8), XFADE (1.5, 0 for none), SETUP (JS run after warm-up),
          ACTION + ACTION_AT (JS run that many seconds into the recording, e.g. tap an answer),
-         ACTIONS (a JSON list of [seconds, JS] for several; each result is printed as `action <t> <json>`)
+         ACTIONS (a JSON list of [seconds, JS] for several; each result is printed as `action <t> <json>`),
+         SCROLL (a JSON list of [seconds, scrollY] keys: the page scrolls between them, eased, frame by frame;
+                 a key's y may be a CSS selector, or [selector, offset px], read once the page has loaded)
 """
 import base64, io, json, os, socket, struct, subprocess, sys, tempfile, time, urllib.request
 from PIL import Image
@@ -21,6 +23,7 @@ WARM, LOOP, XFADE = float(os.environ.get("WARM", "4")), float(os.environ.get("LO
 SETUP = os.environ.get("SETUP", "")
 ACTION, ACTION_AT = os.environ.get("ACTION", ""), float(os.environ.get("ACTION_AT", "1"))
 ACTIONS = json.loads(os.environ.get("ACTIONS", "[]"))
+SCROLL = json.loads(os.environ.get("SCROLL", "[]"))
 if ACTION: ACTIONS.append([ACTION_AT, ACTION])
 MOBILE = os.environ.get("MOBILE") == "1"
 FPS = 30
@@ -34,6 +37,33 @@ CLOCK = """(() => {
   window.cancelAnimationFrame = () => {};
   window.__step = (ms, settle) => {
     now += ms; const list = cbs.splice(0); for (const cb of list) { try { cb(now); } catch (e) { console.error(e); } }
+    return settle ? new Promise((r) => realRAF(() => realRAF(r))) : 0;
+  };
+})();"""
+
+# VIRTUAL=1: timers and Web Animations / CSS animations run on the same virtual clock too, so page transitions
+# (setTimeout + element.animate) and scroll-scrubbed GSAP keep their real timing however slow each frame is
+VIRTUAL = os.environ.get("VIRTUAL") == "1"
+CLOCK_ALL = """(() => {
+  let now = 0; const cbs = []; const realRAF = window.requestAnimationFrame.bind(window);
+  const t0 = Date.now(); let timers = []; let tid = 1;
+  performance.now = () => now; Date.now = () => t0 + now;
+  window.requestAnimationFrame = (cb) => { cbs.push(cb); return cbs.length; };
+  window.cancelAnimationFrame = () => {};
+  window.setTimeout = (fn, ms, ...a) => { const id = tid++; timers.push({ id, at: now + (+ms || 0), fn, a }); return id; };
+  window.clearTimeout = (id) => { timers = timers.filter((t) => t.id !== id); };
+  window.setInterval = (fn, ms, ...a) => { const id = tid++; const run = () => { fn(...a); timers.push({ id, at: now + Math.max(4, +ms || 0), fn: run, a: [] }); }; timers.push({ id, at: now + Math.max(4, +ms || 0), fn: run, a: [] }); return id; };
+  window.clearInterval = window.clearTimeout;
+  const tracked = new WeakMap();
+  window.__step = (ms, settle) => {
+    now += ms;
+    const due = timers.filter((t) => t.at <= now).sort((x, y) => x.at - y.at); timers = timers.filter((t) => t.at > now);
+    for (const t of due) { try { typeof t.fn === 'function' ? t.fn(...t.a) : 0; } catch (e) { console.error(e); } }
+    const list = cbs.splice(0); for (const cb of list) { try { cb(now); } catch (e) { console.error(e); } }
+    for (const an of document.getAnimations()) {
+      if (!tracked.has(an)) { tracked.set(an, now - (an.currentTime || 0)); try { an.pause(); } catch (e) {} }
+      try { an.currentTime = (now - tracked.get(an)) * (an.playbackRate || 1); } catch (e) {}
+    }
     return settle ? new Promise((r) => realRAF(() => realRAF(r))) : 0;
   };
 })();"""
@@ -93,7 +123,7 @@ try:
     call("Emulation.setDeviceMetricsOverride", {"width": VW, "height": VH, "deviceScaleFactor": SCALE, "mobile": MOBILE})
     if MOBILE: call("Emulation.setTouchEmulationEnabled", {"enabled": True, "maxTouchPoints": 5})
     call("Page.enable")
-    call("Page.addScriptToEvaluateOnNewDocument", {"source": CLOCK})
+    call("Page.addScriptToEvaluateOnNewDocument", {"source": CLOCK_ALL if VIRTUAL else CLOCK})
     call("Page.navigate", {"url": url})
     time.sleep(3)  # load: fonts, textures, shaders
     # warm up on the virtual clock, so intros have finished before the loop starts
@@ -101,12 +131,31 @@ try:
         js(f"window.__step({1000 / FPS}, {'true' if k % 10 == 0 else 'false'})")
     if SETUP: js(SETUP)
     js(f"window.__step({1000 / FPS}, true)")
+    keys = []
+    for at, y in SCROLL:
+        if isinstance(y, list): sel, off = y; y = js(f"Math.round(document.querySelector({json.dumps(sel)}).getBoundingClientRect().top + scrollY)") + off
+        elif isinstance(y, str): y = js(f"Math.round(document.querySelector({json.dumps(y)}).getBoundingClientRect().top + scrollY)")
+        keys.append((at, y))
+    def scroll_at(t):
+        if not keys: return None
+        if t <= keys[0][0]: return keys[0][1]
+        for (ta, a), (tb, b) in zip(keys, keys[1:]):
+            if t <= tb:
+                u = (t - ta) / (tb - ta) if tb > ta else 1
+                return a + (b - a) * (u * u * (3 - 2 * u))
+        return keys[-1][1]
     frames = []
     n, x = int(round(LOOP * FPS)), int(round(XFADE * FPS))
+    def safe(expr):
+        for _ in range(40):
+            try: return js(expr)
+            except Exception: time.sleep(0.1)
     for k in range(n + x):
+        y = scroll_at(k / FPS)
+        if y is not None: safe(f"window.scrollTo(0, {y:.1f})")
         for at, code in ACTIONS:
-            if k == int(round(at * FPS)): print('action', at, json.dumps(js(code)), flush=True)
-        js(f"window.__step({1000 / FPS}, true)")
+            if k == int(round(at * FPS)): print('action', at, json.dumps(safe(code)), flush=True)
+        safe(f"window.__step ? window.__step({1000 / FPS}, true) : 0")
         shot = call("Page.captureScreenshot", {"format": "png"})
         frames.append(Image.open(io.BytesIO(base64.b64decode(shot["data"]))).convert("RGB"))
         if k % 60 == 0: print("frame", k, "/", n + x, flush=True)

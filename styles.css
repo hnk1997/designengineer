@@ -299,6 +299,26 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   height: 100svh;
   will-change: transform;
 }
+/* Touch screens scroll on their own thread, ahead of any script, so a stage held back from
+   JS trails the finger by a frame and judders. Where the browser can link an animation to
+   scroll, the same hold and shrink run as scroll-driven animations instead, in step with
+   the finger. main.js sets the frame's end insets (--clip-*) and leaves both alone. */
+@supports (animation-timeline: scroll()) {
+  @media (hover: none) and (pointer: coarse) {
+    .hero-stage, .hero-frame {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0px calc(var(--collapse) * 100svh);
+    }
+    .hero-stage { animation-name: hero-hold; }
+    .hero-frame { animation-name: hero-shrink; }
+  }
+}
+/* 0.7 is the hero's --drift, written out: the Why me tile registers --drift as an integer
+   (@property below), which turns 0.7 into 0 wherever CSS reads it */
+@keyframes hero-hold { to { transform: translate3d(0, calc(0.7 * var(--collapse) * 100svh), 0); } }
+@keyframes hero-shrink { to { clip-path: inset(var(--clip-t, 0px) var(--clip-s, 0px) var(--clip-b, 0px) var(--clip-s, 0px) round 4px); } }
 
 /* Light, gridded page revealed as the frame shrinks; scrolls at normal speed */
 .hero-backdrop {
@@ -926,7 +946,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   gap: 16px;
   padding: 96px 0 32px; /* clear of the nav */
 }
-.stage-layers { position: relative; flex: 1; min-height: 0; }
+.stage-layers { position: relative; flex: 1; min-height: 0; container-type: size; } /* the phone sizes itself off the laptop, below */
 .stage-layer {
   --reveal: 0;
   position: absolute;
@@ -978,9 +998,10 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   border-radius: 1.448% 1.448% 0 0 / 2.229% 2.229% 0 0;
 }
 .mock--laptop .mock-over { z-index: 2; }
-/* fills the stage's height at any screen size, like the laptop fills its width */
+/* sized off the laptop next to it (same width rule, in stage units), 1.5x its height, so
+   the two read as the same scale of object; never taller than the stage */
 .mock--phone {
-  height: 100%;
+  height: min(100cqh, calc(1.5 * 735 / 1216 * min(100cqw, (100svh - 200px) * 1216 / 735)));
   aspect-ratio: 1520 / 3068;
 }
 .mock--phone .mock-screen {
@@ -2999,7 +3020,6 @@ img.screen-page { height: auto; }
   height: 52px;
   background: #25d366;
   color: #fff;
-  box-shadow: 0 10px 28px -10px rgba(5, 5, 5, 0.5);
   animation: wa-in 0.6s var(--ease-out) 1.2s backwards; /* holds only its start, so .is-away can fade it */
   transition: transform 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
 }
@@ -3036,7 +3056,7 @@ img.screen-page { height: auto; }
 .wa-float:not(.is-away) { transition-delay: 0s; }
 /* phones: smaller and quieter, so it doesn't pull focus from the page */
 @media (max-width: 767px) {
-  .wa-float { width: 44px; height: 44px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 6px 16px -8px rgba(5, 5, 5, 0.45); }
+  .wa-float { width: 44px; height: 44px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
   .wa-float svg { width: 21px; height: 21px; }
 }
 @keyframes wa-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

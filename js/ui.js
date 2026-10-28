@@ -4,6 +4,24 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#%&*+=/<>';
 
+  /* Clips. All start as preload="none" so the first load stays light; warm() starts the
+     download a little before a clip is needed, so it's ready when it comes into view.
+     Reels that fade in from black carry data-from (the end of the fade, where the poster
+     was taken): the first play starts there, so the poster hands over to the clip with no
+     dip to black. The loop's own dip stays. */
+  const warm = (v) => {
+    if (!v || v.dataset.warm) return;
+    v.dataset.warm = '1';
+    if (v.dataset.from) {
+      const from = parseFloat(v.dataset.from);
+      const seek = () => { if (v.currentTime < from) v.currentTime = from; };
+      if (v.readyState > 0) seek(); else v.addEventListener('loadedmetadata', seek, { once: true });
+    }
+    v.preload = 'auto';
+    if (v.readyState === 0) v.load();
+  };
+  const playClip = (v) => { warm(v); return v.play().catch(() => {}); };
+
   /* Hover text roll: each [data-roll] gets two stacked copies, split per character */
   function initRolls(els = document.querySelectorAll('[data-roll]')) {
     els.forEach((el) => {
@@ -250,10 +268,22 @@
         const covered = next && parseFloat(next.style.getPropertyValue('--reveal') || 0) >= 0.999;
         const shown = i === 0 || parseFloat(layer.style.getPropertyValue('--reveal') || 0) > 0;
         const play = onScreen && shown && !covered && !reduced;
-        if (play && clip.paused) clip.play().catch(() => {});
+        if (play && clip.paused) playClip(clip);
         else if (!play && !clip.paused) clip.pause();
+        // the next project's clip loads while this one plays, so it's ready before its wipe
+        if (play) warm(layers[i + 1]?.querySelector('video'));
       });
     };
+
+    // The first clip starts loading about a screen before the section arrives
+    if ('IntersectionObserver' in window) {
+      const near = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        near.disconnect();
+        warm(layers[0]?.querySelector('video'));
+      }, { rootMargin: '100% 0px 100% 0px' });
+      near.observe(root);
+    }
 
     // How far each page can scroll inside its screen; measured up front, not on every scroll
     let pages = [];
@@ -352,7 +382,7 @@
         target.classList.toggle('is-playing', isIntersecting);
         // clips (Currently building) load and play only while on screen
         target.querySelectorAll('video').forEach((v) => {
-          if (isIntersecting && !reduced) v.play().catch(() => {});
+          if (isIntersecting && !reduced) playClip(v);
           else v.pause();
         });
         const loop = loops.get(target);
@@ -360,6 +390,15 @@
       });
     }, { threshold: 0.35 });
     tiles.forEach((t) => io.observe(t));
+    // ...and start loading about a screen before they get there
+    const near = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (!isIntersecting) return;
+        near.unobserve(target);
+        target.querySelectorAll('video').forEach(warm);
+      });
+    }, { rootMargin: '100% 0px 100% 0px' });
+    tiles.forEach((t) => { if (t.querySelector('video') && t.offsetParent !== null) near.observe(t); });
   }
 
   /* How I work: the blue rule across the steps fills in step with scroll position (1:1,

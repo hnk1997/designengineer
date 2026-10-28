@@ -197,8 +197,8 @@ inverts on `[data-dark]` sections, hides while the menu is open.
 
 **WhatsApp** (`.wa-float`): fixed bottom right, 52px (44px on phones), WhatsApp green, white
 glyph. Hover: "Chat on WhatsApp" label clips out to the left and the glyph wiggles. Hides over
-the footer (which has its own WhatsApp line) and under the menu. Link pre-fills
-*"Hi Hasan, I found your website and have a project I'd like to talk about."*
+the footer (which has its own WhatsApp line) and under the menu. No pre-filled message: the
+visitor writes their own.
 
 **Disabled CTA** (`.showcase-cta`): dashed 1px outline, grey dot, `Case study coming soon`.
 Honest about what isn't ready; never a fake link.

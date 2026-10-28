@@ -11,6 +11,7 @@
 //   "bitrate": 2500000, "fadeIn": 0.3, "fadeOut": 0.5,
 //   "shots": [ { "from": 1.0, "to": 3.5, "speed": 1.5 } ],
 //   "transitions": [ { "type": "fade" | "wipe" | "black", "dur": 0.4 } ] }   one fewer than shots
+//   optional "sources": ["more.mov", …] with a shot's "src": 1, 2… to cut between several recordings
 // Each shot fills the frame (scaled to cover, centred), so record at the output's shape.
 import AVFoundation
 import CoreGraphics
@@ -98,8 +99,12 @@ generator.appliesPreferredTrackTransform = true
 generator.requestedTimeToleranceBefore = .zero
 generator.requestedTimeToleranceAfter = .zero
 
+// sample the middle of the recording's frame: asking for exact frame boundaries on a 59.99fps
+// screen recording sometimes lands a hair early and repeats or skips a frame (visible as a hitch)
+let sourceFps = Double(syncLoad { try await track.load(.nominalFrameRate) })
 func frame(at t: Double) -> CGImage {
-  let time = CMTime(seconds: max(0, min(duration - 0.02, t)), preferredTimescale: 600)
+  let snapped = sourceFps > 0 ? (floor(t * sourceFps + 1e-6) + 0.5) / sourceFps : t
+  let time = CMTime(seconds: max(0, min(duration - 0.02, snapped)), preferredTimescale: 60000)
   do { return try generator.copyCGImage(at: time, actualTime: nil) } catch { fail("no frame at \(t): \(error)") }
 }
 
@@ -108,8 +113,28 @@ func context(_ w: Int, _ h: Int) -> CGContext {
             space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue)!
 }
 // draw an image scaled to cover w x h, centred
+// "fit": "width" in an edit: wider recordings keep their full width (nothing at the sides is cut),
+// anchored to the top like a real browser, the space below filled with the page's own colour
+var fitWidth = false
+// "zoom": n in an edit scales every shot up by n past cover, centred (e.g. 1.06 trims a recording's white margins)
+var zoom: CGFloat = 1
+let ciContext = CIContext(options: [.useSoftwareRenderer: false])
 func cover(_ ctx: CGContext, _ img: CGImage, _ w: Int, _ h: Int, alpha: CGFloat = 1) {
-  let s = max(CGFloat(w) / CGFloat(img.width), CGFloat(h) / CGFloat(img.height))
+  if fitWidth && CGFloat(img.width) / CGFloat(img.height) > CGFloat(w) / CGFloat(h) {
+    let s = CGFloat(w) / CGFloat(img.width), dh = CGFloat(img.height) * s, band = CGFloat(h) - dh
+    ctx.saveGState(); ctx.setAlpha(alpha); ctx.interpolationQuality = .high
+    // the page's colour just above its last few rows (which can carry a scrollbar or hairline), as a flat fill
+    if let strip = img.cropping(to: CGRect(x: 0, y: img.height - 40, width: img.width, height: 24)) {
+      let ci = CIImage(cgImage: strip), avg = CIFilter(name: "CIAreaAverage", parameters: [kCIInputImageKey: ci, kCIInputExtentKey: CIVector(cgRect: ci.extent)])!.outputImage!
+      var px = [UInt8](repeating: 0, count: 4)
+      ciContext.render(avg, toBitmap: &px, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+      ctx.setFillColor(CGColor(red: CGFloat(px[0]) / 255, green: CGFloat(px[1]) / 255, blue: CGFloat(px[2]) / 255, alpha: 1))
+      ctx.fill(CGRect(x: 0, y: 0, width: CGFloat(w), height: band + 2))
+    }
+    ctx.draw(img, in: CGRect(x: 0, y: band, width: CGFloat(w), height: dh))
+    ctx.restoreGState(); return
+  }
+  let s = max(CGFloat(w) / CGFloat(img.width), CGFloat(h) / CGFloat(img.height)) * zoom
   let dw = CGFloat(img.width) * s, dh = CGFloat(img.height) * s
   ctx.saveGState(); ctx.setAlpha(alpha)
   ctx.interpolationQuality = .high
@@ -154,12 +179,14 @@ case "still":
   save(ctx.makeImage()!, args[4], args[4].hasSuffix(".png") ? .png : .jpeg)
 
 case "cut":
-  struct Shot: Decodable { let from: Double; let to: Double; let speed: Double? }
+  struct Shot: Decodable { let from: Double; let to: Double; let speed: Double?; let src: Int? }
   struct Trans: Decodable { let type: String; let dur: Double }
   struct Edit: Decodable { let width: Int; let height: Int; let fps: Int?; let codec: String?; let bitrate: Int?
-    let fadeIn: Double?; let fadeOut: Double?; let shots: [Shot]; let transitions: [Trans] }
+    let fadeIn: Double?; let fadeOut: Double?; let shots: [Shot]; let transitions: [Trans]; let sources: [String]?; let fit: String?; let zoom: Double? }
   let edit = try! JSONDecoder().decode(Edit.self, from: Data(contentsOf: URL(fileURLWithPath: args[3])))
   let W = edit.width, H = edit.height, fps = edit.fps ?? 30
+  fitWidth = edit.fit == "width"
+  zoom = CGFloat(edit.zoom ?? 1)
   guard edit.transitions.count == edit.shots.count - 1 else { fail("need one transition between each pair of shots") }
   let len = edit.shots.map { ($0.to - $0.from) / ($0.speed ?? 1) }
   var starts: [Double] = []; var t = 0.0
@@ -169,7 +196,17 @@ case "cut":
   let (writer, input, adaptor) = makeWriter(args[4], W, H, fps: fps, codec: edit.codec, bitrate: edit.bitrate)
 
   let ease: (Double) -> Double = { $0 < 0.5 ? 4 * $0 * $0 * $0 : 1 - pow(-2 * $0 + 2, 3) / 2 }
-  func shotImage(_ i: Int, _ u: Double) -> CGImage { let s = edit.shots[i]; return frame(at: min(s.to, s.from + u * (s.speed ?? 1))) }
+  // more recordings than the one named on the command line: "sources" lists them, a shot's "src" picks one (0 = the command line's)
+  let extra: [AVAssetImageGenerator] = (edit.sources ?? []).map { path in
+    let g = AVAssetImageGenerator(asset: AVURLAsset(url: URL(fileURLWithPath: path)))
+    g.appliesPreferredTrackTransform = true; g.requestedTimeToleranceBefore = .zero; g.requestedTimeToleranceAfter = .zero
+    return g
+  }
+  func shotImage(_ i: Int, _ u: Double) -> CGImage {
+    let s = edit.shots[i], t = min(s.to, s.from + u * (s.speed ?? 1))
+    guard let k = s.src, k > 0 else { return frame(at: t) }
+    do { return try extra[k - 1].copyCGImage(at: CMTime(seconds: max(0, t), preferredTimescale: 600), actualTime: nil) } catch { fail("no frame at \(t) in source \(k): \(error)") }
+  }
   let blue = CGColor(red: 0x25 / 255, green: 0x63 / 255, blue: 0xEB / 255, alpha: 1)
 
   for f in 0..<frames {

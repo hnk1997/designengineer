@@ -46,7 +46,7 @@
   const NAV_H = 76;
   const stageEl = document.querySelector('[data-stage]');
   const caption = document.querySelector('[data-caption]');
-  const layout = { range: 1, drift: 0.7, top: 0, bottom: 0, sides: 0 };
+  const layout = { range: 1, drift: 0.7, top: 0, bottom: 0, sides: 0, linked: false };
   let progress = 0;
 
   function measure() {
@@ -55,6 +55,8 @@
     const css = getComputedStyle(hero);
     const collapse = parseFloat(css.getPropertyValue('--collapse')) || 0.65;
     layout.drift = parseFloat(css.getPropertyValue('--drift')) || 0.7;
+    // touch screens with scroll-driven animations hold and shrink the hero in CSS (styles.css)
+    layout.linked = getComputedStyle(stageEl).animationName === 'hero-hold';
     layout.range = Math.max(1, collapse * size.h);
     // Where the figure should sit on screen once collapsed, converted to frame insets
     const shift = (1 - layout.drift) * layout.range; // how far the stage has risen by then
@@ -69,6 +71,9 @@
     // phones: the stack gets the space between the nav and the headline block
     if (mobile && heroContent) stage?.setBand(NAV_H + 4, heroContent.getBoundingClientRect().top - frame.getBoundingClientRect().top - 20);
     stageEl.style.setProperty('--fig-bottom', `${figBottom}px`);
+    frame.style.setProperty('--clip-t', `${layout.top}px`);
+    frame.style.setProperty('--clip-b', `${layout.bottom}px`);
+    frame.style.setProperty('--clip-s', `${layout.sides}px`);
   }
 
   function applyScroll() {
@@ -77,11 +82,13 @@
     const k = c / layout.range;
     progress = k;
     const held = layout.drift * c;
-    stageEl.style.transform = held ? `translate3d(0, ${held}px, 0)` : '';
     const { top, bottom, sides } = layout;
-    frame.style.clipPath = k > 0
-      ? `inset(${top * k}px ${sides * k}px ${bottom * k}px ${sides * k}px round ${4 * k}px)`
-      : '';
+    if (!layout.linked) {
+      stageEl.style.transform = held ? `translate3d(0, ${held}px, 0)` : '';
+      frame.style.clipPath = k > 0
+        ? `inset(${top * k}px ${sides * k}px ${bottom * k}px ${sides * k}px round ${4 * k}px)`
+        : '';
+    }
     stage?.setAssemble(k);
     const fade = String(Math.max(0, 1 - k * 2));
     labelsHost.style.opacity = fade;
@@ -140,6 +147,9 @@
   }
 
   function onResize() {
+    // Phones fire resize as the address bar slides in and out mid-scroll. The hero is sized in
+    // svh, so its frame doesn't change: skip the canvas resize and full redraw, which hitched
+    if (frame.clientWidth === size.w && frame.clientHeight === size.h) { applyScroll(); return; }
     measure();
     stage?.resize(size.w, size.h);
     notes?.resize(size.w, size.h);
