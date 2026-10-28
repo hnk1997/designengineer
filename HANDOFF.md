@@ -136,7 +136,7 @@ Current reels and how each was made:
 | The Birdwatcher | Hasan's screen recording `~/Desktop/Screen Recording 2026-10-28 at 4.46.12 AM.mov` | `reel cut` + `scripts/reel/birdwatcher.json` |
 | McNomNoms | Figma SVGs `~/Desktop/mcnomnoms/` | `journey.js` + `scripts/reel/mcnomnoms/journey.html` → `render.py` → `reel frames` |
 | Cadillac IQ | Hasan's recording `~/Desktop/cadillac scroller2.mp4` (the lineup carousel), used whole | `reel cut` + `scripts/reel/cadillac.json` (1.5x, `zoom: 1.06`). Earlier versions are in `hasancooks2-workspace/old-reels/` |
-| GrowthMotive | Live site https://www.growthmotive.co/ recorded with `capture.py VIRTUAL=1`; raw takes saved in the workspace (§8) | `reel cut` + `scripts/reel/growthmotive.json` |
+| GrowthMotive | Live site https://www.growthmotive.co/ recorded with `capture.py VIRTUAL=1`; raw takes saved in the workspace (§8). The 4 Boxes are their own take (`growthmotive-boxes-long.mp4`): each opened with `GMBoxes.open` and held 3.8s so its animation plays out | `reel cut` + `scripts/reel/growthmotive.json` (28.5s) |
 | BrokerConnector (building) | Local site `~/Desktop/Shortcuts/BrokerConnector/BrokerConnector 3/index.html` | `capture.py` with seam crossfade (8 s loop) |
 | Kuraimi (building) | Figma SVGs `~/Downloads/Kuraimi/` | `scripts/reel/kuraimi/journey.html` → `render.py` |
 | Kia Tasman (unused now) | Figma SVGs `~/Desktop/kia tasman/` (+ `Desktop/LX/` angle renders) | `scripts/reel/kia/journey.html` |
@@ -148,7 +148,7 @@ Current reels and how each was made:
 
 - **Workspace (keep it):** `/Users/hasannawaz/Desktop/Shortcuts/hasancooks2-workspace/`
   - `reel-sources/` — ready-to-serve folders for the SVG journeys (each `<project>/` has the SVGs + `journey.html`, with `journey.js` at the top). Serve with `cd reel-sources && python3 -m http.server 5197`, then `python3 scripts/reel/render.py http://127.0.0.1:5197/<project>/journey.html <out_dir> <scale>`.
-  - `recordings/` — raw GrowthMotive takes (`growthmotive-motive-flow.mp4` is the main source passed to `reel cut`; `growthmotive-home-boxes-work.mp4` is referenced by `scripts/reel/growthmotive.json`).
+  - `recordings/` — raw GrowthMotive takes (`growthmotive-motive-flow.mp4` is the main source passed to `reel cut`; `growthmotive-home-boxes-work.mp4` and `growthmotive-boxes-long.mp4` are referenced by `scripts/reel/growthmotive.json`).
   - `banners/` — HTML sources of the social covers (`linkedin.html`, `behance.html`, `whatsapp.html`, `medium.html`, older `banner2.html`) + `stack.png` (the hero 3D stack, captured without text). Render with headless Chrome at the file's size.
   - `og-cards/` — HTML sources of the link-preview cards.
 - **Social covers (final, on the Desktop):** `linkedin-banner.png` (3168×792) + `linkedin-banner-1584x396.png`, `behance-cover-3200x410.png`, `whatsapp-business-cover-1920x1080.png/.jpg`, `medium-header-1500x500.png`. Current copy on all: "Enterprise-grade digital products, / from idea to launch. / **7+ years, 6x award-winning.**" (last line blue `#3b7bff`) + `HASANNAWAZ.COM →` button + the 3D stack. They aren't uploaded anywhere by us; Hasan uploads them.

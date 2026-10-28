@@ -89,7 +89,9 @@ async function build() {
   // 5 · tap to tickle me
   p = s; s = S['111']; t = pushIn(s, p, t);
   endSpan(p, t);
-  pop(L(s, 2, 3, 4, 5, 6, 7), t - 0.1, { from: 0.4, stagger: 0, origin: '25% 100%' });
+  // the speech bubble (outline, fill, text) grows out of its tail as one piece
+  const bubble = group(s, [2, 3, 4, 5, 6, 7]);
+  pop([bubble], t - 0.1, { from: 0.55, dur: 0.75, origin: '25% 100%', ease: SOFT });
   const kid = L(s, 8)[0]; kid.style.transformOrigin = '50% 100%';
   fadeUp([kid], t - 0.4, { dy: 30, dur: 0.9 });
   twinkle(L(s, 9, 10), t + 0.2);
@@ -99,8 +101,8 @@ async function build() {
   t += 1.7;
 
   // 6 · congrats, a special offer: same hatchling, the screen changes around it
-  // the bubble and squiggles bow out first, so only the backgrounds blend
-  L(s, 2, 3, 4, 5, 6, 7, 9, 10).forEach((e) => A(e, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.85)' }], t - 0.05, 0.3, 'cubic-bezier(.4,0,1,1)'));
+  // the bubble (back into its tail) and the squiggles bow out first, so only the backgrounds blend
+  [bubble, ...L(s, 9, 10)].forEach((e) => A(e, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.85)' }], t - 0.05, 0.3, 'cubic-bezier(.4,0,1,1)'));
   p = s; s = S['112']; t = fadeIn(s, p, t, 0.5, { shared: true });
   endSpan(p, t);
   // the hatchling sits exactly where it did on the last screen, so it holds still through the fade

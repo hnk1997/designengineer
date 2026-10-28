@@ -109,6 +109,17 @@ function relayout(s, map) {
   });
 }
 const L = (s, ...idx) => idx.flat().map((i) => s.layers[i].inner);
+// several layers that make one object (a speech bubble: outline, fill, text) moved and faded as one,
+// so a half-faded fill never lets the outline show through and the parts never drift apart
+function group(s, idx) {
+  const first = s.layers[idx[0]].outer;
+  const outer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const inner = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  inner.setAttribute('class', 'a');
+  first.parentNode.insertBefore(outer, first); outer.appendChild(inner);
+  idx.forEach((i) => inner.appendChild(s.layers[i].outer));
+  return inner;
+}
 const box = (s, i) => { const l = s.layers[i]; const m = l.outer.getAttribute('transform') || ''; const t = m.match(/translate\(0 ([\d.-]+)\)/); return { x: l.b.x, y: l.b.y + (t ? +t[1] : 0), w: l.b.width, h: l.b.height }; };
 const centre = (s, i) => { const b = box(s, i); return [b.x + b.w / 2, b.y + b.h / 2]; };
 
