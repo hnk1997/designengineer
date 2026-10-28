@@ -99,7 +99,7 @@ Static HTML, one `styles.css`, classic scripts on `window.HC` (`js/ui.js`, `js/t
    - **Test switches:** `?blueprint` shows it every time; `?blueprint=slow` also plays it at its full 2.5 s. Work on the live site too.
    - **Mobile scroll:** on touch screens the hold-back and frame shrink run as CSS scroll-driven animations (`hero-hold`, `hero-shrink` in `styles.css`) so they stay in step with the finger; desktop keeps the JS version (`applyScroll` in `main.js`). Address-bar resizes no longer resize the canvas. A pinned (sticky) version was tried and rejected.
    - Gotcha: `--drift` is registered as an `<integer>` `@property` for the Why me tile, so CSS reads the hero's `--drift: 0.7` as 0. JS falls back to 0.7, and the `hero-hold` keyframe writes 0.7 out. Don't rely on `var(--drift)` in hero CSS.
-2. **Stats / Track record** — 6x awards, 9+ industries, 2M+ people, 15+ brands (count-up). (His own copy now says 10+ industries; see §11.)
+2. **Stats / Track record** — in this order: 6x awards, 15+ enterprise brands, 2M+ people, 10+ industries (count-up).
 3. **Selected work** (`#work`) — sticky device stage with wipes between projects. Order: **The Birdwatcher** (laptop) · **McNomNoms** (phone) · **Cadillac IQ** (laptop) · **GrowthMotive** (laptop). Each step has a disabled "Case study coming soon" button. On phones/tablets the stage pins to the top half and the text scrolls below. Clips play only while their layer shows. The phone mockup is sized off the laptop (1.5× the laptop's height, via container units on `.stage-layers`); 1.2× was too small, full stage height too big.
 4. **Why me** — bento tiles (1 partner no drift, activity log, brands, 6x award wreath, quotes).
 5. **What I do** (`#services`) — 5 rows (Research, Design, Build, QA, Launch). Desktop: hover plays the row's diagram. Touch: the row crossing mid-screen plays.
@@ -223,11 +223,10 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 ## 11. Likely next steps
 
 1. **Phone number:** the CVs say +971 54 **477** 5306; the website's WhatsApp link says +971 54 **794** 5306. Ask Hasan which is right and fix the other.
-2. **Industries:** his own copy says **10+ industries** (used on the Design Engineer CV); the site's Track record says **9+**. Ask which, and make them match.
-3. Portfolio "Download Resume" button (About page) links a Google Drive file nobody here can see; ask Hasan to check it's the CV he wants.
-4. When a case study is ready, replace that project's "Case study coming soon" button with a real link.
-5. GrowthMotive reel is 28.5 s; if he finds it long, drop CRMBox or trim the opening (~22 s).
-6. Optional: a thin blue loading line on a device screen while its reel buffers (offered, not built). Phones could also preload all 4 reels now that the phone files are small.
-7. Bring `DESIGN.md` up to date (§9).
-8. Optional cleanup (§4).
-9. New article → run `build-articles.py`, add its cover + preview card, push.
+2. Portfolio "Download Resume" button (About page) links a Google Drive file nobody here can see; ask Hasan to check it's the CV he wants.
+3. When a case study is ready, replace that project's "Case study coming soon" button with a real link.
+4. GrowthMotive reel is 28.5 s; if he finds it long, drop CRMBox or trim the opening (~22 s).
+5. Optional: a thin blue loading line on a device screen while its reel buffers (offered, not built). Phones could also preload all 4 reels now that the phone files are small.
+6. Bring `DESIGN.md` up to date (§9).
+7. Optional cleanup (§4).
+8. New article → run `build-articles.py`, add its cover + preview card, push.
