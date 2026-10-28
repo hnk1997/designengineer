@@ -110,11 +110,28 @@
   })();
   window.HC.heroReady = blueprint.ready;
 
-  // Once the intro is in and the page has loaded, the first project's reel starts downloading
-  // quietly, so it's ready even for someone who scrolls straight to Selected work
+  // Once the intro is in and the page has loaded, reels download quietly, 1 at a time in page
+  // order (Selected work, then Currently building), so each is ready however fast someone
+  // scrolls. Desktops (almost always on Wi-Fi or broadband) get all of them; phones and tablets
+  // get the first 2, the rest loading as they come near (ui.js), so a visitor on mobile data
+  // doesn't pay for reels they never reach; data saver gets just the first. Each waits for the
+  // last to be playable through, or 10s at most so one slow file never holds up the rest.
   const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise((r) => addEventListener('load', r, { once: true }));
-  Promise.all([blueprint.released, loaded]).then(() => setTimeout(() => {
-    window.HC.warmClip?.(document.querySelector('[data-showcase] [data-layer] video'));
+  Promise.all([blueprint.released, loaded]).then(() => setTimeout(async () => {
+    const warm = window.HC.warmClip;
+    if (!warm) return;
+    const clips = [...document.querySelectorAll('[data-showcase] [data-layer] video, .build video')];
+    const saveData = navigator.connection && navigator.connection.saveData;
+    const desktop = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    for (const v of clips.slice(0, saveData ? 1 : desktop ? clips.length : 2)) {
+      warm(v);
+      await new Promise((done) => {
+        if (v.readyState >= 4) return done();
+        v.addEventListener('canplaythrough', done, { once: true });
+        v.addEventListener('error', done, { once: true });
+        setTimeout(done, 10000);
+      });
+    }
   }, 400));
 
   /* ── Scroll: the hero shrinks into a framed figure on the light grid ──
