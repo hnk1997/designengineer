@@ -32,3 +32,6 @@
 # The build tooling isn't part of the site
 /scripts/*
   X-Robots-Tag: noindex
+
+/assets/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
