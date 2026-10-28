@@ -3,18 +3,13 @@
 Design engineering partner site. Plain HTML, CSS and classic scripts, no build step.
 How it looks, sounds, moves and performs: [DESIGN.md](DESIGN.md).
 
-## Hosting (Cloudflare Pages, connected to this repo)
+## Hosting (Cloudflare Workers, connected to this repo)
 
-| Setting | Value |
-|---|---|
-| Framework preset | None |
-| Build command | `rm -rf scripts DESIGN.md README.md` |
-| Build output directory | `/` |
-| Production branch | `main` |
-
-The build command only strips the tooling and docs, so they aren't published. Every push to
-`main` redeploys. `_headers` sets caching and security headers, `_redirects` sends the old
-portfolio pages to product.hasannawaz.com.
+The Worker `designengineer` deploys on every push to `main` with `npx wrangler deploy`
+(no build command). `wrangler.jsonc` serves the repo root as static files, and
+`.assetsignore` keeps `scripts/`, `DESIGN.md` and this README out of the upload. `_headers`
+sets caching and security headers, `_redirects` sends the old portfolio pages to
+product.hasannawaz.com, and `404.html` answers any missing page.
 
 ## Working locally
 

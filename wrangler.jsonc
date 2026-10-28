@@ -1,0 +1,12 @@
+// Cloudflare Workers: this site is static files only, served from the repo root.
+// _headers (caching, security) and _redirects (old portfolio links) apply as they are.
+// .assetsignore keeps the tooling and docs out of what's published.
+{
+  "name": "designengineer",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
