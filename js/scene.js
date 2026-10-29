@@ -16,7 +16,7 @@
   const SPREAD = 0.54; // exploded layer gap
   const STACKED = 0.085; // assembled layer gap
   const BG_SCALE = 0.35; // the background is soft, so it renders at a fraction of screen size
-  const INTRO = 2.2; // seconds for each layer to drop in
+  const INTRO = 1.7; // seconds for each layer to drop in
 
   const quadVert = /* glsl */ `
     varying vec2 vUv;
@@ -104,7 +104,7 @@
     return tex;
   }
 
-  const expoOut = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+  const quartOut = (x) => (x >= 1 ? 1 : 1 - Math.pow(1 - x, 4));
 
   function createStage(canvas, { reduced = false, maxPixelRatio = 1.5, lowPower = false } = {}) {
     const dpr = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
@@ -229,8 +229,10 @@
         // Annotation anchor on the screen surface, in layer-local space
         anchorLocal: new THREE.Vector3(cfg.anchor[0] * (w / 2), t / 2, cfg.anchor[1] * (d / 2)),
         phase: i * 0.9,
-        drop: 7 + i * 0.6, // how far above its resting place it starts
-        delay: 0.08 + i * 0.13,
+        // how far above its resting place it starts: close enough to fall in with the canvas fade,
+        // so the stack, not the empty background, is the first thing that shows
+        drop: 2.6 + i * 0.45,
+        delay: i * 0.08,
         intro: { y: 0, r: 0 },
       };
     });
@@ -358,7 +360,8 @@
       const spacing = THREE.MathUtils.lerp(SPREAD + breathe, STACKED, assembleS);
       const n = layers.length;
       layers.forEach((L, i) => {
-        const k = expoOut(Math.max(0, (time - introAt - L.delay) / INTRO));
+        // quartic, not expo: expo starts so fast the first frames jump; this one glides in and settles
+        const k = quartOut(Math.max(0, (time - introAt - L.delay) / INTRO));
         L.intro.y = L.drop * (1 - k);
         L.intro.r = 0.5 * (1 - k);
         const bob = Math.sin(time * 0.9 + L.phase) * 0.028 * open * motion;

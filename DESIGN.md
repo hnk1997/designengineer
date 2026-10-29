@@ -267,7 +267,9 @@ large settles, 2.5s for diagram loops, 6–7s for ambient drifts.
 
 **Behaviours**
 - **Reveal on scroll:** blocks rise in slightly with a stagger (`--d` delay), once.
-- **Hero:** layers drop in (3.2s intro), labels appear after 1.7s, the frame collapses into the
+- **Hero:** the canvas fades up (1.2s, from 1.02 scale) as the layers glide in from just above
+  their places (quartic ease, 1.7s each, 0.08s stagger; ~2.6s in all), labels appear after 1.3s.
+  Until the 3D shows, the hero is plain dark: no glow first. The frame collapses into the
   page as you scroll; the stack assembles as it shrinks.
 - **Play only what's visible:** every video and animated tile plays only while on screen
   (`[data-play]`, IntersectionObserver); showcase clips only while their layer is showing.

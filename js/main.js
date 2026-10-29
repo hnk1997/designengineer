@@ -354,7 +354,7 @@
       stage.settle(); // arrived mid-scroll: no drop-in
     } else {
       stage.intro(clock + 0.1);
-      introUntil = clock + 3.2;
+      introUntil = clock + 2.6;
     }
 
     live = true;
@@ -363,7 +363,7 @@
     // The labels wait until the layers have mostly landed, so they don't compete.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       root.classList.add('is-live');
-      setTimeout(() => notes.reveal(), reduced ? 0 : 1700);
+      setTimeout(() => notes.reveal(), reduced ? 0 : 1300);
     }));
   };
 })();

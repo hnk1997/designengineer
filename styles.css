@@ -374,6 +374,10 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 }
 /* Nothing to animate once the 3D covers it */
 .is-live .hero-glow { display: none; }
+/* The glow is only the stand-in for browsers that can't run the 3D. Where the 3D is coming,
+   the hero stays plain dark until it fades in, so nothing else flashes up first. */
+.full:not(.three-off) .hero-glow { opacity: 0; animation: none; }
+.full:not(.three-off) .hero-glow span { animation: none; }
 
 .hero-canvas {
   position: absolute;
@@ -387,11 +391,11 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .is-live .hero-canvas {
   opacity: 1;
   visibility: visible;
-  animation: focus-in 1.6s var(--ease-out);
+  animation: focus-in 1.2s var(--ease-out);
 }
 /* Opacity and scale only: a CSS blur on a WebGL canvas flickers on some GPUs */
 @keyframes focus-in {
-  from { opacity: 0; transform: scale(1.04); }
+  from { opacity: 0; transform: scale(1.02); }
 }
 
 /* Annotations only exist alongside the live scene */
