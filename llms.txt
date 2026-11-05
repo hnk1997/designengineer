@@ -77,9 +77,9 @@ Message me on WhatsApp. We have a short call about the problem, then agree scope
 
 ## Articles
 
-- [Accessibility is Not Optional in Product Design](https://hasannawaz.com/thoughts/accessibility.html)
-- [The Hidden Cost of Dark Patterns in Product Design](https://hasannawaz.com/thoughts/dark-patterns.html)
-- [Design Systems: The Secret to Product Momentum](https://hasannawaz.com/thoughts/design-systems.html)
-- [Designing for Habit: How Small UX Decisions Drive Long-Term Engagement](https://hasannawaz.com/thoughts/designing-for-habit.html)
-- [The Power of Empty States: Why the First Blank Screen Matters](https://hasannawaz.com/thoughts/empty-states.html)
-- [MLP over MVP: why lovable is the better business bet](https://hasannawaz.com/thoughts/mlp-over-mvp.html)
+- [Accessibility is Not Optional in Product Design](https://hasannawaz.com/thoughts/accessibility)
+- [The Hidden Cost of Dark Patterns in Product Design](https://hasannawaz.com/thoughts/dark-patterns)
+- [Design Systems: The Secret to Product Momentum](https://hasannawaz.com/thoughts/design-systems)
+- [Designing for Habit: How Small UX Decisions Drive Long-Term Engagement](https://hasannawaz.com/thoughts/designing-for-habit)
+- [The Power of Empty States: Why the First Blank Screen Matters](https://hasannawaz.com/thoughts/empty-states)
+- [MLP over MVP: why lovable is the better business bet](https://hasannawaz.com/thoughts/mlp-over-mvp)

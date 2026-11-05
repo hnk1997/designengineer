@@ -244,7 +244,7 @@ def faq_list(items):
 
 def schema(a):
     """The article and where it sits, for search engines and AI assistants."""
-    url = f'https://hasannawaz.com/thoughts/{a["slug"]}.html'
+    url = f'https://hasannawaz.com/thoughts/{a["slug"]}'
     author = {'@type': 'Person', '@id': 'https://hasannawaz.com/#hasan', 'name': 'Hasan Nawaz', 'url': 'https://hasannawaz.com/'}
     data = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'BlogPosting', 'headline': a['title'], 'description': a['summary'], 'url': url,
@@ -269,8 +269,8 @@ def page(a, nxt, nav):
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{e(a["title"])} | Hasan Nawaz</title>
   <meta name="description" content="{e(a["summary"])}">
-  <link rel="canonical" href="https://hasannawaz.com/thoughts/{a["slug"]}.html">
-  <meta property="og:url" content="https://hasannawaz.com/thoughts/{a["slug"]}.html">
+  <link rel="canonical" href="https://hasannawaz.com/thoughts/{a["slug"]}">
+  <meta property="og:url" content="https://hasannawaz.com/thoughts/{a["slug"]}">
   <meta property="og:type" content="article">
   <meta property="article:published_time" content="{a["iso"]}">
   <meta property="og:site_name" content="Hasan Nawaz">
