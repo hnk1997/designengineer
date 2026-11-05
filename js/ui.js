@@ -30,7 +30,8 @@
         .map((ch, i) => `<span class="c" style="--i:${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`)
         .join('');
       el.innerHTML = `<span class="roll"><span>${chars}</span><span aria-hidden="true">${chars}</span></span>`;
-      el.closest('[data-roll-host]')?.setAttribute('aria-label', text);
+      const host = el.closest('[data-roll-host]');
+      if (host && !host.hasAttribute('aria-label')) host.setAttribute('aria-label', text);
     });
   }
 
@@ -622,5 +623,39 @@
     new IntersectionObserver(([e]) => btn.classList.toggle('is-away', e.isIntersecting), { threshold: 0.15 }).observe(foot);
   }
 
-  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp });
+  /* Pricing: 2 tabs of plans. Both panels stay in the same grid cell, so the page never moves. */
+  function initPricing() {
+    const list = document.querySelector('[data-price-tabs]');
+    if (!list) return;
+    const tabs = [...list.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[data-price-panel]')];
+    panels[0].parentElement.classList.add('is-tabbed');
+    const select = (tab, focus) => {
+      const i = tabs.indexOf(tab);
+      if (tab.getAttribute('aria-selected') === 'true') return;
+      tabs.forEach((t, n) => {
+        t.setAttribute('aria-selected', String(n === i));
+        t.tabIndex = n === i ? 0 : -1;
+      });
+      list.style.setProperty('--tab', i);
+      panels.forEach((p, n) => {
+        p.classList.toggle('is-on', n === i);
+        p.classList.toggle('is-entering', n === i);
+      });
+      panels[i].querySelector('.plans').scrollLeft = 0;
+      if (focus) tab.focus();
+    };
+    list.addEventListener('click', (e) => {
+      const tab = e.target.closest('[role="tab"]');
+      if (tab) select(tab);
+    });
+    list.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      const i = tabs.indexOf(document.activeElement);
+      select(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true);
+    });
+  }
+
+  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp, initPricing });
 })();

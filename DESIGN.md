@@ -197,8 +197,12 @@ inverts on `[data-dark]` sections, hides while the menu is open.
 
 **WhatsApp** (`.wa-float`): fixed bottom right, 52px (44px on phones), WhatsApp green, white
 glyph. Hover: "Chat on WhatsApp" label clips out to the left and the glyph wiggles. Hides over
-the footer (which has its own WhatsApp line) and under the menu. No pre-filled message: the
-visitor writes their own.
+the footer (which has its own WhatsApp line) and under the menu. Pre-fills 1 line that fits anyone:
+`Hi Hasan, can we talk?` The footer line uses the same.
+
+**WhatsApp entry points:** sticky button, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and each
+article's aside (`.art-wa`). `.btn--green` is the green glyph square on any button. All pre-fill a message;
+the general one is `Hi Hasan, can we talk?`
 
 **Disabled CTA** (`.showcase-cta`): dashed 1px outline, grey dot, `Case study coming soon`.
 Honest about what isn't ready; never a fake link.
@@ -221,6 +225,22 @@ a "+" top right, a live mini-visual, then title + one line. Animations run only 
 
 **Build card** (`.build`): Currently building. 16:10 looping film, logo, `IN PROGRESS` status
 with a pulsing blue dot, one line.
+
+**Pricing** (`.pricing`, `#pricing`): paper band after How I work, left-aligned like every other section.
+Lede `Need something custom? Just ask.` with a WhatsApp button (`.btn--wa`: white label, green square,
+white glyph). A toggle, Projects and Monthly (`.price-tabs`: white thumb in a soft track, sentence case;
+`ui.js initPricing`, arrow keys work), with `Full rate card available on request` opposite it, also a
+WhatsApp link. Both panels share 1 grid cell so switching never moves the page.
+**Plan card** (`.plan`): 4 white columns in 1 panel split by hairlines. Name, best for, price, CTA, then
+timeline or hours and a check list. `.plan--top` is the "Most popular" plan: 2px blue edge, blue tab on
+top, the 1 solid blue button. Other CTAs are blue tint with a blue arrow square. No black buttons here.
+Every CTA reads `Enquire on WhatsApp`, with a diagonal arrow (`.ico--out`) and a short pre-filled message
+naming that plan (`?text=`). The lead button and rate card link have their own. White-label and Sprint show `Enquire`, never a price. 2 columns under 1180px, a
+swipeable row with the next card peeking under 768px.
+
+**FAQ** (`.faq`, `.faq-item`): native `<details>` rows with hairlines, a "+" that turns to "×" when open, first
+row open. Homepage: label and lede sticky on the left, list on the right, before Hiring. Articles: `.art-faq`,
+"Quick answers", under the text. The answer text stays in the HTML for crawlers.
 
 **Email** (`.mail`): the address as huge type. Clicking copies it (no mailto), a blue underline
 sweeps, a `Copied` badge appears and the hint under it confirms ("Tap to copy" on touch).
@@ -358,4 +378,5 @@ portfolio URLs to product.hasannawaz.com.
 - [ ] Works at 320, 375, 390, 430, 768, 1024, 1440, 1920 with no sideways scroll.
 - [ ] Media obeys the budgets; videos `preload="none"` with WebP posters.
 - [ ] Reduced motion checked. No console errors.
+- [ ] Price, plan, stat or contact change? Update the homepage FAQ, the JSON-LD in `index.html` and `llms.txt` too.
 - [ ] Redeploy the clean folder (no `scripts/`) to Cloudflare Pages.

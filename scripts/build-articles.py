@@ -11,6 +11,7 @@ Article text is used as written. The cleanup only removes Medium extras: the tra
 pixel, embedded images, and the "follow me on LinkedIn" sign-off with its links.
 """
 import html
+import json
 import math
 import re
 import sys
@@ -127,6 +128,7 @@ def load(feed):
         date = parsedate_to_datetime(it.findtext('pubDate'))
         first = re.search(r'<p>(.*?)</p>', body, flags=re.S)
         summary = ' '.join(text_of(first.group(1)).split()) if first else ''
+        summary = re.sub(r'\s+([,.;:!?])', r'\1', summary)
         items.append({
             'slug': slug,
             'title': it.findtext('title').strip(),
@@ -191,6 +193,73 @@ def site_nav(index):
     return re.sub(r'href="#([\w-]+)"', r'href="../index.html#\1"', nav)
 
 
+# Quick answers under each article. Plain restatements of what the article says; keep them to it.
+FAQS = {
+    'accessibility': [
+        ('Why does accessibility matter in product design?', 'An inaccessible product silently excludes people: anyone who can’t read low-contrast text, struggles with confusing navigation or relies on a screen reader. Designing for them improves the experience for everyone.'),
+        ('What are the easiest accessibility improvements to make?', 'Use strong colour contrast, replace placeholder text with clear labels that stay visible, and keep navigation predictable across the product.'),
+        ('Does accessibility limit design?', 'No. It opens doors. The more people who can use your product with ease, the more valuable it becomes.'),
+    ],
+    'dark-patterns': [
+        ('What are dark patterns?', 'Design choices that trick people into doing something they didn’t intend. Examples are subscriptions that are nearly impossible to cancel, pre-checked marketing boxes and confusing button labels.'),
+        ('Why do dark patterns backfire?', 'They can lift short-term metrics, but the moment someone feels tricked, the trust is gone. Retention, NPS and referrals only thrive on trust.'),
+        ('What should teams do instead?', 'Align business goals with user goals. Make cancelling as clear as signing up, be transparent about pricing, use plain language and give people control of their data.'),
+    ],
+    'design-systems': [
+        ('What is a design system really for?', 'Momentum. It isn’t a set of rules or a Figma file of buttons. It’s a growth tool that makes every team member faster, more aligned and more focused.'),
+        ('What does a product lose without a design system?', 'Every new screen starts from scratch. Designers debate spacing, engineers question colours and handoffs turn into long threads, so product growth slows down.'),
+        ('How much time can a design system save?', 'On 1 product I worked on, design time on new features dropped by almost 40%, and engineers spent less time clarifying specs.'),
+    ],
+    'designing-for-habit': [
+        ('How do you design a product people come back to?', 'Fit it into their routine. Identify the key moments, reduce friction, reward consistency, build feedback loops, then measure and iterate.'),
+        ('Which metrics show a habit is forming?', 'Retention, daily active users and drop-off points. Let them guide your UX tweaks, because even a tiny adjustment can make a difference.'),
+        ('How do you encourage habits without being pushy?', 'Keep the guidance subtle. Show progress, offer gentle nudges and small rewards, and keep the experience seamless.'),
+    ],
+    'empty-states': [
+        ('What is an empty state?', 'The screen people see before there’s any data. In a new product, it’s usually the first impression.'),
+        ('Why do empty states matter?', 'They set expectations about the product’s value, guide the first meaningful action, and either build momentum or kill it.'),
+        ('What makes a good empty state?', 'It shows what the space will look like once it’s active, gives a clear next step and reassures people through tone and microcopy. Think of it as a mini onboarding moment.'),
+    ],
+    'mlp-over-mvp': [
+        ('What is the difference between an MVP and an MLP?', 'An MVP asks what’s the least you can ship that works. A Minimum Lovable Product asks what’s the least you can ship that someone would be glad to use. The scope stays tight and the quality bar goes up.'),
+        ('Does lovable mean more features or more polish?', 'No. It means picking the 1 or 2 moments that matter most, making those genuinely good and keeping everything else deliberately small.'),
+        ('Why is an MLP the better business bet?', 'Retention is what makes the business work, and people come back to things that felt good. Lovable products also get recommended, which is distribution you didn’t pay for.'),
+    ],
+}
+
+PLUS = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>'
+
+
+def faq_list(items):
+    e = html.escape
+    rows = ''.join(
+        f'\n          <details class="faq-item"{" open" if i == 0 else ""}><summary><h3 class="faq-q">{e(q)}</h3>{PLUS}</summary><p class="faq-a">{e(a)}</p></details>'
+        for i, (q, a) in enumerate(items))
+    return f'''<section class="art-faq" aria-labelledby="art-faq-title">
+          <h2 id="art-faq-title">Quick answers</h2>
+          <div class="faq-list">{rows}
+          </div>
+        </section>'''
+
+
+def schema(a):
+    """The article and where it sits, for search engines and AI assistants."""
+    url = f'https://hasannawaz.com/thoughts/{a["slug"]}.html'
+    author = {'@type': 'Person', '@id': 'https://hasannawaz.com/#hasan', 'name': 'Hasan Nawaz', 'url': 'https://hasannawaz.com/'}
+    data = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'BlogPosting', 'headline': a['title'], 'description': a['summary'], 'url': url,
+         'mainEntityOfPage': url, 'image': f'https://hasannawaz.com/assets/og/{a["slug"]}.jpg',
+         'datePublished': a['iso'], 'inLanguage': 'en', 'author': author, 'publisher': author},
+        {'@type': 'BreadcrumbList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Hasan Nawaz', 'item': 'https://hasannawaz.com/'},
+            {'@type': 'ListItem', 'position': 2, 'name': a['title'], 'item': url}]},
+        {'@type': 'FAQPage', 'mainEntity': [
+            {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': ans}}
+            for q, ans in FAQS[a['slug']]]},
+    ]}
+    return json.dumps(data, ensure_ascii=False).replace('</', '<\\/')
+
+
 def page(a, nxt, nav):
     e = html.escape
     return f'''<!doctype html>
@@ -203,6 +272,7 @@ def page(a, nxt, nav):
   <link rel="canonical" href="https://hasannawaz.com/thoughts/{a["slug"]}.html">
   <meta property="og:url" content="https://hasannawaz.com/thoughts/{a["slug"]}.html">
   <meta property="og:type" content="article">
+  <meta property="article:published_time" content="{a["iso"]}">
   <meta property="og:site_name" content="Hasan Nawaz">
   <meta property="og:title" content="{e(a["title"])} | Hasan Nawaz">
   <meta property="og:description" content="{e(a["summary"])}">
@@ -217,6 +287,7 @@ def page(a, nxt, nav):
   <link rel="icon" href="../favicon.ico" sizes="48x48">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <script type="application/ld+json">{schema(a)}</script>
   <link rel="stylesheet" href="../styles.css">
   <link rel="preload" href="../assets/fonts/inter-tight-v9-latin.woff2" as="font" type="font/woff2" crossorigin>
 </head>
@@ -245,9 +316,11 @@ def page(a, nxt, nav):
         <p class="art-author">Hasan Nawaz</p>
         <p class="art-role">Design engineering partner</p>
         <a class="art-cta" href="../index.html#contact" data-roll-host><span class="pill pill--light"><span data-roll>Get in touch</span></span>{ARROW}</a>
+        <a class="art-wa" href="https://wa.me/971547945306?text=Hi%20Hasan%2C%20can%20we%20talk%3F" target="_blank" rel="noopener">Or message me on WhatsApp</a>
       </aside>
       <article class="prose">
         {a["body"]}
+        {faq_list(FAQS[a["slug"]])}
       </article>
     </div>
 
@@ -261,7 +334,7 @@ def page(a, nxt, nav):
   <script src="../js/ui.js"></script>
   <script>window.HC.initRolls(); window.HC.initMenu(); window.HC.initBento(); window.HC.initCtaFloat();</script>
   <!-- WhatsApp, always a thumb away -->
-  <a class="wa-float" href="https://wa.me/971547945306" target="_blank" rel="noopener" aria-label="Message me on WhatsApp"><span class="wa-tip" aria-hidden="true">Chat on WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+  <a class="wa-float" href="https://wa.me/971547945306?text=Hi%20Hasan%2C%20can%20we%20talk%3F" target="_blank" rel="noopener" aria-label="Message me on WhatsApp"><span class="wa-tip" aria-hidden="true">Chat on WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 </body>
 </html>
 '''

@@ -2,7 +2,7 @@
 // straight from disk. Everything here works without the 3D scene; the scene is
 // loaded later by index.html, and only on devices marked `full` (see <head>).
 (() => {
-  const { createStage, Annotations, initRolls, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp } = window.HC;
+  const { createStage, Annotations, initRolls, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp, initPricing } = window.HC;
 
   const root = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -31,6 +31,7 @@
   initBento();
   initServices();
   initWhatsApp();
+  initPricing();
   initProcess();
   initCopy();
   initAnchors();
