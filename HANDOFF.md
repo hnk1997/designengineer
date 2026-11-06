@@ -217,7 +217,7 @@ Current reels and how each was made:
 - Data layer events: `whatsapp_click` (`cta_location`, `plan_name`), `yalla_open` (`yalla_section`), `yalla_option` (`yalla_option`), `yalla_message`, `yalla_brief_ready`. `whatsapp_click` is the key event.
 - **Privacy:** never send what visitors type. WhatsApp links carry their question or brief in the URL, so automatic outbound click tracking must stay off in 2 places: GA4 Enhanced measurement, and Tag Manager → Settings → Manage automatic event detection (it defaults on and overrides GA4). No cookie banner: Hasan found it distracting. Tag Manager doesn't load for visitors in Europe (browser time zone, approximate) unless they turn it on from `privacy.html`; anyone else can turn it off there (`hn-consent` in localStorage). `privacy.html` must stay accurate: if Yalla starts saving chats, update it and tell visitors.
 
-- Microsoft Clarity: goes in through Tag Manager (the official template), so it respects the same Europe rule. The Yalla panel carries `data-clarity-mask`, so chats never appear in recordings.
+- Microsoft Clarity: project `z9m4n2dg2l`, published as a Custom HTML tag (`Clarity - Tracking`, Tag Manager version 3, `scripts/gtm-clarity.json`), so it respects the same Europe rule. The Yalla panel carries `data-clarity-mask`, so chats never appear in recordings.
 
 ## SEO and AI search
 

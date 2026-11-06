@@ -9,7 +9,7 @@
 (() => {
   const WA = 'https://wa.me/971547945306?text=';
   const DAILY = 50;
-  const LIMIT = 'I’m done for today, but Hasan can answer this directly.';
+  const LIMIT = 'Khalas, I’m done for today. Hasan can answer this directly.';
   const FIELDS = [['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
   const TOPICS = {
     pricing: {
@@ -28,15 +28,15 @@
   // scoping is guided and written, so it's instant, costs nothing and works even if the model is down
   const SCOPE = [
     { key: 'what', chips: ['A website', 'A landing page', 'A web app', 'A mobile app'] },
-    { key: 'who', say: (a) => `${a}, nice. Who’s it for?`, chips: ['My startup', 'My company', 'An agency client'] },
-    { key: 'when', say: () => 'Makes sense. When are you hoping to have it live?', chips: ['Within a month', 'In 2–3 months', 'No fixed date'] },
-    { key: 'budget', say: () => 'Good to know. Do you have a rough budget in mind?', chips: ['Under AED 15,000', 'AED 15,000–30,000', 'AED 30,000+', 'Not sure yet'] },
+    { key: 'who', say: (a) => `${a}, tamam. Who’s it for?`, chips: ['My startup', 'My company', 'An agency client'] },
+    { key: 'when', say: () => 'Sah, that makes sense. When do you want it live?', chips: ['Within a month', 'In 2–3 months', 'No fixed date'] },
+    { key: 'budget', say: () => 'Shukran, that helps. Do you have a rough budget in mind?', chips: ['Under AED 15,000', 'AED 15,000–30,000', 'AED 30,000+', 'Not sure yet'] },
   ];
   const STARTERS = {
-    scope: { ask: 'Scope my project', say: 'Happy to. What are you building?' },
-    pricing: { ask: 'What does it cost?', say: 'Here’s where things start. The final price depends on what you need, so Hasan confirms it once the scope is clear. What are you looking to build?', card: 'pricing' },
-    work: { ask: 'Show me the work', say: 'These are a few recent ones. Tap any of them to see it on the page. Is there a type of project you’re thinking about?', card: 'work' },
-    process: { ask: 'How does it work?', say: 'It’s pretty simple, and you talk to Hasan the whole way through. What are you working on?', card: 'process' },
+    scope: { ask: 'Scope my project', say: 'Yalla, let’s do it. Grab a karak, this takes 1 minute. What are we building?' },
+    pricing: { ask: 'What does it cost?', say: 'Here’s where things start. Hasan confirms the final price once the scope is clear. So, what are we building?', card: 'pricing' },
+    work: { ask: 'Show me the work', say: 'A few recent ones. Tap any of them to see it on the page. What are you thinking of building?', card: 'work' },
+    process: { ask: 'How does it work?', say: 'Simple, and faster than Sheikh Zayed Road at 6pm. You talk to Hasan the whole way. What are you working on?', card: 'process' },
   };
   const LAUNCH = { work: 'Ask about the work', pricing: 'Which plan fits?', process: 'How does this work?', faq: 'Still curious?' };
   const HELLO = { work: 'Curious about the work?', pricing: 'Not sure which plan fits?', process: 'Want to know how it runs?' };
@@ -744,7 +744,7 @@
       step += 1;
       scopeNext();
       const q = SCOPE[step];
-      const line = q ? q.say(text) : 'Thanks, that’s plenty for Hasan to go on. Here’s your brief.';
+      const line = q ? q.say(text) : 'Khalas, your brief is ready.';
       history.push({ role: 'user', content: text }, { role: 'assistant', content: line });
       await reveal(line);
       if (!q && paintBrief()) {
@@ -752,7 +752,7 @@
         readyCard();
         celebrate();
         await sleep(900);
-        await reveal('Anything you’d like to ask before you send it?');
+        await reveal('Yalla, send it over when you’re ready. Anything you want to ask first?');
       }
       keepGoing();
       toEnd();
@@ -804,7 +804,7 @@
       setState('thinking');
       const row = thinking(topic ? TOPICS[topic].status : '');
       if (!topic) { // never leave someone looking at nothing
-        setTimeout(() => { if (row.isConnected && !row.querySelector('.yalla-shimmer')) row.append(el('span', 'yalla-shimmer', 'Thinking')); }, 900);
+        setTimeout(() => { if (row.isConnected && !row.querySelector('.yalla-shimmer')) row.append(el('span', 'yalla-shimmer', ['Yalla, 1 second', 'Shway shway', 'Checking with my karak'][Math.floor(Math.random() * 3)])); }, 900);
       }
       let raw = '';
       let live = null;
@@ -864,7 +864,7 @@
       let reply = raw.split('[[')[0].trim();
       // only tags came back: keep the conversation going rather than failing
       if (!reply && raw.includes('[[')) {
-        reply = step >= 0 && SCOPE[step + 1] ? SCOPE[step + 1].say('Got it') : 'Got it. Tell me a bit more about what you have in mind.';
+        reply = step >= 0 && SCOPE[step + 1] ? SCOPE[step + 1].say('Got it') : 'Tamam. Tell me a bit more about what you have in mind.';
         say(reply);
       }
       if (!reply) {
@@ -880,7 +880,7 @@
           return;
         }
         if (limit) done = true;
-        say(limit ? LIMIT : 'Sorry, I lost my train of thought there. Want to try that again, or ask Hasan directly?');
+        say(limit ? LIMIT : 'Wallah, I lost my train of thought. Want to try that again, or ask Hasan directly?');
         handoff(question);
         if (!limit) {
           const again = el('button', 'yalla-next', 'Try again');
