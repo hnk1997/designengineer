@@ -73,9 +73,9 @@
 
     let history = [];
     let chatId = '';
+    let offered = false;
     let brief = {};
     let shown = {};
-    let strikes = 0;
     let done = false;
     let busy = null;
     let ready = false;
@@ -138,10 +138,36 @@
       pop() {
         play('.yc-root', [{ transform: 'translateY(12px) scale(0.5)', opacity: 0 }, { transform: 'translateY(-2px) scale(1.07, 0.95)', opacity: 1, offset: 0.6 }, { transform: 'scale(0.98, 1.03)', offset: 0.82 }, { transform: 'none' }], { duration: 560, delay: 160, fill: 'backwards' });
       },
+      shake() {
+        play('.yc-root', [T('none'), T('rotate(-4deg)', 0.2), T('rotate(4deg)', 0.4), T('rotate(-3deg)', 0.6), T('rotate(2deg)', 0.8), T('none')], { duration: 620 });
+      },
+      droop() {
+        play('.yc-root', [T('none'), T('translateY(1.5px) scale(1.03, 0.95)', 0.5, SPRING), T('none')], { duration: 1500 });
+      },
+      gasp() {
+        play('.yc-root', [T('none'), T('scale(1.06, 0.9)', 0.15), T('translateY(-4px) scale(0.95, 1.08)', 0.42), T('none')], { duration: 560, easing: SPRING });
+      },
       glance() {
         look((Math.random() < 0.5 ? -1 : 1) * 1.3, (Math.random() - 0.5) * 1.6);
         setTimeout(() => { if (mood === 'idle') look(0, 0); }, 800 + Math.random() * 500);
       },
+    };
+    // how it reacts to each feeling: how long it holds, and what it does
+    const FEELINGS = {
+      excited: [1700, () => { moves.jump(); setTimeout(moves.wave, 500); }],
+      happy: [1600, () => { moves.hop(); }],
+      proud: [1800, () => { moves.stretch(); }],
+      curious: [2000, () => { moves.tilt(); }],
+      sad: [2200, () => { moves.droop(); }],
+      surprised: [1200, () => { moves.gasp(); }],
+      embarrassed: [1800, () => { moves.droop(); moves.blink(); }],
+      playful: [1500, () => { moves.shake(); }],
+    };
+    const feel = (name) => {
+      const f = FEELINGS[name];
+      if (!f || calm) return;
+      flash(name, f[0]);
+      f[1]();
     };
     let energy = 0;
     let raf = 0;
@@ -149,7 +175,7 @@
     let moodTimer = 0;
     const decay = () => {
       energy *= 0.88;
-      hosts.forEach((h) => h.style.setProperty('--e', energy.toFixed(3)));
+      parts('.yc-root').forEach((n) => n.style.setProperty('--e', energy.toFixed(3))); // on the logo only, so the panel never repaints
       raf = energy > 0.01 ? requestAnimationFrame(decay) : 0;
     };
     const pulse = (n) => {
@@ -158,9 +184,9 @@
       if (!raf) raf = requestAnimationFrame(decay);
     };
     function look(x, y) {
-      hosts.forEach((h) => {
-        h.style.setProperty('--lx', `${x.toFixed(2)}px`);
-        h.style.setProperty('--ly', `${y.toFixed(2)}px`);
+      parts('.yc-eyes').forEach((n) => {
+        n.style.setProperty('--lx', `${x.toFixed(2)}px`);
+        n.style.setProperty('--ly', `${y.toFixed(2)}px`);
       });
     }
     const setState = (s) => {
@@ -174,6 +200,7 @@
       moodTimer = setTimeout(() => setState('idle'), ms);
     };
     let lastMove = 0;
+    let lastActive = 0;
     let visits = 0;
     if (!calm) {
       const blinks = () => {
@@ -197,6 +224,21 @@
         }, 3800 + Math.random() * 4800);
       };
       idle();
+      // left alone in an open chat, it dozes off
+      setInterval(() => {
+        if (panel.open && mood === 'idle' && performance.now() - lastActive > 12000) setState('sleepy');
+      }, 1500);
+      const wake = () => {
+        lastActive = performance.now();
+        if (mood === 'sleepy') {
+          setState('idle');
+          moves.gasp();
+        }
+      };
+      panel.addEventListener('pointerdown', wake);
+      panel.addEventListener('keydown', wake);
+      // tap it and it reacts
+      panel.querySelectorAll('.yc-tile').forEach((t) => t.addEventListener('click', () => feel(['playful', 'happy', 'surprised', 'excited'][Math.floor(Math.random() * 4)])));
       // says hi from the corner a few times, until it's been opened
       const greet = (n) => {
         setTimeout(() => {
@@ -269,7 +311,7 @@
       panel.style.setProperty('--kb', `${n}px`);
       const until = performance.now() + 380;
       const follow = () => {
-        if (anchorMsg || !hello.hidden) toEnd();
+        toEnd();
         if (performance.now() < until) requestAnimationFrame(follow);
       };
       follow();
@@ -297,10 +339,15 @@
       if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
       panel.classList.remove('is-settled'); // never carried over from the last time
       visits += 1;
+      lastActive = performance.now();
       track('yalla_open', { yalla_section: section || 'top' });
       panel.showModal();
       panel.focus({ preventScroll: true }); // otherwise the first button gets focused and outlined
-      setTimeout(() => { if (panel.open) panel.classList.add('is-settled'); }, 620);
+      setTimeout(() => {
+        if (!panel.open) return;
+        panel.classList.add('is-settled');
+        document.documentElement.classList.add('yalla-covered');
+      }, 620);
       sync();
       setState('idle');
       moves.pop();
@@ -312,6 +359,7 @@
     const tidy = () => {
       document.documentElement.classList.remove('yalla-open');
       panel.classList.remove('is-settled');
+      document.documentElement.classList.remove('yalla-covered');
       unlock();
       if (fine) opener.focus({ preventScroll: true });
       else opener.blur(); // on touch, the browser would leave it outlined
@@ -351,22 +399,20 @@
     const count = () => {
       try { localStorage.setItem('hn-yalla', JSON.stringify({ d: today, n: used() + 1 })); } catch {}
     };
-    // like Claude: your message moves to the top and the reply fills in below it
-    const spacer = $('[data-yalla-spacer]');
-    let anchorMsg = null;
+    // the conversation stays anchored to the bottom, with everything earlier right above it. It follows
+    // new words unless the visitor has scrolled up to read, and sending a message brings them back down
+    let sticky = true;
     const bottom = () => log.offsetTop + log.offsetHeight;
-    const fit = () => {
-      spacer.style.height = anchorMsg ? `${Math.max(0, scroller.clientHeight - kb - (bottom() - anchorMsg.offsetTop) - 40)}px` : '0px';
-    };
+    const gap = () => bottom() + 24 + kb - (scroller.scrollTop + scroller.clientHeight);
+    scroller.addEventListener('scroll', () => { sticky = gap() < 120; }, { passive: true });
     const toEnd = () => {
-      fit();
-      const over = bottom() + 24 + kb - (scroller.scrollTop + scroller.clientHeight);
+      if (!sticky) return;
+      const over = gap();
       if (over > 0) scroller.scrollTop += over;
     };
-    const anchor = (msg) => {
-      anchorMsg = msg;
-      fit();
-      scroller.scrollTo({ top: msg.offsetTop - 16, behavior: calm ? 'auto' : 'smooth' });
+    const anchor = () => {
+      sticky = true;
+      toEnd();
     };
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const started = () => {
@@ -601,6 +647,28 @@
       });
     };
 
+    /* ── there's always something to do next ── */
+    const OPTIONS = [['Scope my project', 'scope'], ['What does it cost?', 'pricing'], ['Show me the work', 'work'], ['How does it work?', 'process']];
+    let usedOptions = new Set();
+    const keepGoing = () => {
+      if (step >= 0 && SCOPE[step]) {
+        renderNext(SCOPE[step].chips);
+        return;
+      }
+      nextRow.replaceChildren();
+      OPTIONS.filter(([, name]) => !usedOptions.has(name) && !(name === 'scope' && ready)).slice(0, 2).forEach(([text, name]) => {
+        const b = el('button', 'yalla-next', text);
+        b.type = 'button';
+        b.addEventListener('click', () => starter(name));
+        nextRow.append(b);
+      });
+      const a = el('a', 'yalla-next', 'Talk to Hasan on WhatsApp');
+      a.href = headerWa.href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      nextRow.append(a);
+    };
+
     /* ── written answers ── */
     const reveal = async (text) => {
       const row = thinking();
@@ -620,6 +688,7 @@
       const st = STARTERS[name];
       if (busy) return;
       track('yalla_option', { yalla_option: name });
+      usedOptions.add(name);
       renderNext([]);
       anchor(say(st.ask, true));
       history.push({ role: 'user', content: st.ask }, { role: 'assistant', content: st.say });
@@ -629,7 +698,7 @@
       }
       await reveal(st.say);
       if (st.card) showCard(st.card);
-      if (name === 'scope' && step >= 0) renderNext(SCOPE[step].chips);
+      keepGoing();
       toEnd();
       if (fine) input.focus();
     };
@@ -654,6 +723,7 @@
       await reveal(line);
       const go = waButton('Enquire on WhatsApp', plan.querySelector('.plan-cta').href);
       add(go);
+      keepGoing();
       toEnd();
     };
 
@@ -677,13 +747,14 @@
       const line = q ? q.say(text) : 'Thanks, that’s plenty for Hasan to go on. Here’s your brief.';
       history.push({ role: 'user', content: text }, { role: 'assistant', content: line });
       await reveal(line);
-      if (q) {
-        renderNext(q.chips);
-      } else if (paintBrief()) {
+      if (!q && paintBrief()) {
         ready = true;
         readyCard();
         celebrate();
+        await sleep(900);
+        await reveal('Anything you’d like to ask before you send it?');
       }
+      keepGoing();
       toEnd();
       if (fine) input.focus();
     }
@@ -710,7 +781,7 @@
     }
     const topicOf = (q) => Object.keys(TOPICS).find((k) => TOPICS[k].re.test(q));
 
-    async function ask(question) {
+    async function ask(question, again) {
       if (busy) return;
       renderNext([]);
       anchor(say(question, true));
@@ -725,7 +796,9 @@
       track('yalla_message');
       const topic = topicOf(question);
       moves.nod();
+      let failed = false;
       const request = new AbortController();
+      const giveUp = setTimeout(() => { failed = true; request.abort(); }, 45000);
       busy = request;
       working(true);
       setState('thinking');
@@ -736,7 +809,6 @@
       let raw = '';
       let live = null;
       let limit = false;
-      let failed = false;
       let mock = false;
       let said = 0;
       let t = null;
@@ -746,7 +818,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: history.slice(-12), context: section, chat: chatId }),
-          signal: AbortSignal.any([request.signal, AbortSignal.timeout(45000)]),
+          signal: request.signal,
         });
         if (!res.ok) throw new Error(res.status);
         mock = res.headers.has('X-Yalla-Mock');
@@ -775,8 +847,9 @@
           }
         }
       } catch {
-        failed = !request.signal.aborted;
+        failed = failed || !request.signal.aborted;
       }
+      clearTimeout(giveUp);
       if (!live) row.remove();
       if (t && !request.signal.aborted) await t.done();
       busy = null;
@@ -788,16 +861,26 @@
         if (!request.signal.aborted) live.textContent = raw.split('[[')[0].trim();
       }
 
-      const reply = raw.split('[[')[0].trim();
+      let reply = raw.split('[[')[0].trim();
+      // only tags came back: keep the conversation going rather than failing
+      if (!reply && raw.includes('[[')) {
+        reply = step >= 0 && SCOPE[step + 1] ? SCOPE[step + 1].say('Got it') : 'Got it. Tell me a bit more about what you have in mind.';
+        say(reply);
+      }
       if (!reply) {
-        if (request.signal.aborted) return;
+        if (request.signal.aborted && !failed) return;
         history.pop();
+        if (!limit && !again) { // a hiccup shouldn't end the chat: try once more, quietly
+          log.lastChild.remove();
+          ask(question, true);
+          return;
+        }
         if (step >= 0 && !question.includes('?')) { // scoping still works without the model
           scopeAnswer(question, true);
           return;
         }
         if (limit) done = true;
-        say(limit ? LIMIT : 'I can’t reach my notes right now. Try again, or ask Hasan directly.');
+        say(limit ? LIMIT : 'Sorry, I lost my train of thought there. Want to try that again, or ask Hasan directly?');
         handoff(question);
         if (!limit) {
           const again = el('button', 'yalla-next', 'Try again');
@@ -812,17 +895,17 @@
       history.push({ role: 'assistant', content: reply });
 
       const tags = {};
-      raw.replace(/\[\[\s*(fields|show|handoff|offtopic)\s*:?\s*([^\]]*)\]\]/gi, (m, k, v) => { tags[k.toLowerCase()] = v.trim(); return m; });
-      strikes = 'offtopic' in tags ? strikes + 1 : 0;
+      raw.replace(/\[\[\s*(fields|show|handoff|offtopic|mood)\s*:?\s*([^\]]*)\]\]/gi, (m, k, v) => { tags[k.toLowerCase()] = v.trim(); return m; });
       if (tags.fields) mergeBrief(tags.fields);
       if (!('offtopic' in tags) && question.split(/\s+/).length > 2) showCard((tags.show || topic || '').toLowerCase());
-      if ('handoff' in tags) handoff(question);
+      if ('handoff' in tags && !offered) {
+        offered = true; // once per chat, so it doesn't feel like being shown the door
+        handoff(question);
+      }
       scopeNext();
       if ('offtopic' in tags) flash('puzzled', 1500);
-      if (strikes >= 2) {
-        form.hidden = true;
-        form.style.display = 'none';
-      }
+      else feel((tags.mood || '').toLowerCase());
+      keepGoing();
       toEnd();
     }
 
@@ -830,17 +913,17 @@
       if (busy) busy.abort();
       history = [];
       chatId = '';
+      offered = false;
+      usedOptions = new Set();
       brief = {};
       shown = {};
-      strikes = 0;
       ready = false;
       step = -1;
       readyEl = null;
       goLinks.clear();
         log.replaceChildren();
       nextRow.replaceChildren();
-      anchorMsg = null;
-      fit();
+      sticky = true;
       input.placeholder = 'Message Yalla';
       hello.hidden = false;
       fresh.hidden = true;

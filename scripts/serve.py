@@ -35,8 +35,8 @@ def mock_reply(q):
     if re.search(r"founder|customers?|startup|for my|for our|users", q):
         return "Nice, early days are a fun time to get this right. When are you hoping to go live?\n[[fields: who=Their startup]]"
     if re.search(r"website|landing|app|platform|build", q):
-        return "Oh nice. What’s it for, and who are you hoping it reaches?\n[[fields: what=A website]]"
-    return "I’m not sure about that one, but Hasan will be.\n[[handoff]]"
+        return "Oh nice. What’s it for, and who are you hoping it reaches?\n[[fields: what=A website]]\n[[mood: excited]]"
+    return "I’m not sure about that one, but Hasan will be.\n[[handoff]]\n[[mood: embarrassed]]"
 
 
 def delta_of(line):

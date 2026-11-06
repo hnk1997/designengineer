@@ -3368,6 +3368,30 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 [data-mood="puzzled"] .yc-root { transform: rotate(8deg); }
 [data-mood="puzzled"] .yc-arm--l { transform: rotate(-16deg); }
 [data-mood="puzzled"] .yc-arm--r { transform: rotate(16deg); }
+/* feelings: mostly the eyes, because that's where a face lives */
+[data-mood="excited"] .yc-eye { transform: scale(1.22); }
+[data-mood="excited"] .yc-arm--l { transform: rotate(8deg); }
+[data-mood="excited"] .yc-arm--r { transform: rotate(-8deg); }
+[data-mood="happy"] .yc-eye, [data-mood="proud"] .yc-eye { opacity: 0; }
+[data-mood="happy"] .yc-joy, [data-mood="proud"] .yc-joy { opacity: 1; }
+[data-mood="proud"] .yc-root { transform: translateY(-1px) scale(0.97, 1.05); }
+[data-mood="curious"] .yc-eye:first-child { transform: scale(0.86); }
+[data-mood="curious"] .yc-eye:nth-child(2) { transform: scale(1.2); }
+[data-mood="sad"] .yc-eye { transform: scaleY(0.62) translateY(2px); }
+[data-mood="sad"] .yc-root { transform: translateY(1.2px) rotate(-2deg); }
+[data-mood="sad"] .yc-arm--l { transform: rotate(-16deg); }
+[data-mood="sad"] .yc-arm--r { transform: rotate(16deg); }
+[data-mood="surprised"] .yc-eye { transform: scale(1.34); }
+[data-mood="embarrassed"] .yc-eyes { transform: translate(-1.2px, 1.2px); }
+[data-mood="embarrassed"] .yc-root { transform: rotate(-5deg); }
+[data-mood="embarrassed"] .yc-arm--r { transform: rotate(12deg); }
+[data-mood="playful"] .yc-eye:first-child { transform: scaleY(0.12); }
+[data-mood="playful"] .yc-root { transform: rotate(6deg); }
+[data-mood="sleepy"] .yc-eye { transform: scaleY(0.14); }
+[data-mood="sleepy"] .yc-root { transform: translateY(1px) rotate(4deg); }
+[data-mood="sleepy"] .yc-body { animation-duration: 7s; }
+.yc-eye { transition: opacity 0.15s linear, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.yalla .yc-tile { cursor: pointer; }
 @keyframes yc-breathe { 50% { transform: scaleY(1.018); } }
 @keyframes yc-tap { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(10deg); } }
 @keyframes yc-ponder { 0%, 38% { transform: translate(1.3px, -1.1px); } 42%, 80% { transform: translate(-1.2px, -1.2px); } 84%, 96% { transform: translate(0.2px, -1.3px); } 100% { transform: translate(1.3px, -1.1px); } }
@@ -3380,8 +3404,11 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yc-fluid i:nth-child(3) { right: -10%; bottom: -25%; width: 60%; height: 55%; background: #f97316; animation: yc-drift-c 27s var(--ease-io) infinite alternate; }
 .yalla > .yc-fluid { z-index: 0; opacity: 0; contain: strict; transition: opacity 0.8s var(--ease-out); }
 .yalla.is-settled > .yc-fluid { opacity: 1; }
-.yalla > .yc-fluid i { filter: blur(90px); opacity: 0.16; }
-.yalla > .yc-fluid i:nth-child(3) { opacity: 0.2; }
+.yalla > .yc-fluid i { width: 150%; height: 120%; animation: none; opacity: 0.11; } /* plain gradients: animated blur this size flickers on phones */
+.yalla > .yc-fluid i:nth-child(1) { background: radial-gradient(closest-side, #2563eb, transparent); }
+.yalla > .yc-fluid i:nth-child(2) { background: radial-gradient(closest-side, #7c3aed, transparent); }
+.yalla > .yc-fluid i:nth-child(3) { background: radial-gradient(closest-side, #f97316, transparent); }
+.yalla > .yc-fluid i:nth-child(3) { opacity: 0.14; }
 .yalla.is-settled.is-chatting > .yc-fluid { opacity: 0.6; }
 @keyframes yc-drift-a { to { transform: translate(28%, -22%) scale(1.15); } }
 @keyframes yc-drift-b { to { transform: translate(-26%, 24%) scale(0.9); } }
@@ -3439,6 +3466,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   transition: transform 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete;
 }
 .yalla[open] { display: flex; transform: none; }
+.yalla.is-settled { will-change: auto; }
 @starting-style { .yalla[open] { transform: translateX(100%); } }
 .yalla::backdrop { background: rgba(5, 5, 5, 0); transition: background-color 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete; }
 .yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
@@ -3493,7 +3521,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla-plans { display: grid; }
 .yalla-plans .yalla-plan:first-child { border-top: 0; }
 .yalla-log { display: grid; gap: 22px; }
-.yalla-spacer { flex: none; }
 .yalla-log:empty { display: none; }
 .yalla-log > * { animation: yalla-rise 0.5s var(--ease-out) backwards; }
 .yalla-msg { margin: 0; font-size: 16.5px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -3557,6 +3584,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
   .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; }
+  html.yalla-covered main, html.yalla-covered footer, html.yalla-covered header { visibility: hidden; } /* nothing moving behind it */
   .yalla.is-settled { box-shadow: 0 0 0 100vh #fff; } /* only once it's in place: earlier, this flashes the page white */
   .yalla.is-settled::backdrop { background: #fff; }
   .yalla-dock { transform: translateY(calc(var(--kb, 0px) * -1)); transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
