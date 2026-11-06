@@ -11,7 +11,7 @@ const CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
 
 // Yalla. Free on Workers AI: past the daily allowance the call fails, it never bills.
 // Thinking is off (reasoning_effort below): gpt-oss-120b took 3 to 19s to start because it reasons first
-const MODEL = '@cf/deepseek-ai/deepseek-v4.1-flash-1017';
+const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const DAILY_LIMIT = 200; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
@@ -136,7 +136,6 @@ async function yalla(request, env, ctx) {
       messages: [{ role: 'system', content: `${RULES}\n${where}SITE FACTS\n\n${FACTS}` }, ...turns],
       max_tokens: 400,
       temperature: 0.4,
-      reasoning_effort: 'none',
       stream: true,
     });
     const section = SECTIONS.includes(body.context) ? body.context : '';
