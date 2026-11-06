@@ -1,16 +1,17 @@
 // Cloudflare Workers: this site is static files, served from the repo root.
 // _headers (caching, security) and _redirects (old portfolio links) apply as they are.
 // .assetsignore keeps the tooling and docs out of what's published.
-// worker.js runs only for the reels, to answer byte-range requests (see the file).
+// worker.js runs only for the reels (byte-range requests) and /api/* (Yalla, on Workers AI).
 {
   "name": "designengineer",
   "compatibility_date": "2025-09-01",
   "main": "worker.js",
+  "ai": { "binding": "AI" },
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/assets/work/*", "/assets/building/*"]
+    "run_worker_first": ["/api/*", "/assets/work/*", "/assets/building/*"]
   }
 }

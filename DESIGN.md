@@ -18,7 +18,7 @@ a senior engineer built it.
 
 1. **Show, don't claim.** A reel of the real product beats a sentence about it. A diagram that
    plays beats an icon. Claims are numbers (6x, 2M+, 15+) and real quotes, never adjectives.
-2. **One loud thing per screen.** The 3D hero, a pinned device, a big email address. Around it
+2. **One loud thing per screen.** The 3D hero, a pinned device, a big WhatsApp line. Around it
    everything is quiet: paper, hairlines, small uppercase labels.
 3. **Square, flat, precise.** No rounded cards, no drop shadows on UI, no gradients on buttons.
    Hierarchy comes from type size, hairlines and the one accent blue.
@@ -89,11 +89,12 @@ Two grounds, one ink each, one accent. The palette comes from the hasannawaz.com
 | `--paper-line` | `rgba(11,12,15,.08)` | Hairlines on `--paper` (section rules use `.16`) |
 | `--blue` | `#2563eb` | The accent: lede payoffs, `.ico` squares, active rules, links on hover, the `.sq` marker |
 | `--rose` | `#e11d48` | Glow only (hero, footer, Why me tiles) |
-| `--orange` | `#f97316` | Glow only; status dot "taking on projects" |
+| `--orange` | `#f97316` | Glow; status dot "taking on projects"; Yalla's logo square |
+| Purple | `#7c3aed` | Yalla's fluid glow only |
 | `--glass` | `rgba(20,22,28,.56)` + 16px blur | Nav pills and cards over the 3D |
 | `--glass-strong` | `rgba(20,22,28,.82)` | Pills when blur is off (`.perf-low`) |
 | `--hair` | `rgba(255,255,255,.14)` | Hairlines on `--dark` |
-| WhatsApp green | `#25d366` (hover `#1fbe5b`) | Only the WhatsApp button and glyph |
+| WhatsApp green | `#25d366` (hover `#1fbe5b`) | Only WhatsApp buttons and glyphs |
 
 **Body text greys on paper:** `rgba(11,12,15,.62)` (5.3:1) for card copy, `.66` (6.1:1) for
 service copy. Muted labels on paper use `.5`–`.56` (3.6–4.3:1); keep those to 12px uppercase
@@ -124,7 +125,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 | Stat | `clamp(64px, 7vw, 120px)` | 0.9 | −0.055em, tabular figures | Track record numbers, suffix in blue |
 | Service | `clamp(40px, 5.2vw, 88px)` | 0.95 | −0.05em | What I do rows |
 | Project / article title | `clamp(40px, 4.4vw, 72px)` / `clamp(40px, 5.2vw, 84px)` | 0.98 / 1 | −0.045em | Selected work, article pages |
-| Email | `min((100vw − 2·gutter) / 12.2, 150px)` | 1 | −0.05em | Footer address, always one line |
+| Footer WhatsApp | `clamp(40px, 7vw, 96px)` | 1 | −0.05em | `WhatsApp me`, always one line |
 | Lede | `clamp(26px, 2.8vw, 44px)` | 1.12 | −0.035em | Section statements |
 | Card title | `22px` · post `clamp(22px, 1.9vw, 28px)` | 1.15 | −0.02 / −0.03em | Bento tiles, article cards |
 | Body | `17px` (phones 16px) | 1.45 | 0 | Project and service copy, max ~44ch |
@@ -154,7 +155,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 - **Radius:** 0 everywhere in the UI. Exceptions are physical objects only: device frames
   (measured from the artwork), Currently building media (10px), the 3D layers.
 - **Shadows:** none on UI. Allowed on objects that float: Currently building media
-  (`0 28px 56px -32px rgba(11,12,15,.35)`), the WhatsApp button, device mockups.
+  (`0 28px 56px -32px rgba(11,12,15,.35)`), device mockups, Yalla's sticky label.
 
 **Breakpoints**
 | Query | What changes |
@@ -166,7 +167,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 | `pointer: coarse` | 44px controls, press feedback instead of hover, no tap highlight |
 | `hover: hover and pointer: fine` | Hover effects (arrow rolls, What I do diagrams, WhatsApp label) |
 
-**Layers (z-index):** content 2–5 · menu 40 · nav 50 · floating Get in touch 55 · WhatsApp 56.
+**Layers (z-index):** content 2–5 · menu 40 · nav 50 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
 
 ---
 
@@ -195,12 +196,7 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
 inverts on `[data-dark]` sections, hides while the menu is open.
 
-**WhatsApp** (`.wa-float`): fixed bottom right, 52px (44px on phones), WhatsApp green, white
-glyph. Hover: "Chat on WhatsApp" label clips out to the left and the glyph wiggles. Hides over
-the footer (which has its own WhatsApp line) and under the menu. Pre-fills 1 line that fits anyone:
-`Hi Hasan, can we talk?` The footer line uses the same.
-
-**WhatsApp entry points:** sticky button, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and each
+**WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and each
 article's aside (`.art-wa`). `.btn--green` is the green glyph square on any button. All pre-fill a message;
 the general one is `Hi Hasan, can we talk?`
 
@@ -242,8 +238,19 @@ swipeable row with the next card peeking under 768px.
 row open. Homepage: label and lede sticky on the left, list on the right, before Hiring. Articles: `.art-faq`,
 "Quick answers", under the text. The answer text stays in the HTML for crawlers.
 
-**Email** (`.mail`): the address as huge type. Clicking copies it (no mailto), a blue underline
-sweeps, a `Copied` badge appears and the hint under it confirms ("Tap to copy" on touch).
+**Yalla** (`.yalla-float`, `.yalla`, `js/yalla.js`): the AI assistant, built to show product thinking. Mark: `.yc`, a white Y
+with curved arms and 2 pill eyes, in an orange circle. It's the 1 round shape in the UI, because it's a character. It moves
+like 1: anticipation, squash and stretch, overshoot; eyes dart, never drift. Launcher: a contextual label + the orange mark,
+bottom right, hides over the footer and under the menu, mark only on phones. Panel: a white `<dialog>` from the right,
+500px wide, full screen on phones, 0.6s `--ease-out`, with a subtle blue, orange and purple fluid glow behind (`.yc-fluid`).
+Colour has jobs: orange is Yalla (logo, send, brief meter; a soft tint for the primary action and your messages), blue is anything tappable, green
+is WhatsApp. No gradients on controls.
+Keep it sparse, so it doesn't look AI-generated. Opening screen: logo with `Yalla` and `Hasan’s AI assistant` beside it, a heading that follows the section, 1 soft orange action,
+3 plain rows; the header stays empty until a chat starts. WhatsApp is always in the header (`.yalla-hwa`). Replies are plain
+streaming text with no avatars, like Claude's chat. Inside the panel, chat elements have soft corners (bubble, composer, chips, brief card), the 1 exception to square UI; the small thinking character and status are replaced by the reply. Cards reuse page content. `.yalla-brief` is the live brief bar. Yalla
+says "I" for itself and "Hasan" for Hasan, and never claims to be him.
+
+**Footer contact** (`.wa-big`, `.mail`): WhatsApp leads as huge type with its green glyph and a green underline sweep on hover; the number sits under it. The email is a small line below. Clicking it copies it, a blue selection and `Copied` badge appear, and the note beside it confirms.
 
 **Article back link** (`.art-back`): quiet grey `← Thought leadership`, blue with underline on
 hover. Navigation, not a CTA.
@@ -349,7 +356,7 @@ Canvas textures wait up to 400ms for Inter Tight, then redraw when it lands.
   fast-start). Never MediaRecorder output.
 - Images WebP; logos SVG or small PNG. Nothing larger than it's shown.
 - No third-party requests at runtime: no analytics, trackers, embeds, CDNs or web fonts from
-  elsewhere.
+  elsewhere. Yalla calls this site's own `/api/yalla`; the model runs in the Worker.
 
 **Caching and hosting** (`_headers`, Cloudflare Pages): vendor and fonts cached a year
 (immutable, versioned paths); reels, posters, logos, devices a day with

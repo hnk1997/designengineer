@@ -616,13 +616,6 @@
   }
 
   /* The sticky WhatsApp button steps aside over the footer, which has its own WhatsApp line */
-  function initWhatsApp() {
-    const btn = document.querySelector('.wa-float');
-    const foot = document.querySelector('#contact');
-    if (!btn || !foot || !('IntersectionObserver' in window)) return;
-    new IntersectionObserver(([e]) => btn.classList.toggle('is-away', e.isIntersecting), { threshold: 0.15 }).observe(foot);
-  }
-
   /* Pricing: 2 tabs of plans. Both panels stay in the same grid cell, so the page never moves. */
   function initPricing() {
     const list = document.querySelector('[data-price-tabs]');
@@ -657,5 +650,5 @@
     });
   }
 
-  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initWhatsApp, initPricing });
+  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initPricing });
 })();

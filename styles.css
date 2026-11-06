@@ -534,7 +534,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .bp-done .hero-title .line > span { -webkit-text-stroke-color: transparent; }
 .bp-was .hero-title .line > span { animation: none; }
 /* everything else waits for the blueprint: the intros hold at their first frame */
-.bp .intro, .bp .wa-float { animation-play-state: paused; }
+.bp .intro, .bp .yalla-float { animation-play-state: paused; }
 .hero-glow { transition: opacity 0.9s var(--ease-out); }
 .bp .hero-glow { opacity: 0; }
 
@@ -3023,7 +3023,26 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .contact .sec-lede span { display: block; } /* "Tell me about it." on its own line */
 
 /* The address, as big as the width allows (it sets about 11.9em wide) */
-.contact-mail { display: grid; justify-items: start; gap: 24px; }
+.contact-mail { display: grid; justify-items: start; gap: 12px; }
+.wa-big {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  padding-bottom: 0.08em;
+  background: linear-gradient(#25d366, #25d366) 0 100% / 0 0.04em no-repeat;
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-size 0.8s var(--ease-out);
+}
+.wa-big svg { flex: none; width: 0.86em; height: 0.86em; fill: #25d366; }
+.wa-big:hover, .wa-big:focus-visible { background-size: 100% 0.04em; }
+.wa-num { margin: 0; font-size: clamp(18px, 2vw, 24px); font-weight: 500; letter-spacing: -0.02em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.contact-email { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 20px; }
 .mail {
   position: relative;
   isolation: isolate;
@@ -3031,10 +3050,10 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   border: 0;
   background: linear-gradient(var(--blue), var(--blue)) 0 100% / 0 0.04em no-repeat;
   font: inherit;
-  font-size: min(calc((100vw - 2 * var(--gutter)) / 12.2), 150px);
+  font-size: clamp(18px, 2vw, 24px);
   font-weight: 500;
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.02em;
   color: var(--ink);
   white-space: nowrap;
   cursor: copy;
@@ -3330,76 +3349,234 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .hero-foot { display: none; } /* the intro picks up just below, in the stats */
 }
 
-/* ── WhatsApp ──────────────────────────────────────────────────
-   Sticky, bottom right, in WhatsApp's own green so it's recognised at a glance */
-.wa-float {
+/* ── Sticky corner button: Yalla ───────────────────────────────── */
+@keyframes wa-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ── Yalla: the AI assistant ─────────────────────────────────────────
+   Yalla is a character: a white Y with 2 eyes in an orange circle. The panel is light, with a soft fluid glow.
+   Colour: orange is Yalla, blue is anything you can tap, green is WhatsApp.
+   js/yalla.js sets data-mood and moves the eyes (--lx, --ly); --e is a bounce from typing and words. */
+.yc { display: block; width: 100%; height: 100%; overflow: visible; }
+.yc-root { transform-origin: 24px 42px; translate: 0 calc(var(--e, 0) * -1.2px); transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.yc-body { transform-origin: 24px 42px; animation: yc-breathe 5s var(--ease-io) infinite; }
+.yc-body > path { fill: none; stroke: #fff; stroke-width: 12.5; stroke-linecap: round; }
+.yc-arm { transform-origin: 24px 29px; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.yc-eyes { transform: translate(var(--lx, 0px), var(--ly, 0px)); transition: transform 0.13s cubic-bezier(0.2, 0.8, 0.2, 1); } /* eyes dart, they don't drift */
+.yc-eye { transform-box: fill-box; transform-origin: center; transition: opacity 0.15s linear; }
+.yc-eye rect { fill: #0b0b0c; }
+.yc-eye circle { fill: #fff; }
+.yc-joy { fill: none; stroke: #0b0b0c; stroke-width: 2; stroke-linecap: round; opacity: 0; transition: opacity 0.15s linear; }
+.yc-tile { display: block; flex: none; width: 60px; height: 60px; padding: 5px; border-radius: 50%; background: var(--orange); } /* no clipping: it can jump out of its square */
+.yc-tile--bar { width: 38px; height: 38px; padding: 3px; }
+.yc-tile--hello { width: 88px; height: 88px; padding: 7.5px; }
+.yc-tile--think { width: 30px; height: 30px; padding: 2.5px; }
+
+/* held moods. One-off moves (wave, jump, nod…) are played by js/yalla.js */
+[data-mood="listening"] .yc-root { transform: translateY(0.6px) rotate(1.5deg); }
+[data-mood="listening"] .yc-arm--l { transform: rotate(-6deg); }
+[data-mood="listening"] .yc-arm--r { transform: rotate(6deg); }
+[data-mood="thinking"] .yc-root, .yc-tile--think .yc-root { transform: rotate(-6deg); }
+[data-mood="thinking"] .yc-arm--r, .yc-tile--think .yc-arm--r { animation: yc-tap 1.5s var(--ease-io) infinite; }
+[data-mood="thinking"] .yc-eyes, .yc-tile--think .yc-eyes { animation: yc-ponder 3s linear infinite; }
+[data-mood="happy"] .yc-eye { opacity: 0; }
+[data-mood="happy"] .yc-joy { opacity: 1; }
+[data-mood="puzzled"] .yc-root { transform: rotate(8deg); }
+[data-mood="puzzled"] .yc-arm--l { transform: rotate(-16deg); }
+[data-mood="puzzled"] .yc-arm--r { transform: rotate(16deg); }
+@keyframes yc-breathe { 50% { transform: scaleY(1.018); } }
+@keyframes yc-tap { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(10deg); } }
+@keyframes yc-ponder { 0%, 38% { transform: translate(1.3px, -1.1px); } 42%, 80% { transform: translate(-1.2px, -1.2px); } 84%, 96% { transform: translate(0.2px, -1.3px); } 100% { transform: translate(1.3px, -1.1px); } }
+
+/* the fluid glow: blue, orange and purple drifting behind everything, barely there */
+.yc-fluid { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+.yc-fluid i { position: absolute; display: block; border-radius: 50%; }
+.yc-fluid i:nth-child(1) { left: -25%; bottom: -30%; width: 90%; height: 80%; background: #2563eb; animation: yc-drift-a 19s var(--ease-io) infinite alternate; }
+.yc-fluid i:nth-child(2) { right: -25%; top: -20%; width: 80%; height: 70%; background: #7c3aed; animation: yc-drift-b 23s var(--ease-io) infinite alternate; }
+.yc-fluid i:nth-child(3) { right: -10%; bottom: -25%; width: 60%; height: 55%; background: #f97316; animation: yc-drift-c 27s var(--ease-io) infinite alternate; }
+.yalla > .yc-fluid { z-index: 0; transition: opacity 0.8s var(--ease-out); }
+.yalla > .yc-fluid i { filter: blur(90px); opacity: 0.16; }
+.yalla > .yc-fluid i:nth-child(3) { opacity: 0.2; }
+.yalla.is-chatting > .yc-fluid { opacity: 0.6; }
+@keyframes yc-drift-a { to { transform: translate(28%, -22%) scale(1.15); } }
+@keyframes yc-drift-b { to { transform: translate(-26%, 24%) scale(0.9); } }
+@keyframes yc-drift-c { to { transform: translate(-34%, -18%) scale(1.2); } }
+.perf-low .yc-fluid i { animation: none; }
+
+@keyframes yalla-pulse { 50% { opacity: 0.2; } }
+@keyframes yalla-shine { to { background-position: -200% 0; } }
+@keyframes yalla-rise { from { opacity: 0; transform: translateY(8px); } }
+
+.yalla-float {
   position: fixed;
+  z-index: 56;
   right: var(--gutter);
   bottom: calc(var(--gutter) + env(safe-area-inset-bottom));
-  z-index: 56;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  background: #25d366;
-  color: #fff;
-  animation: wa-in 0.6s var(--ease-out) 1.2s backwards; /* holds only its start, so .is-away can fade it */
-  transition: transform 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
-}
-.wa-float svg { width: 26px; height: 26px; fill: currentColor; }
-/* hover: a label slides out to the left, joined to the button, and the glyph gives a little wiggle */
-.wa-tip {
-  position: absolute;
-  top: 0;
-  right: calc(100% + 2px);
   display: flex;
   align-items: center;
-  height: 100%;
-  padding: 0 16px;
-  background: #25d366;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path 0.45s cubic-bezier(.22, 1, .36, 1);
-  pointer-events: none;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--paper-ink);
+  font: inherit;
+  cursor: pointer;
+  animation: wa-in 0.6s var(--ease-out) 1.2s backwards;
+  transition: transform 0.4s var(--ease-out), opacity 0.35s var(--ease-out), visibility 0s linear 0.4s;
 }
-@media (hover: hover) and (pointer: fine) {
-  .wa-float:hover { background: #1fbe5b; }
-  .wa-float:hover .wa-tip { clip-path: inset(0); background: #1fbe5b; }
-  .wa-float:hover svg { animation: wa-wiggle 0.6s var(--ease-out); }
-}
-.wa-float:focus-visible .wa-tip { clip-path: inset(0); }
-@keyframes wa-wiggle { 0%, 100% { transform: none; } 25% { transform: rotate(-12deg) scale(1.08); } 55% { transform: rotate(9deg) scale(1.08); } 80% { transform: rotate(-3deg); } }
-.wa-float:active { transform: scale(0.95); }
-.menu-open .wa-float, .wa-float.is-away { opacity: 0; visibility: hidden; transform: translateY(12px); }
-.wa-float { transition: transform 0.4s var(--ease-out), background-color 0.3s var(--ease-out), opacity 0.35s var(--ease-out), visibility 0s linear 0.4s; }
-.wa-float:not(.is-away) { transition-delay: 0s; }
-/* phones: smaller and quieter, so it doesn't pull focus from the page */
-@media (max-width: 767px) {
-  .wa-float { width: 44px; height: 44px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
-  .wa-float svg { width: 21px; height: 21px; }
-}
-@keyframes wa-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-/* in the footer, under the email */
-.wa-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  margin-top: 8px;
-  font-size: clamp(18px, 2vw, 24px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+.yalla-float:not(.is-away) { transition-delay: 0s; }
+.yalla-float.is-away, .menu-open .yalla-float { opacity: 0; visibility: hidden; pointer-events: none; }
+.yalla-float-label { display: flex; align-items: center; height: 36px; padding: 0 12px; background: #fff; box-shadow: 0 0 0 1px rgba(11, 12, 15, 0.05), 0 6px 18px -6px rgba(11, 12, 15, 0.22); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.yalla-float:active { transform: scale(0.95); }
+.yalla-float:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+
+.yalla {
+  position: fixed;
+  inset: 0 0 0 auto;
+  display: none;
+  flex-direction: column;
+  width: min(500px, 100vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-left: 1px solid var(--hair);
+  --ink: #0b0c0f;
+  --ink-2: rgba(11, 12, 15, 0.62);
+  --hair: rgba(11, 12, 15, 0.1);
+  background: #fff;
   color: var(--ink);
-  text-decoration: none;
-  transition: color 0.3s var(--ease-out);
+  transform: translateX(100%);
+  transition: transform 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete;
 }
-.wa-line svg { width: 20px; height: 20px; fill: #25d366; flex: none; }
-.wa-line span { color: rgba(255, 255, 255, 0.5); }
-.wa-line:hover, .wa-line:focus-visible { color: #25d366; }
+.yalla[open] { display: flex; transform: none; }
+@starting-style { .yalla[open] { transform: translateX(100%); } }
+.yalla::backdrop { background: rgba(5, 5, 5, 0); transition: background-color 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete; }
+.yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
+@starting-style { .yalla[open]::backdrop { background: rgba(5, 5, 5, 0); } }
+html.yalla-open { overflow: hidden; }
+.yalla > :not(.yc-fluid) { position: relative; z-index: 1; }
+
+.yalla-bar { flex: none; display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 10px 0 var(--gutter); border-bottom: 1px solid var(--hair); }
+.yalla-tool { height: 36px; white-space: nowrap; padding: 0 10px; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: 13px; cursor: pointer; }
+.yalla-tool[hidden] { display: none; }
+.yalla-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
+.yalla-close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+.yalla-brief { flex: none; border-bottom: 1px solid var(--hair); background: rgba(11, 12, 15, 0.022); }
+.yalla-brief[hidden] { display: none; }
+.yalla-brief-bar { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px 0 var(--gutter); border: 0; background: none; color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+.yalla-brief-bar svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 0.4s var(--ease-out); }
+.yalla-brief-bar[aria-expanded="true"] svg { transform: rotate(180deg); }
+.yalla-brief-body { display: grid; gap: 8px; padding: 4px var(--gutter) 16px; }
+.yalla-brief-body[hidden] { display: none; }
+.yalla-field { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.yalla-field input { min-width: 0; height: 36px; padding: 0 10px; border: 0; border-radius: 0; background: rgba(11, 12, 15, 0.044); color: var(--ink); font: inherit; font-size: 16px; }
+.yalla-go { justify-self: start; margin-top: 4px; }
+
+.yalla-scroll { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 24px var(--gutter); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--hair) transparent; }
+.yalla-hello { margin-top: auto; }
+.yalla-hello[hidden] { display: none; }
+.yalla-lede { margin: 24px 0 28px; font-size: min(42px, calc((100vw - 2 * var(--gutter)) / 10.8)); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; text-wrap: balance; } /* sized to stay on 1 line */
+
+.yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
+.yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
+.yalla:not(.is-chatting) .yc-tile--bar, .yalla:not(.is-chatting) .yalla-id { visibility: hidden; opacity: 0; }
+.yalla-hwa { display: grid; place-items: center; width: 44px; height: 44px; color: #1fbe5b; }
+.yalla-hwa svg { width: 20px; height: 20px; fill: currentColor; }
+.yalla-brief-row { display: flex; align-items: center; }
+.yalla-who { display: flex; align-items: center; gap: 16px; }
+.yalla-who-text { display: grid; gap: 2px; margin: 0; }
+.yalla-who-text b { font-size: 24px; font-weight: 500; line-height: 1.1; letter-spacing: -0.025em; }
+.yalla-who-text span { font-size: 15px; line-height: 1.3; color: var(--ink-2); }
+.yalla-start { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; border: 0; border-radius: 14px; background: rgba(249, 115, 22, 0.12); color: var(--paper-ink); font: inherit; text-align: left; cursor: pointer; transition: background-color 0.3s var(--ease-out); }
+.yalla-start span { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+.yalla-start svg { color: #c2410c; }
+.yalla-start svg, .yalla-option svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 0.3s var(--ease-out); }
+.yalla-options { display: grid; margin-top: 6px; }
+.yalla-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 16px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 15px; text-align: left; cursor: pointer; transition: padding-left 0.3s var(--ease-out); }
+.yalla-option svg { opacity: 0; color: var(--ink-2); }
+
+.yalla-tabs { display: flex; gap: 2px; margin: 10px 0 4px; }
+.yalla-tab { height: 30px; padding: 0 10px; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: 13px; cursor: pointer; }
+.yalla-tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--hair); }
+.yalla-plans[hidden] { display: none; }
+.yalla-plans { display: grid; }
+.yalla-plans .yalla-plan:first-child { border-top: 0; }
+.yalla-log { display: grid; gap: 22px; }
+.yalla-spacer { flex: none; }
+.yalla-log:empty { display: none; }
+.yalla-log > * { animation: yalla-rise 0.5s var(--ease-out) backwards; }
+.yalla-msg { margin: 0; font-size: 16.5px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.yalla-msg--you { justify-self: end; max-width: 82%; padding: 9px 14px; border-radius: 16px; background: rgba(11, 12, 15, 0.06); line-height: 1.45; }
+.yalla-msg.is-live::after { content: ""; display: inline-block; width: 8px; height: 8px; margin-left: 4px; border-radius: 50%; background: var(--orange); animation: yalla-pulse 1.2s var(--ease-io) infinite; }
+.yalla-mock { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.yalla-think { display: flex; align-items: center; gap: 10px; min-height: 30px; }
+.yalla-shimmer { font-size: 15px; color: transparent; background: linear-gradient(90deg, var(--ink-2) 30%, var(--orange) 50%, var(--ink-2) 70%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; animation: yalla-shine 1.8s linear infinite; }
+
+.yalla-card { display: grid; }
+.yalla-card-label { margin: 0 0 4px; font-size: 11px; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.yalla-plan { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 8px 0; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; font-size: 15px; border-top: 1px solid var(--hair); color: var(--ink); text-decoration: none; }
+.yalla-plan + .yalla-plan { border-top: 1px solid var(--hair); }
+.yalla-plan b { font-weight: 500; }
+.yalla-plan-fig { flex: none; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.yalla-more { justify-self: start; height: 40px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--hair); cursor: pointer; }
+.yalla-work { display: flex; gap: 8px; margin-right: calc(var(--gutter) * -1); padding-right: var(--gutter); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+.yalla-work-item { flex: 0 0 190px; overflow: hidden; display: grid; align-content: start; gap: 4px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start; }
+.yalla-work-item img { border-radius: 10px; display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; margin-bottom: 8px; }
+.yalla-work-item b { font-size: 15px; font-weight: 500; }
+.yalla-steps { display: grid; margin: 0; padding: 0; list-style: none; }
+.yalla-steps li { display: grid; padding: 10px 0; border-top: 1px solid var(--hair); }
+.yalla-steps li:first-child { border-top: 0; }
+.yalla-steps b { font-size: 15px; font-weight: 500; }
+.yalla-ready { display: grid; gap: 8px; padding: 16px; border-radius: 14px; background: rgba(249, 115, 22, 0.08); }
+.yalla-ready-line { display: grid; grid-template-columns: 64px 1fr; gap: 8px; margin: 0; font-size: 15px; line-height: 1.35; }
+.yalla-ready-line span { color: var(--ink-2); }
+.yalla-ready-line b { font-weight: 400; }
+
+.yalla-dock { flex: none; padding: 0 var(--gutter) calc(12px + env(safe-area-inset-bottom)); }
+.yalla-nexts { display: flex; gap: 6px; margin-right: calc(var(--gutter) * -1); padding: 0 var(--gutter) 10px 0; overflow-x: auto; scrollbar-width: none; }
+.yalla-nexts:empty { display: none; }
+.yalla-next { flex: none; display: flex; align-items: center; height: 34px; padding: 0 13px; border: 0; border-radius: 17px; background: none; box-shadow: inset 0 0 0 1px var(--hair); color: var(--ink); font: inherit; font-size: 14px; text-decoration: none; white-space: nowrap; cursor: pointer; animation: yalla-rise 0.5s var(--ease-out) backwards; transition: background-color 0.3s var(--ease-out); }
+.yalla-form { position: relative; display: flex; align-items: flex-end; gap: 2px; padding: 5px; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px var(--hair), 0 4px 16px -8px rgba(11, 12, 15, 0.16); }
+.yalla-form:focus-within { box-shadow: inset 0 0 0 1px rgba(11, 12, 15, 0.22), 0 4px 16px -8px rgba(11, 12, 15, 0.16); }
+.yalla-input { flex: 1; box-sizing: border-box; min-width: 0; height: 40px; max-height: 132px; padding: 9px 10px; border: 0; border-radius: 0; resize: none; background: none; color: var(--ink); font: inherit; font-size: 16px; line-height: 22px; outline: none; }
+.yalla-input::placeholder { color: var(--ink-2); }
+.yalla-send { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: var(--orange); color: var(--paper-ink); cursor: pointer; transition: opacity 0.3s var(--ease-out); }
+.yalla-send:disabled { background: none; color: var(--ink-2); opacity: 0.6; cursor: default; }
+.yalla-send svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.yalla-send.is-stop svg { fill: currentColor; stroke: none; }
+.yalla-note { margin: 10px 0 0; font-size: 12px; line-height: 1.35; color: var(--ink-2); }
+.yalla-close:focus-visible, .yalla-tool:focus-visible, .yalla-start:focus-visible, .yalla-option:focus-visible, .yalla-hwa:focus-visible, .yalla-tab:focus-visible, .yalla-next:focus-visible, .yalla-send:focus-visible, .yalla-plan:focus-visible, .yalla-work-item:focus-visible, .yalla-more:focus-visible, .yalla-brief-bar:focus-visible, .yalla-field input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .yalla-next:hover { background: rgba(11, 12, 15, 0.05); }
+  .yalla-plan:hover b { color: var(--blue); }
+  .yalla-tool:hover { color: var(--ink); }
+  .yalla-start:hover { background: rgba(249, 115, 22, 0.2); }
+  .yalla-start:hover svg, .yalla-option:hover svg { opacity: 1; transform: translateX(3px); }
+  .yalla-option:hover { padding-left: 20px; }
+  .yalla-work-item:hover { background: rgba(11, 12, 15, 0.072); }
+}
+@media (pointer: coarse) {
+  .yalla-next, .yalla-tool { height: 44px; }
+  .yalla-field input { height: 44px; }
+}
+@media (max-width: 767px) {
+  .yalla-float { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .yalla-float-label { display: none; }
+  .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
+  .yalla { border-left: 0; }
+  .yc-tile--hello { width: 76px; height: 76px; padding: 6.5px; }
+  .yalla-lede { margin-top: 22px; }
+  }
+@media (prefers-reduced-motion: reduce) {
+  .yalla, .yalla::backdrop { transition: none; }
+  .yalla-float { animation: none; }
+  .yc-body, .yc-arm, .yc-eyes, .yc-fluid i, .yalla-shimmer, .yalla-log > *, .yalla-next, .yalla-msg.is-live::after { animation: none !important; }
+  .yalla-shimmer { color: var(--ink-2); background: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .grain, .dot::after, .hero-glow span,
@@ -3408,7 +3585,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .price-tabs::before { transition: none; }
   .faq-item::details-content, .faq-item summary svg { transition: none; }
   .roll .c, .ico svg, .quote { transition: none; }
-  .wa-float { animation: none; }
   .quotes-progress { visibility: hidden; }
   .reveal-ready [data-reveal] .reveal, .reveal-ready [data-reveal] .stat::before,
   .showcase-step { transition: none; }
