@@ -34,12 +34,12 @@
   ];
   const STARTERS = {
     scope: { ask: 'Scope my project', say: 'Yalla, let’s do it. Grab a karak, this takes 1 minute. What are we building?' },
-    pricing: { ask: 'What does it cost?', say: 'Here’s where things start. Hasan confirms the final price once the scope is clear. So, what are we building?', card: 'pricing' },
-    work: { ask: 'Show me the work', say: 'A few recent ones. Tap any of them to see it on the page. What are you thinking of building?', card: 'work' },
+    pricing: { ask: 'What does it cost?', say: 'Yalla, here’s where things start. Hasan confirms the final price once the scope is clear. So, what are we building?', card: 'pricing' },
+    work: { ask: 'Show me the work', say: 'Here’s the good stuff. Tap any of them to see it on the page. Yalla, what are you thinking of building?', card: 'work' },
     process: { ask: 'How does it work?', say: 'Simple, and faster than Sheikh Zayed Road at 6pm. You talk to Hasan the whole way. What are you working on?', card: 'process' },
   };
   const LAUNCH = { work: 'Ask about the work', pricing: 'Which plan fits?', process: 'How does this work?', faq: 'Still curious?' };
-  const HELLO = { work: 'Curious about the work?', pricing: 'Not sure which plan fits?', process: 'Want to know how it runs?' };
+  const HELLO = { work: 'Ahlan. Seen the work?', pricing: 'Ahlan. Which plan fits you?', process: 'Ahlan. Want the process?' };
 
   function initYalla() {
     const panel = document.querySelector('[data-yalla]');
@@ -336,7 +336,7 @@
     const open = () => {
       document.documentElement.classList.add('yalla-open');
       lock();
-      if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
+      if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'Ahlan. What are we building?';
       panel.classList.remove('is-settled'); // never carried over from the last time
       visits += 1;
       lastActive = performance.now();
@@ -716,7 +716,7 @@
       const [label, value] = [...plan.querySelectorAll('.plan-spec span')].map((n) => n.textContent);
       const items = [...plan.querySelectorAll('.plan-list li')].map((n) => n.textContent.trim().replace(/^[A-Z][a-z]/, (m) => m.toLowerCase())); // SEO and QA stay capitals
       const price = /enquire/i.test(fig) ? 'Pricing is on enquiry' : `It’s ${lead && /from/i.test(lead.textContent) ? 'from ' : ''}${fig}`;
-      const line = `${price}, and ${/time/i.test(label) ? `takes ${value.replace('~', 'about ')}` : `gives you ${value.replace('/month', ' hours a month')}`}. It covers ${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}.`;
+      const line = `Tamam, ${name}. ${price}, and ${/time/i.test(label) ? `takes ${value.replace('~', 'about ')}` : `gives you ${value.replace('/month', ' hours a month')}`}. It covers ${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}. Yalla, want to talk it through with Hasan?`;
       renderNext([]);
       anchor(say(`Tell me about ${name}`, true));
       history.push({ role: 'user', content: `Tell me about ${name}` }, { role: 'assistant', content: line });

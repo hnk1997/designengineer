@@ -3494,7 +3494,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla-scroll { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 24px var(--gutter); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--hair) transparent; }
 .yalla-hello { margin-top: auto; }
 .yalla-hello[hidden] { display: none; }
-.yalla-lede { margin: 24px 0 28px; font-size: min(42px, calc((100vw - 2 * var(--gutter)) / 10.8)); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; text-wrap: balance; } /* sized to stay on 1 line */
+.yalla-lede { margin: 24px 0 28px; font-size: min(40px, calc((100vw - 2 * var(--gutter)) / 12)); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; text-wrap: balance; } /* sized to stay on 1 line */
 
 .yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
 .yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
