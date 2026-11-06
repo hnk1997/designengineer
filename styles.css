@@ -3570,8 +3570,8 @@ html.yalla-lock body { position: fixed; left: 0; right: 0; width: 100%; overflow
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
   .yalla { inset: var(--yt, 0px) 0 auto 0; width: 100%; height: var(--yh, 100dvh); border-left: 0; overscroll-behavior: none; }
+  .yalla[open] { transition: transform 0.6s var(--ease-out), top 0.26s var(--ease-out), height 0.26s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete; } /* moves with the keyboard, not after it */
   .yalla-bar { padding-top: env(safe-area-inset-top); }
-  .yalla.is-short .yalla-who { display: none; }
   .yc-tile--hello { width: 76px; height: 76px; padding: 6.5px; }
   .yalla-lede { margin-top: 22px; }
   }

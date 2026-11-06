@@ -8,7 +8,7 @@
    /api/yalla (worker.js) enforces the limits; the count here just saves a pointless call. */
 (() => {
   const WA = 'https://wa.me/971547945306?text=';
-  const DAILY = 20;
+  const DAILY = 50;
   const LIMIT = 'I’m done for today, but Hasan can answer this directly.';
   const FIELDS = [['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
   const TOPICS = {
@@ -250,7 +250,6 @@
       if (!vv || fine || !panel.open) return;
       panel.style.setProperty('--yh', `${vv.height}px`);
       panel.style.setProperty('--yt', `${vv.offsetTop}px`);
-      panel.classList.toggle('is-short', vv.height < 560);
       if (anchorMsg || !hello.hidden) toEnd();
     }
     if (vv) {

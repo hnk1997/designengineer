@@ -18,7 +18,7 @@ const MODELS = {
   llama: { model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast', extra: {} },
   scout: { model: '@cf/meta/llama-4-scout-17b-16e-instruct', extra: {} },
 };
-const DAILY_LIMIT = 20; // messages per visitor per day
+const DAILY_LIMIT = 50; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
 const MAX_TURNS = 12; // history sent to the model
