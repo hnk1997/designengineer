@@ -11,8 +11,8 @@ const CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
 
 // Yalla. Free on Workers AI: past the daily allowance the call fails, it never bills.
 // Thinking is off (reasoning_effort below): gpt-oss-120b took 3 to 19s to start because it reasons first
-const MODEL = '@cf/google/gemma-4-26b-a4b-it';
-const FALLBACK = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'; // if MODEL fails, so Yalla keeps answering
+const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const TRY = { scout: '@cf/meta/llama-4-scout-17b-16e-instruct', mistral: '@cf/mistralai/mistral-small-3.1-24b-instruct', sealion: '@cf/aisingapore/gemma-sea-lion-v4-27b-it' }; // temporary
 const DAILY_LIMIT = 200; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
@@ -139,11 +139,8 @@ async function yalla(request, env, ctx) {
       temperature: 0.4,
       stream: true,
     };
-    let used = MODEL;
-    const stream = await env.AI.run(MODEL, options).catch(() => {
-      used = FALLBACK;
-      return env.AI.run(FALLBACK, options);
-    });
+    const used = TRY[body.try] || MODEL;
+    const stream = await env.AI.run(used, options);
     const section = SECTIONS.includes(body.context) ? body.context : '';
     const finished = (reply) => {
       const saving = saveChat(env, body.chat, section, turns, reply);
