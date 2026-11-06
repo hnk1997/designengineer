@@ -4,7 +4,7 @@
    Never put what a visitor typed in an event. WhatsApp links carry their question or brief in the
    URL, so whatsapp_click sends only where the click came from. */
 (() => {
-  const ID = 'GTM-KHWQFJGB';
+  const ID = 'GTM-TCNQ8QDS';
   const dl = (window.dataLayer = window.dataLayer || []);
   const live = /(^|\.)hasannawaz\.com$/.test(location.hostname) || /[?&](gtm|gtm_debug)\b/.test(location.search);
 
