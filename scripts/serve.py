@@ -17,7 +17,7 @@ HOST = sys.argv[2] if len(sys.argv) > 2 else "127.0.0.1"
 
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+MODEL = "@cf/google/gemma-4-26b-a4b-it"
 
 
 def mock_reply(q):
