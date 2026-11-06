@@ -3378,10 +3378,11 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yc-fluid i:nth-child(1) { left: -25%; bottom: -30%; width: 90%; height: 80%; background: #2563eb; animation: yc-drift-a 19s var(--ease-io) infinite alternate; }
 .yc-fluid i:nth-child(2) { right: -25%; top: -20%; width: 80%; height: 70%; background: #7c3aed; animation: yc-drift-b 23s var(--ease-io) infinite alternate; }
 .yc-fluid i:nth-child(3) { right: -10%; bottom: -25%; width: 60%; height: 55%; background: #f97316; animation: yc-drift-c 27s var(--ease-io) infinite alternate; }
-.yalla > .yc-fluid { z-index: 0; transition: opacity 0.8s var(--ease-out); }
+.yalla > .yc-fluid { z-index: 0; opacity: 0; contain: strict; transition: opacity 0.8s var(--ease-out); }
+.yalla.is-settled > .yc-fluid { opacity: 1; }
 .yalla > .yc-fluid i { filter: blur(90px); opacity: 0.16; }
 .yalla > .yc-fluid i:nth-child(3) { opacity: 0.2; }
-.yalla.is-chatting > .yc-fluid { opacity: 0.6; }
+.yalla.is-settled.is-chatting > .yc-fluid { opacity: 0.6; }
 @keyframes yc-drift-a { to { transform: translate(28%, -22%) scale(1.15); } }
 @keyframes yc-drift-b { to { transform: translate(-26%, 24%) scale(0.9); } }
 @keyframes yc-drift-c { to { transform: translate(-34%, -18%) scale(1.2); } }
@@ -3434,6 +3435,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   background: #fff;
   color: var(--ink);
   transform: translateX(100%);
+  will-change: transform;
   transition: transform 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete;
 }
 .yalla[open] { display: flex; transform: none; }
@@ -3554,8 +3556,9 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .yalla-float { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
-  .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; box-shadow: 0 0 0 100vh #fff; } /* nothing shows around it, ever */
-  .yalla[open]::backdrop { background: #fff; }
+  .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; }
+  .yalla.is-settled { box-shadow: 0 0 0 100vh #fff; } /* only once it's in place: earlier, this flashes the page white */
+  .yalla.is-settled::backdrop { background: #fff; }
   .yalla-dock { transform: translateY(calc(var(--kb, 0px) * -1)); transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
   .yalla-scroll { padding-bottom: calc(24px + var(--kb, 0px)); }
   .yalla-bar { padding-top: env(safe-area-inset-top); }

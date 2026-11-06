@@ -72,6 +72,7 @@
     };
 
     let history = [];
+    let chatId = '';
     let brief = {};
     let shown = {};
     let strikes = 0;
@@ -294,10 +295,12 @@
       document.documentElement.classList.add('yalla-open');
       lock();
       if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
+      panel.classList.remove('is-settled'); // never carried over from the last time
       visits += 1;
       track('yalla_open', { yalla_section: section || 'top' });
       panel.showModal();
       panel.focus({ preventScroll: true }); // otherwise the first button gets focused and outlined
+      setTimeout(() => { if (panel.open) panel.classList.add('is-settled'); }, 620);
       sync();
       setState('idle');
       moves.pop();
@@ -305,17 +308,23 @@
       if (fine) input.focus();
     };
     opener.addEventListener('click', open);
-    $('[data-yalla-close]').addEventListener('click', () => panel.close());
-    panel.addEventListener('click', (e) => { if (e.target === panel) panel.close(); });
-    panel.addEventListener('close', () => {
+    // runs straight away, not just on the dialog's close event, which can arrive late
+    const tidy = () => {
       document.documentElement.classList.remove('yalla-open');
+      panel.classList.remove('is-settled');
       unlock();
       if (fine) opener.focus({ preventScroll: true });
       else opener.blur(); // on touch, the browser would leave it outlined
-    });
-    const goTo = (target) => {
+    };
+    const shut = () => {
       panel.close();
-      unlock();
+      tidy();
+    };
+    $('[data-yalla-close]').addEventListener('click', shut);
+    panel.addEventListener('click', (e) => { if (e.target === panel) shut(); });
+    panel.addEventListener('close', tidy);
+    const goTo = (target) => {
+      shut();
       if (target) target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
     };
 
@@ -341,9 +350,6 @@
     };
     const count = () => {
       try { localStorage.setItem('hn-yalla', JSON.stringify({ d: today, n: used() + 1 })); } catch {}
-    };
-    const save = () => {
-      try { sessionStorage.setItem('hn-yalla-chat', JSON.stringify({ history: history.slice(-12), brief, step })); } catch {}
     };
     // like Claude: your message moves to the top and the reply fills in below it
     const spacer = $('[data-yalla-spacer]');
@@ -519,7 +525,6 @@
         brief[key] = f.value.trim();
         paintBrief();
         if (readyEl) readyCard();
-        save();
       });
       inputs[key] = f;
       row.append(f);
@@ -626,7 +631,6 @@
       if (st.card) showCard(st.card);
       if (name === 'scope' && step >= 0) renderNext(SCOPE[step].chips);
       toEnd();
-      save();
       if (fine) input.focus();
     };
     panel.addEventListener('click', (e) => {
@@ -651,7 +655,6 @@
       const go = waButton('Enquire on WhatsApp', plan.querySelector('.plan-cta').href);
       add(go);
       toEnd();
-      save();
     };
 
     /* ── guided scoping ── */
@@ -682,7 +685,6 @@
         celebrate();
       }
       toEnd();
-      save();
       if (fine) input.focus();
     }
 
@@ -718,6 +720,7 @@
         handoff(question);
         return;
       }
+      if (!chatId) chatId = `${Date.now()}-${Math.random().toString(36).slice(2, 10).padEnd(6, '0')}`;
       history.push({ role: 'user', content: question });
       track('yalla_message');
       const topic = topicOf(question);
@@ -742,7 +745,7 @@
         const res = await fetch('/api/yalla', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: history.slice(-12), context: section }),
+          body: JSON.stringify({ messages: history.slice(-12), context: section, chat: chatId }),
           signal: AbortSignal.any([request.signal, AbortSignal.timeout(45000)]),
         });
         if (!res.ok) throw new Error(res.status);
@@ -821,12 +824,12 @@
         form.style.display = 'none';
       }
       toEnd();
-      save();
     }
 
     fresh.addEventListener('click', () => {
       if (busy) busy.abort();
       history = [];
+      chatId = '';
       brief = {};
       shown = {};
       strikes = 0;
@@ -848,7 +851,6 @@
       panel.classList.remove('is-chatting');
       paintBrief();
       tracker.hidden = true;
-      try { sessionStorage.removeItem('hn-yalla-chat'); } catch {}
       if (fine) input.focus();
     });
 
@@ -888,18 +890,6 @@
       ask(question);
     });
 
-    // the conversation survives closing the panel and moving around the site in this tab
-    try {
-      const kept = JSON.parse(sessionStorage.getItem('hn-yalla-chat'));
-      if (kept && kept.history && kept.history.length) {
-        history = kept.history;
-        brief = kept.brief || {};
-        step = Number.isInteger(kept.step) ? kept.step : -1;
-        history.forEach((t) => say(t.content, t.role === 'user'));
-        ready = paintBrief();
-        if (step >= 0 && SCOPE[step]) renderNext(SCOPE[step].chips);
-      }
-    } catch {}
     size();
   }
 

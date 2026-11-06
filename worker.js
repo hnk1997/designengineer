@@ -36,14 +36,16 @@ function deltaOf(line) {
 }
 
 // turns the model's event stream into plain text for the page, and holds a reply to MAX_REPLY
-function plainText(stream) {
+function plainText(stream, done) {
   const encoder = new TextEncoder();
   let buffer = '';
   let sent = 0;
+  let reply = '';
   const emit = (line, controller) => {
     const text = deltaOf(line.trim());
     if (!text || sent >= MAX_REPLY) return;
     sent += text.length;
+    reply += text;
     controller.enqueue(encoder.encode(text));
   };
   return stream.pipeThrough(new TextDecoderStream()).pipeThrough(new TransformStream({
@@ -55,6 +57,7 @@ function plainText(stream) {
     },
     flush(controller) {
       emit(buffer, controller);
+      done(reply);
     },
   }));
 }
@@ -74,7 +77,42 @@ async function overLimit(request) {
   return false;
 }
 
-async function yalla(request, env) {
+// Chats are kept for 30 days so Hasan can read them at /api/chats. Each one is a random id, the page
+// section and the messages: no IP, no name. Newest sort first because keys count down.
+const KEEP = 60 * 60 * 24 * 30;
+const CHAT_ID = /^\d{13}-[a-z0-9]{6,12}$/;
+function saveChat(env, id, section, turns, reply) {
+  if (!env.CHATS || !CHAT_ID.test(id || '')) return null;
+  const started = Number(id.slice(0, 13));
+  const key = `chat:${String(9999999999999 - started).padStart(13, '0')}:${id}`;
+  const answer = reply.replace(/\[\[[^\]]*\]\]?/g, '').trim();
+  const value = { started, updated: Date.now(), section, turns: [...turns, { role: 'assistant', content: answer }] };
+  return env.CHATS.put(key, JSON.stringify(value), { expirationTtl: KEEP });
+}
+
+const digest = async (text) => new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))).join();
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// Hasan's private page. Without the CHATS_PASSWORD secret set, it doesn't exist.
+async function chats(request, env) {
+  if (!env.CHATS_PASSWORD || !env.CHATS) return new Response('Not found', { status: 404 });
+  const given = atob((request.headers.get('Authorization') || '').replace(/^Basic /, '') || '').split(':').slice(1).join(':');
+  if (await digest(given) !== await digest(env.CHATS_PASSWORD)) {
+    return new Response('Private', { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Yalla chats"', 'Cache-Control': 'no-store' } });
+  }
+  const { keys } = await env.CHATS.list({ prefix: 'chat:', limit: 100 });
+  const rows = await Promise.all(keys.map((k) => env.CHATS.get(k.name, 'json')));
+  const when = (t) => new Date(t).toLocaleString('en-GB', { timeZone: 'Asia/Dubai', dateStyle: 'medium', timeStyle: 'short' });
+  const body = rows.filter(Boolean).map((c) => `<section><h2>${esc(when(c.started))}${c.section ? ` · ${esc(c.section)}` : ''}</h2>${
+    c.turns.map((t) => `<p class="${t.role === 'user' ? 'you' : 'bot'}">${esc(t.content)}</p>`).join('')}</section>`).join('');
+  const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Yalla chats</title><style>
+body{margin:0 auto;max-width:680px;padding:32px 16px 96px;background:#eceef1;color:#0b0c0f;font:16px/1.5 system-ui,sans-serif}h1{margin:0 0 4px;font-size:32px;letter-spacing:-.03em}small{color:#0b0c0f9e}
+section{margin-top:20px;padding:16px;background:#fff}h2{margin:0 0 12px;font-size:13px;font-weight:500;color:#0b0c0f9e}p{margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}.you{margin-left:auto;width:fit-content;max-width:85%;padding:8px 12px;background:#f973161f}</style></head>
+<body><h1>Yalla chats</h1><small>${rows.length} recent, kept for 30 days. Dubai time.</small>${body || '<section><p>No chats yet.</p></section>'}</body></html>`;
+  return new Response(page, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+}
+
+async function yalla(request, env, ctx) {
   if (request.method !== 'POST') return json({ error: 'POST only' }, 405);
   if (!ORIGINS.includes(request.headers.get('Origin'))) return json({ error: 'Not allowed' }, 403);
 
@@ -100,7 +138,12 @@ async function yalla(request, env) {
       temperature: 0.4,
       stream: true,
     });
-    return new Response(plainText(stream), {
+    const section = SECTIONS.includes(body.context) ? body.context : '';
+    const finished = (reply) => {
+      const saving = saveChat(env, body.chat, section, turns, reply);
+      if (saving) ctx.waitUntil(saving.catch(() => {}));
+    };
+    return new Response(plainText(stream, finished), {
       headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
     });
   } catch {
@@ -109,8 +152,10 @@ async function yalla(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
-    if (new URL(request.url).pathname === '/api/yalla') return yalla(request, env);
+  async fetch(request, env, ctx) {
+    const { pathname } = new URL(request.url);
+    if (pathname === '/api/yalla') return yalla(request, env, ctx);
+    if (pathname === '/api/chats') return chats(request, env);
 
     const res = await env.ASSETS.fetch(request);
     // a miss, a 304, or a range the asset server already answered: pass it on
