@@ -382,7 +382,14 @@
       tidy();
     };
     $('[data-yalla-close]').addEventListener('click', shut);
-    panel.addEventListener('click', (e) => { if (e.target === panel) shut(); });
+    // only a press that began on the backdrop closes it. When the keyboard moves things mid-tap, the
+    // browser sends the click to the panel itself, so the click's target alone can't be trusted
+    let pressedOutside = false;
+    panel.addEventListener('pointerdown', (e) => {
+      const r = panel.getBoundingClientRect();
+      pressedOutside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    });
+    panel.addEventListener('click', (e) => { if (e.target === panel && pressedOutside) shut(); });
     panel.addEventListener('close', tidy);
     const goTo = (target) => {
       shut();
