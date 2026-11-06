@@ -3458,6 +3458,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
 @starting-style { .yalla[open]::backdrop { background: rgba(5, 5, 5, 0); } }
 html.yalla-open { overflow: hidden; }
+.yalla:focus { outline: none; }
 html.yalla-lock body { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
 .yalla > :not(.yc-fluid) { position: relative; z-index: 1; }
 

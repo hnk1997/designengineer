@@ -264,6 +264,7 @@
       if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
       visits += 1;
       panel.showModal();
+      panel.focus({ preventScroll: true }); // otherwise the first button gets focused and outlined
       sync();
       setState('idle');
       moves.pop();
@@ -774,7 +775,7 @@
       raw.replace(/\[\[\s*(fields|show|handoff|offtopic)\s*:?\s*([^\]]*)\]\]/gi, (m, k, v) => { tags[k.toLowerCase()] = v.trim(); return m; });
       strikes = 'offtopic' in tags ? strikes + 1 : 0;
       if (tags.fields) mergeBrief(tags.fields);
-      if (!('offtopic' in tags)) showCard((tags.show || topic || '').toLowerCase());
+      if (!('offtopic' in tags) && question.split(/\s+/).length > 2) showCard((tags.show || topic || '').toLowerCase());
       if ('handoff' in tags) handoff(question);
       scopeNext();
       if ('offtopic' in tags) flash('puzzled', 1500);

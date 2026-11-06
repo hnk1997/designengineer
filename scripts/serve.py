@@ -17,7 +17,7 @@ HOST = sys.argv[2] if len(sys.argv) > 2 else "127.0.0.1"
 
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-MODEL = "@cf/openai/gpt-oss-120b"
+MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
 
 def mock_reply(q):
@@ -68,7 +68,7 @@ def real_stream(turns, context=""):
     req = urllib.request.Request(
         f"https://api.cloudflare.com/client/v4/accounts/{os.environ['CF_ACCOUNT_ID']}/ai/run/{MODEL}",
         data=json.dumps({"messages": [{"role": "system", "content": system}] + turns[-12:],
-                         "max_tokens": 900, "temperature": 0.4, "stream": True}).encode(),
+                         "max_tokens": 400, "temperature": 0.4, "stream": True}).encode(),
         headers={"Authorization": f"Bearer {os.environ['CF_API_TOKEN']}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=45) as res:
         for line in res:
