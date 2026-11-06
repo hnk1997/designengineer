@@ -229,34 +229,58 @@
       opener.querySelector('.yalla-float-label').textContent = Object.values(brief).some(Boolean) ? 'Back to your brief' : (LAUNCH[section] || 'Ask Yalla');
     };
 
-    /* ── touch screens: overflow alone won't hold the page still, and the keyboard resizes nothing
-       on its own, so the page is pinned and the panel is fitted to what's really visible ── */
+    /* ── holding the page still while Yalla is open ── */
     let lockedAt = null;
+    // no overflow: hidden or position: fixed here: either one breaks the sticky Selected work stage
+    const holdPage = (e) => {
+      if (!e.target.closest('.yalla-scroll, .yalla-work, .yalla-nexts, .yalla-input')) e.preventDefault();
+    };
     function lock() {
-      if (fine || lockedAt !== null) return;
+      if (lockedAt !== null) return;
       lockedAt = window.scrollY;
-      document.body.style.top = `-${lockedAt}px`;
-      document.documentElement.classList.add('yalla-lock');
+      document.addEventListener('touchmove', holdPage, { passive: false });
+      document.addEventListener('wheel', holdPage, { passive: false });
     }
     function unlock() {
       if (lockedAt === null) return;
-      document.documentElement.classList.remove('yalla-lock');
-      document.body.style.top = '';
-      window.scrollTo({ top: lockedAt, behavior: 'instant' });
+      document.removeEventListener('touchmove', holdPage);
+      document.removeEventListener('wheel', holdPage);
+      if (Math.abs(window.scrollY - lockedAt) > 1) window.scrollTo({ top: lockedAt, behavior: 'instant' });
       lockedAt = null;
     }
+    /* The sheet never moves or resizes for the keyboard: that's what looked jerky, and left gaps. Only the
+       message box lifts. It lifts the moment you tap, before Safari decides anything, so the box is
+       already clear of the keyboard and Safari has no reason to shove the whole page up. */
     const vv = window.visualViewport;
-    function sync() {
-      if (!vv || fine || !panel.open) return;
-      panel.style.setProperty('--yh', `${vv.height}px`);
-      panel.style.setProperty('--yt', `${vv.offsetTop}px`);
-      // keep the conversation glued to the message box for the whole move, not just at the end
-      const until = performance.now() + 420;
+    let kb = 0;
+    const guess = () => {
+      try {
+        const saved = Number(localStorage.getItem('hn-yalla-kb'));
+        if (saved > 100) return saved;
+      } catch {}
+      return Math.round(window.innerHeight * 0.41);
+    };
+    const setKb = (n) => {
+      if (Math.abs(n - kb) < 2) return;
+      kb = n;
+      panel.style.setProperty('--kb', `${n}px`);
+      const until = performance.now() + 380;
       const follow = () => {
         if (anchorMsg || !hello.hidden) toEnd();
         if (performance.now() < until) requestAnimationFrame(follow);
       };
       follow();
+    };
+    function sync() {
+      if (!vv || fine || !panel.open) return;
+      const covered = Math.round(window.innerHeight - vv.height);
+      if (document.activeElement === input && covered > 100) {
+        setKb(covered);
+        try { localStorage.setItem('hn-yalla-kb', String(covered)); } catch {}
+      } else if (covered < 60 && document.activeElement !== input) {
+        setKb(0);
+      }
+      if (lockedAt !== null && Math.abs(window.scrollY - lockedAt) > 1) window.scrollTo({ top: lockedAt, behavior: 'instant' });
     }
     if (vv) {
       vv.addEventListener('resize', sync);
@@ -283,7 +307,8 @@
     panel.addEventListener('close', () => {
       document.documentElement.classList.remove('yalla-open');
       unlock();
-      opener.focus({ preventScroll: true });
+      if (fine) opener.focus({ preventScroll: true });
+      else opener.blur(); // on touch, the browser would leave it outlined
     });
     const goTo = (target) => {
       panel.close();
@@ -322,11 +347,11 @@
     let anchorMsg = null;
     const bottom = () => log.offsetTop + log.offsetHeight;
     const fit = () => {
-      spacer.style.height = anchorMsg ? `${Math.max(0, scroller.clientHeight - (bottom() - anchorMsg.offsetTop) - 40)}px` : '0px';
+      spacer.style.height = anchorMsg ? `${Math.max(0, scroller.clientHeight - kb - (bottom() - anchorMsg.offsetTop) - 40)}px` : '0px';
     };
     const toEnd = () => {
       fit();
-      const over = bottom() + 24 - (scroller.scrollTop + scroller.clientHeight);
+      const over = bottom() + 24 + kb - (scroller.scrollTop + scroller.clientHeight);
       if (over > 0) scroller.scrollTop += over;
     };
     const anchor = (msg) => {
@@ -821,6 +846,15 @@
       if (fine) input.focus();
     });
 
+    if (!fine) {
+      input.addEventListener('pointerdown', () => {
+        if (document.activeElement === input) return;
+        setKb(guess());
+        setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 700); // a scroll, not a tap
+      });
+      input.addEventListener('focus', () => { if (!kb) setKb(guess()); });
+      input.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 80));
+    }
     input.addEventListener('input', () => {
       size();
       pulse(0.2);

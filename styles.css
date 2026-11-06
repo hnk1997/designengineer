@@ -2202,14 +2202,18 @@ img.screen-page { height: auto; }
 /* the toggle: a white thumb sliding in a soft track */
 .price-switch { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-bottom: 60px; }
 .price-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
   font-size: 15px;
-  line-height: 1.4;
-  color: rgba(11, 12, 15, 0.62);
+  color: var(--paper-ink);
   text-decoration: underline;
-  text-decoration-color: rgba(11, 12, 15, 0.24);
+  text-decoration-color: #25d366;
   text-underline-offset: 3px;
-  transition: color 0.3s var(--ease-out), text-decoration-color 0.3s var(--ease-out);
+  transition: color 0.3s var(--ease-out);
 }
+.price-card svg { flex: none; width: 18px; height: 18px; fill: #1fbe5b; }
 @media (hover: hover) and (pointer: fine) {
   .price-card:hover { color: var(--blue); text-decoration-color: var(--blue); }
 }
@@ -3457,9 +3461,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla::backdrop { background: rgba(5, 5, 5, 0); transition: background-color 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete; }
 .yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
 @starting-style { .yalla[open]::backdrop { background: rgba(5, 5, 5, 0); } }
-html.yalla-open { overflow: hidden; }
 .yalla:focus { outline: none; }
-html.yalla-lock body { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
 .yalla > :not(.yc-fluid) { position: relative; z-index: 1; }
 
 .yalla-bar { flex: none; display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 10px 0 var(--gutter); border-bottom: 1px solid var(--hair); }
@@ -3564,14 +3566,18 @@ html.yalla-lock body { position: fixed; left: 0; right: 0; width: 100%; overflow
 }
 @media (pointer: coarse) {
   .yalla-next, .yalla-tool { height: 44px; }
+  .yalla-float { -webkit-tap-highlight-color: transparent; }
+  .yalla-float:focus-visible { outline: none; }
   .yalla-field input { height: 44px; }
 }
 @media (max-width: 767px) {
   .yalla-float { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
-  .yalla { inset: var(--yt, 0px) 0 auto 0; width: 100%; height: var(--yh, 100dvh); border-left: 0; overscroll-behavior: none; }
-  .yalla[open] { transition: transform 0.6s var(--ease-out), top 0.38s cubic-bezier(0.32, 0.72, 0, 1), height 0.38s cubic-bezier(0.32, 0.72, 0, 1), display 0.6s allow-discrete, overlay 0.6s allow-discrete; } /* moves with the keyboard, not after it */
+  .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; box-shadow: 0 0 0 100vh #fff; } /* nothing shows around it, ever */
+  .yalla[open]::backdrop { background: #fff; }
+  .yalla-dock { transform: translateY(calc(var(--kb, 0px) * -1)); transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
+  .yalla-scroll { padding-bottom: calc(24px + var(--kb, 0px)); }
   .yalla-bar { padding-top: env(safe-area-inset-top); }
   .yc-tile--hello { width: 76px; height: 76px; padding: 6.5px; }
   .yalla-lede { margin-top: 22px; }
