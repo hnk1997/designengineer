@@ -252,8 +252,7 @@ says "I" for itself and "Hasan" for Hasan, and never claims to be him.
 
 **Footer contact** (`.wa-big`, `.mail`): WhatsApp leads as huge type with its green glyph and a green underline sweep on hover; the number sits under it. The email is a small line below. Clicking it copies it, a blue selection and `Copied` badge appear, and the note beside it confirms.
 
-**Article back link** (`.art-back`): quiet grey `← Thought leadership`, blue with underline on
-hover. Navigation, not a CTA.
+**Back button** (`.art-back`): a blue square with a left arrow + a white `Back` label, on articles and the privacy page.
 
 **Menu** (`.menu`): full-screen glass, big links anchored to the bottom (thumb reach), locks
 scroll, closes on link tap or Escape.

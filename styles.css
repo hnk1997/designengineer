@@ -2800,31 +2800,11 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   align-items: start;
   padding: 168px 0 56px;
 }
-/* back to the list: a quiet way out, not a call to action. The arrow nudges left on hover. */
-.art-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  justify-self: start;
-  min-height: 44px;
-  margin-top: calc(0.4em - 14px);
-  color: rgba(11, 12, 15, 0.56);
-  text-decoration: none;
-  transition: color 0.3s var(--ease-out);
-}
-.art-back span { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; padding-bottom: 2px; transition: background-size 0.4s var(--ease-out); }
-.art-back-arrow { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 0.4s var(--ease-out); }
-.art-back:focus-visible { color: var(--blue); }
+.art-back { justify-self: start; }
+.ico--back svg, .ico--back svg:last-child { position: static; transform: none; transition: transform 0.4s var(--ease-out); }
+.art-back .btn-label { box-shadow: inset 0 0 0 1px var(--paper-line); background: #fff; color: var(--paper-ink); }
 @media (hover: hover) and (pointer: fine) {
-  .art-back:hover { color: var(--blue); }
-  .art-back:hover span { background-size: 100% 1px; }
-  .art-back:hover .art-back-arrow { transform: translateX(-4px); }
-}
-/* back arrow slides out to the left instead of the right */
-.ico--back svg:last-child { transform: translateX(260%); }
-@media (hover: hover) and (pointer: fine) {
-  [data-roll-host]:hover .ico--back svg:first-child { transform: translateX(-260%); }
-  [data-roll-host]:hover .ico--back svg:last-child { transform: translateX(0); }
+  .art-back:hover .ico--back svg { transform: translateX(-3px); }
 }
 .art-title {
   max-width: 18ch;
@@ -2856,6 +2836,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .prose { max-width: 680px; font-size: 19px; line-height: 1.65; color: rgba(11, 12, 15, 0.8); }
 .prose > p:first-child { font-size: clamp(21px, 1.8vw, 25px); line-height: 1.45; letter-spacing: -0.01em; color: var(--paper-ink); }
 .prose p { margin: 0 0 1.1em; }
+.prose a, .prose [data-consent-toggle] { padding: 0; border: 0; background: none; color: var(--blue); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .prose h2 {
   margin: 2.2em 0 0.7em;
   font-size: clamp(24px, 2vw, 30px);
@@ -3238,7 +3219,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .post-row .ico { grid-column: 2; grid-row: 1 / 3; }
   .art-head, .art-body { grid-template-columns: 1fr; }
   .art-head { gap: 28px; padding: 120px 0 36px; }
-  .art-back { padding-top: 0; }
   .art-meta { margin-top: 20px; }
   .art-cover { aspect-ratio: 4 / 3; }
   .art-cover .cover-stage { inset: 17% 7% 19%; }

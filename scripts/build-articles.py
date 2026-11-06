@@ -313,10 +313,7 @@ def page(a, nxt, nav):
 
   <main class="article">
     <header class="art-head">
-      <a class="art-back label" href="../index.html#thought-leadership">
-        <svg class="art-back-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4"/></svg>
-        <span>Thought leadership</span>
-      </a>
+      <a class="btn art-back" href="../index.html#thought-leadership"><span class="ico ico--back" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M14 8H3M7 4L3 8l4 4"/></svg></span><span class="btn-label">Back</span></a>
       <div class="art-titles">
         <h1 class="art-title">{e(a["title"])}</h1>
         <p class="label art-meta"><time datetime="{a["iso"]}">{a["when"]}</time> · {a["mins"]} min read</p>

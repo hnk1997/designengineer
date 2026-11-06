@@ -8,7 +8,24 @@
   const dl = (window.dataLayer = window.dataLayer || []);
   const live = /(^|\.)hasannawaz\.com$/.test(location.hostname) || /[?&](gtm|gtm_debug)\b/.test(location.search);
 
+  /* Consent, with no banner: for visitors in Europe (judged from the browser's time zone, so approximate)
+     analytics stays off unless they turn it on from the privacy page. Everyone else can turn it off there. */
+  const KEY = 'hn-consent';
+  const saved = () => {
+    try { return localStorage.getItem(KEY); } catch { return null; }
+  };
+  const store = (v) => {
+    try { localStorage.setItem(KEY, v); } catch {}
+  };
+  const zone = (Intl.DateTimeFormat().resolvedOptions().timeZone || '');
+  const europe = /^Europe\/|^Atlantic\/(Reykjavik|Canary|Faroe|Madeira|Azores)/.test(zone);
+  function gtag() { dl.push(arguments); }
+
+  let loaded = false;
   const load = () => {
+    if (loaded || !live) return;
+    loaded = true;
+    gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     dl.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
     const s = document.createElement('script');
     s.async = true;
@@ -16,9 +33,21 @@
     document.head.append(s);
   };
   const later = () => ('requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 3000 }) : setTimeout(load, 1500));
-  if (live) {
-    if (document.readyState === 'complete') later();
-    else window.addEventListener('load', later);
+
+  const isOn = () => saved() === 'yes' || (!europe && saved() !== 'no');
+  if (document.readyState === 'complete') { if (isOn()) later(); }
+  else window.addEventListener('load', () => { if (isOn()) later(); });
+
+  // the switch on the privacy page
+  const paint = (b) => { b.textContent = isOn() ? 'Turn analytics off' : 'Turn analytics on'; };
+  const toggle = document.querySelector('[data-consent-toggle]');
+  if (toggle) {
+    paint(toggle);
+    toggle.addEventListener('click', () => {
+      store(isOn() ? 'no' : 'yes');
+      paint(toggle);
+      if (isOn()) load();
+    });
   }
 
   const PLACES = [

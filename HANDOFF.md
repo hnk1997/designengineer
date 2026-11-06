@@ -212,7 +212,7 @@ Current reels and how each was made:
 
 - Google Tag Manager `GTM-TCNQ8QDS` sends to GA4 `G-FHPT21Y31F`. `js/analytics.js` loads it after the page, on the live site only (add `?gtm` to load it locally). Tags are managed in Tag Manager, not the repo.
 - Data layer events: `whatsapp_click` (`cta_location`, `plan_name`), `yalla_open` (`yalla_section`), `yalla_option` (`yalla_option`), `yalla_message`, `yalla_brief_ready`. `whatsapp_click` is the key event.
-- **Privacy:** never send what visitors type. WhatsApp links carry their question or brief in the URL, so GA4's automatic outbound click tracking must stay off (Enhanced measurement). No consent banner decided yet.
+- **Privacy:** never send what visitors type. WhatsApp links carry their question or brief in the URL, so GA4's automatic outbound click tracking must stay off (Enhanced measurement). No cookie banner: Hasan found it distracting. Tag Manager doesn't load for visitors in Europe (browser time zone, approximate) unless they turn it on from `privacy.html`; anyone else can turn it off there (`hn-consent` in localStorage). `privacy.html` must stay accurate: if Yalla starts saving chats, update it and tell visitors.
 
 ## SEO and AI search
 
