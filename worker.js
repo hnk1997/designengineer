@@ -10,10 +10,9 @@ import RULES from './yalla-prompt.txt';
 const CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
 
 // Yalla. Free on Workers AI: past the daily allowance the call fails, it never bills.
-// Thinking is off (reasoning_effort below): gpt-oss-120b took 3 to 19s to start because it reasons first
+// Timed on the live site: starts in about 2s, where gpt-oss-120b took 3 to 19s because it reasons first
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
-const TRY = { scout: '@cf/meta/llama-4-scout-17b-16e-instruct', mistral: '@cf/mistralai/mistral-small-3.1-24b-instruct', sealion: '@cf/aisingapore/gemma-sea-lion-v4-27b-it' }; // temporary
-const DAILY_LIMIT = 200; // messages per visitor per day
+const DAILY_LIMIT = 50; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
 const MAX_TURNS = 12; // history sent to the model
@@ -129,28 +128,26 @@ async function yalla(request, env, ctx) {
     .map((t) => ({ role: t.role, content: t.content.slice(0, t.role === 'user' ? MAX_CHARS : MAX_REPLY) }));
   if (turns.at(-1)?.role !== 'user') return json({ error: 'Bad request' }, 400);
 
-  if (await overLimit(request)) return json({ limit: true, why: 'visitor' });
+  if (await overLimit(request)) return json({ limit: true });
   const where = SECTIONS.includes(body.context) ? `The visitor is on the ${body.context} section of the page.\n\n` : '';
 
   try {
-    const options = {
+    const stream = await env.AI.run(MODEL, {
       messages: [{ role: 'system', content: `${RULES}\n${where}SITE FACTS\n\n${FACTS}` }, ...turns],
       max_tokens: 400,
       temperature: 0.4,
       stream: true,
-    };
-    const used = TRY[body.try] || MODEL;
-    const stream = await env.AI.run(used, options);
+    });
     const section = SECTIONS.includes(body.context) ? body.context : '';
     const finished = (reply) => {
       const saving = saveChat(env, body.chat, section, turns, reply);
       if (saving) ctx.waitUntil(saving.catch(() => {}));
     };
     return new Response(plainText(stream, finished), {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Yalla-Model': used },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
     });
-  } catch (e) {
-    return json({ limit: true, why: String(e?.message || e).slice(0, 200) }); // out of allowance or down: the page hands over to WhatsApp
+  } catch {
+    return json({ limit: true }); // out of allowance or down: the page hands over to WhatsApp
   }
 }
 
