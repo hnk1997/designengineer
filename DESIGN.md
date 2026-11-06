@@ -355,8 +355,8 @@ Canvas textures wait up to 400ms for Inter Tight, then redraw when it lands.
   (`codecs="hvc1"`) then H.264. Encoded with `scripts/reel/reel.swift` (AVFoundation,
   fast-start). Never MediaRecorder output.
 - Images WebP; logos SVG or small PNG. Nothing larger than it's shown.
-- No third-party requests at runtime: no analytics, trackers, embeds, CDNs or web fonts from
-  elsewhere. Yalla calls this site's own `/api/yalla`; the model runs in the Worker.
+- 1 third-party request at runtime: Google Tag Manager, loaded after the page (`js/analytics.js`). No other
+  trackers, embeds, CDNs or web fonts from elsewhere. Yalla calls this site's own `/api/yalla`; the model runs in the Worker.
 
 **Caching and hosting** (`_headers`, Cloudflare Pages): vendor and fonts cached a year
 (immutable, versioned paths); reels, posters, logos, devices a day with

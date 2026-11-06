@@ -345,6 +345,7 @@ def page(a, nxt, nav):
     </a>
   </main>
 
+  <script src="../js/analytics.js"></script>
   <script src="../js/ui.js"></script>
   <script>window.HC.initRolls(); window.HC.initMenu(); window.HC.initBento(); window.HC.initCtaFloat();</script>
   <!-- WhatsApp, always a thumb away -->

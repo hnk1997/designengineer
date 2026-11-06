@@ -208,6 +208,12 @@ Current reels and how each was made:
 
 ---
 
+## Analytics
+
+- Google Tag Manager `GTM-KHWQFJGB` sends to GA4 `G-FHPT21Y31F`. `js/analytics.js` loads it after the page, on the live site only (add `?gtm` to load it locally). Tags are managed in Tag Manager, not the repo.
+- Data layer events: `whatsapp_click` (`cta_location`, `plan_name`), `yalla_open` (`yalla_section`), `yalla_option` (`yalla_option`), `yalla_message`, `yalla_brief_ready`. `whatsapp_click` is the key event.
+- **Privacy:** never send what visitors type. WhatsApp links carry their question or brief in the URL, so GA4's automatic outbound click tracking must stay off (Enhanced measurement). No consent banner decided yet.
+
 ## SEO and AI search
 
 - `index.html` head holds JSON-LD: `WebSite`, `Person` and `ProfessionalService`, with an `OfferCatalog` of the pricing. `llms.txt` at the root is the same facts in plain text for AI assistants.

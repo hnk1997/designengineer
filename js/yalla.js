@@ -62,6 +62,8 @@
     const today = new Date().toISOString().slice(0, 10);
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    // what happened, never what was typed (see js/analytics.js)
+    const track = (event, data) => (window.dataLayer = window.dataLayer || []).push({ event, ...data });
     const el = (tag, cls, text) => {
       const n = document.createElement(tag);
       if (cls) n.className = cls;
@@ -293,6 +295,7 @@
       lock();
       if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
       visits += 1;
+      track('yalla_open', { yalla_section: section || 'top' });
       panel.showModal();
       panel.focus({ preventScroll: true }); // otherwise the first button gets focused and outlined
       sync();
@@ -560,6 +563,7 @@
       readyEl = card;
     };
     const celebrate = () => {
+      track('yalla_brief_ready');
       flash('happy', 1900);
       moves.jump();
       setTimeout(moves.jump, 900);
@@ -610,6 +614,7 @@
     const starter = async (name) => {
       const st = STARTERS[name];
       if (busy) return;
+      track('yalla_option', { yalla_option: name });
       renderNext([]);
       anchor(say(st.ask, true));
       history.push({ role: 'user', content: st.ask }, { role: 'assistant', content: st.say });
@@ -714,6 +719,7 @@
         return;
       }
       history.push({ role: 'user', content: question });
+      track('yalla_message');
       const topic = topicOf(question);
       moves.nod();
       const request = new AbortController();
