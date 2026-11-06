@@ -250,7 +250,13 @@
       if (!vv || fine || !panel.open) return;
       panel.style.setProperty('--yh', `${vv.height}px`);
       panel.style.setProperty('--yt', `${vv.offsetTop}px`);
-      if (anchorMsg || !hello.hidden) toEnd();
+      // keep the conversation glued to the message box for the whole move, not just at the end
+      const until = performance.now() + 420;
+      const follow = () => {
+        if (anchorMsg || !hello.hidden) toEnd();
+        if (performance.now() < until) requestAnimationFrame(follow);
+      };
+      follow();
     }
     if (vv) {
       vv.addEventListener('resize', sync);
