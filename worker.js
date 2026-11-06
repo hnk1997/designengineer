@@ -12,7 +12,7 @@ const CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
 // Yalla. Free on Workers AI: past the daily allowance the call fails, it never bills.
 // Thinking is off (reasoning_effort below): gpt-oss-120b took 3 to 19s to start because it reasons first
 const MODEL = '@cf/deepseek-ai/deepseek-v4.1-flash-1017';
-const DAILY_LIMIT = 50; // messages per visitor per day
+const DAILY_LIMIT = 200; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
 const MAX_TURNS = 12; // history sent to the model
@@ -128,7 +128,7 @@ async function yalla(request, env, ctx) {
     .map((t) => ({ role: t.role, content: t.content.slice(0, t.role === 'user' ? MAX_CHARS : MAX_REPLY) }));
   if (turns.at(-1)?.role !== 'user') return json({ error: 'Bad request' }, 400);
 
-  if (await overLimit(request)) return json({ limit: true });
+  if (await overLimit(request)) return json({ limit: true, why: 'visitor' });
   const where = SECTIONS.includes(body.context) ? `The visitor is on the ${body.context} section of the page.\n\n` : '';
 
   try {
@@ -147,8 +147,8 @@ async function yalla(request, env, ctx) {
     return new Response(plainText(stream, finished), {
       headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
     });
-  } catch {
-    return json({ limit: true }); // out of allowance or down: the page hands over to WhatsApp
+  } catch (e) {
+    return json({ limit: true, why: String(e?.message || e).slice(0, 200) }); // out of allowance or down: the page hands over to WhatsApp
   }
 }
 
