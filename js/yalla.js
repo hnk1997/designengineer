@@ -26,16 +26,29 @@
     },
   };
   // scoping is guided and written, so it's instant, costs nothing and works even if the model is down
+  // the flavour goes at the start and the end. In between it reacts to the answer, in plain words
   const SCOPE = [
     { key: 'what', chips: ['A website', 'A landing page', 'A web app', 'A mobile app'] },
-    { key: 'who', say: (a) => `${a}, tamam. Who’s it for?`, chips: ['My startup', 'My company', 'An agency client'] },
-    { key: 'when', say: () => 'Sah, that makes sense. When do you want it live?', chips: ['Within a month', 'In 2–3 months', 'No fixed date'] },
-    { key: 'budget', say: () => 'Shukran, that helps. Do you have a rough budget in mind?', chips: ['Under AED 15,000', 'AED 15,000–30,000', 'AED 30,000+', 'Not sure yet'] },
+    {
+      key: 'who',
+      say: (a) => ({ 'A website': 'Nice. Who’s it for?', 'A landing page': 'Good, quick to get live. Who’s it for?', 'A web app': 'Now we’re talking. Who’s going to use it?', 'A mobile app': 'Fun. Who’s going to use it?' }[a] || 'Love it. Who’s it for?'),
+      chips: ['My startup', 'My company', 'An agency client'],
+    },
+    {
+      key: 'when',
+      say: (a) => ({ 'My startup': 'Early days, the best part. When do you want it live?', 'My company': 'Got it. When do you want it live?', 'An agency client': 'White-label is built for that. When’s it due?' }[a] || 'Got it. When do you want it live?'),
+      chips: ['Within a month', 'In 2–3 months', 'No fixed date'],
+    },
+    {
+      key: 'budget',
+      say: (a) => ({ 'Within a month': 'Tight, but let’s see. Any rough budget in mind?', 'In 2–3 months': 'That’s a comfortable runway. Any rough budget in mind?', 'No fixed date': 'Even better, no rush. Any rough budget in mind?' }[a] || 'Noted. Any rough budget in mind?'),
+      chips: ['Under AED 15,000', 'AED 15,000–30,000', 'AED 30,000+', 'Not sure yet'],
+    },
   ];
   const STARTERS = {
-    scope: { ask: 'Scope my project', say: 'Yalla, let’s do it. Grab a karak, this takes 1 minute. What are we building?' },
+    scope: { ask: 'Scope my project', say: 'Yalla, grab a karak. This takes 1 minute. What are we building?' },
     pricing: { ask: 'What does it cost?', say: 'Yalla, here’s where things start. Hasan confirms the final price once the scope is clear. So, what are we building?', card: 'pricing' },
-    work: { ask: 'Show me the work', say: 'Here’s the good stuff. Tap any of them to see it on the page. Yalla, what are you thinking of building?', card: 'work' },
+    work: { ask: 'Show me the work', say: 'Here’s the good stuff. Tap any of them to see it on the page. What are you thinking of building?', card: 'work' },
     process: { ask: 'How does it work?', say: 'Simple, and faster than Sheikh Zayed Road at 6pm. You talk to Hasan the whole way. What are you working on?', card: 'process' },
   };
   const LAUNCH = { work: 'Ask about the work', pricing: 'Which plan fits?', process: 'How does this work?', faq: 'Still curious?' };
@@ -716,7 +729,7 @@
       const [label, value] = [...plan.querySelectorAll('.plan-spec span')].map((n) => n.textContent);
       const items = [...plan.querySelectorAll('.plan-list li')].map((n) => n.textContent.trim().replace(/^[A-Z][a-z]/, (m) => m.toLowerCase())); // SEO and QA stay capitals
       const price = /enquire/i.test(fig) ? 'Pricing is on enquiry' : `It’s ${lead && /from/i.test(lead.textContent) ? 'from ' : ''}${fig}`;
-      const line = `Tamam, ${name}. ${price}, and ${/time/i.test(label) ? `takes ${value.replace('~', 'about ')}` : `gives you ${value.replace('/month', ' hours a month')}`}. It covers ${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}. Yalla, want to talk it through with Hasan?`;
+      const line = `${price}, and ${/time/i.test(label) ? `takes ${value.replace('~', 'about ')}` : `gives you ${value.replace('/month', ' hours a month')}`}. It covers ${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}. Want to talk it through with Hasan?`;
       renderNext([]);
       anchor(say(`Tell me about ${name}`, true));
       history.push({ role: 'user', content: `Tell me about ${name}` }, { role: 'assistant', content: line });
@@ -752,7 +765,7 @@
         readyCard();
         celebrate();
         await sleep(900);
-        await reveal('Yalla, send it over when you’re ready. Anything you want to ask first?');
+        await reveal('Anything you want to ask before you send it?');
       }
       keepGoing();
       toEnd();
@@ -864,7 +877,7 @@
       let reply = raw.split('[[')[0].trim();
       // only tags came back: keep the conversation going rather than failing
       if (!reply && raw.includes('[[')) {
-        reply = step >= 0 && SCOPE[step + 1] ? SCOPE[step + 1].say('Got it') : 'Tamam. Tell me a bit more about what you have in mind.';
+        reply = step >= 0 && SCOPE[step + 1] ? SCOPE[step + 1].say('Got it') : 'Tell me a bit more about what you have in mind.';
         say(reply);
       }
       if (!reply) {
