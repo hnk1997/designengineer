@@ -196,8 +196,8 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
 inverts on `[data-dark]` sections, hides while the menu is open.
 
-**WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and each
-article's aside (`.art-wa`). `.btn--green` is the green glyph square on any button. All pre-fill a message;
+**WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and every
+article's nav, sticky button, menu and aside, which all say `WhatsApp me` (`.ico--wa`) instead of Get in touch. `.btn--green` is the green glyph square on any button. All pre-fill a message;
 the general one is `Hi Hasan, can we talk?`
 
 **Disabled CTA** (`.showcase-cta`): dashed 1px outline, grey dot, `Case study coming soon`.

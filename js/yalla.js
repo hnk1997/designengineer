@@ -229,12 +229,43 @@
       opener.querySelector('.yalla-float-label').textContent = Object.values(brief).some(Boolean) ? 'Back to your brief' : (LAUNCH[section] || 'Ask Yalla');
     };
 
+    /* ── touch screens: overflow alone won't hold the page still, and the keyboard resizes nothing
+       on its own, so the page is pinned and the panel is fitted to what's really visible ── */
+    let lockedAt = null;
+    function lock() {
+      if (fine || lockedAt !== null) return;
+      lockedAt = window.scrollY;
+      document.body.style.top = `-${lockedAt}px`;
+      document.documentElement.classList.add('yalla-lock');
+    }
+    function unlock() {
+      if (lockedAt === null) return;
+      document.documentElement.classList.remove('yalla-lock');
+      document.body.style.top = '';
+      window.scrollTo({ top: lockedAt, behavior: 'instant' });
+      lockedAt = null;
+    }
+    const vv = window.visualViewport;
+    function sync() {
+      if (!vv || fine || !panel.open) return;
+      panel.style.setProperty('--yh', `${vv.height}px`);
+      panel.style.setProperty('--yt', `${vv.offsetTop}px`);
+      panel.classList.toggle('is-short', vv.height < 560);
+      if (anchorMsg || !hello.hidden) toEnd();
+    }
+    if (vv) {
+      vv.addEventListener('resize', sync);
+      vv.addEventListener('scroll', sync);
+    }
+
     /* ── open, close, moving to the page ── */
     const open = () => {
       document.documentElement.classList.add('yalla-open');
+      lock();
       if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'What are you working on?';
       visits += 1;
       panel.showModal();
+      sync();
       setState('idle');
       moves.pop();
       setTimeout(moves.wave, 620);
@@ -245,10 +276,12 @@
     panel.addEventListener('click', (e) => { if (e.target === panel) panel.close(); });
     panel.addEventListener('close', () => {
       document.documentElement.classList.remove('yalla-open');
+      unlock();
       opener.focus({ preventScroll: true });
     });
     const goTo = (target) => {
       panel.close();
+      unlock();
       if (target) target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
     };
 
@@ -657,6 +690,9 @@
       working(true);
       setState('thinking');
       const row = thinking(topic ? TOPICS[topic].status : '');
+      if (!topic) { // never leave someone looking at nothing
+        setTimeout(() => { if (row.isConnected && !row.querySelector('.yalla-shimmer')) row.append(el('span', 'yalla-shimmer', 'Thinking')); }, 900);
+      }
       let raw = '';
       let live = null;
       let limit = false;

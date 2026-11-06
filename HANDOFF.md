@@ -115,6 +115,7 @@ Static HTML, one `styles.css`, classic scripts on `window.HC` (`js/ui.js`, `js/t
    - **Cards:** pricing, work and process cards are built from the page itself, so prices never come from the model. Tapping a plan opens its details in the chat, written from the page; only a button labelled Enquire on WhatsApp goes to WhatsApp. Never send people to WhatsApp from something that doesn't say so. Work cards jump to the project on the page.
    - **Brief:** the model and quick answers fill in Project, For, Timing and Budget in the background. With a project plus 2 more details, a brief card appears in the thread, a small Your brief bar appears under the header for editing, and the header's WhatsApp link carries the brief.
    - **Model:** `POST /api/yalla` in `worker.js`, `@cf/openai/gpt-oss-120b` on Workers AI, free plan, so past 10,000 Neurons a day (resets 00:00 UTC) calls fail and never bill. The Worker turns the event stream into plain text; JSON `{limit:true}` means limit or failure. Rules are in `yalla-prompt.txt`, facts in `llms.txt`, both bundled into the Worker. Replies end with `[[fields:…]]`, `[[show:…]]`, `[[handoff]]` or `[[offtopic]]`, parsed in `yalla.js`. If the model skips `show`, keywords in `TOPICS` fill in.
+   - **Phones:** the page is pinned while the panel is open (`lock`, because `overflow: hidden` isn't enough on iOS) and the panel is sized from `visualViewport` so the keyboard can't push it off screen.
    - **Limits:** 20 messages per visitor per day (edge cache, hash of IP + date, so approximate), 500 characters a message, 1,500 a reply, only requests from hasannawaz.com. 2 off-topic replies in a row remove the input. Limit or failure hands over to WhatsApp. Nothing is stored on the server. Turnstile was left out because it's a third-party script.
 9. **Hiring banner** — "Hiring a product designer?" → `https://product.hasannawaz.com/`. On hover (mice only) blue wipes up and the text turns white a beat later; the button is solid (no glass blur, which flickered over the moving fill). The `.reveal-ready [data-reveal] .hire` rule keeps the band's colour fade alongside the reveal's transition; without it the text went white before the blue arrived.
 10. **Footer** (`#contact`, dark) — big `WhatsApp me` link and number, then a small email (click copies), socials (LinkedIn, Behance, Dribbble `HNK001`, Instagram `hasan.dsign`, Medium `@hasannawaz97`).
@@ -242,7 +243,7 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 - A "lite" low-performance version of the site (everyone gets the 3D; it self-tunes instead).
 - **Mobile hero pinned with `position: sticky`** — he disliked the "pinned scroll effect"; it must feel like desktop.
 - **A fixed-time splash screen** — the blueprint intro waits for real readiness instead (0.6–2.5 s), first visit only.
-- **WhatsApp pre-fill wording** — formal, "saw your website", and warm versions all rejected. Now in use: 1 plain line ("Hi Hasan, can we talk?") on the general links, a message per plan on the pricing CTAs. Full list of WhatsApp entry points in `DESIGN.md` §6. Article pages are edited through `scripts/build-articles.py`.
+- **WhatsApp pre-fill wording** — formal, "saw your website", and warm versions all rejected. Now in use: 1 plain line ("Hi Hasan, can we talk?") on the general links, a message per plan on the pricing CTAs. Full list of WhatsApp entry points in `DESIGN.md` §6. Article pages are edited through `scripts/build-articles.py`; their nav, sticky button, menu and aside all say WhatsApp me instead of Get in touch (`whatsapp_ctas`).
 - CV copy: "Computer Science graduate" (reads junior), process lists (research → design → build…), "product designer turned design engineer", leading with the Aramco dashboard.
 - Phone mockup at full stage height (too big) and at 1.2× the laptop (too small); 1.5× is right.
 
@@ -250,7 +251,7 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 
 ## 11. Likely next steps
 
-0. **Yalla:** test the real model with about 30 awkward questions before it goes live; the stream format and answer quality are unconfirmed. Have a native Arabic speaker check the name. Articles don't have Yalla yet (`scripts/build-articles.py`), and they no longer have a sticky button.
+0. **Yalla:** live since 2026-11-06, and the Workers AI stream works. 13 awkward questions run on the live model: it held prices, refused off-topic and tricks, invented nothing. Keep testing as real chats happen. Have a native Arabic speaker check the name. Articles don't have Yalla yet (`scripts/build-articles.py`), and they no longer have a sticky button.
 1. **Phone number:** the CVs say +971 54 **477** 5306; the website's WhatsApp link says +971 54 **794** 5306. Ask Hasan which is right and fix the other.
 2. Portfolio "Download Resume" button (About page) links a Google Drive file nobody here can see; ask Hasan to check it's the CV he wants.
 3. When a case study is ready, replace that project's "Case study coming soon" button with a real link.

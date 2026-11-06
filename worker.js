@@ -10,7 +10,14 @@ import RULES from './yalla-prompt.txt';
 const CACHE = 'public, max-age=86400, stale-while-revalidate=604800';
 
 // Yalla. Free on Workers AI: past the daily allowance the call fails, it never bills.
-const MODEL = '@cf/openai/gpt-oss-120b';
+// Speed matters more than depth here, so reasoning stays low. `variant` is a temporary switch for timing
+// the options on the live site; remove it once a model is chosen.
+const MODELS = {
+  fast: { model: '@cf/openai/gpt-oss-120b', extra: { reasoning: { effort: 'low' } } },
+  deep: { model: '@cf/openai/gpt-oss-120b', extra: {} },
+  llama: { model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast', extra: {} },
+  scout: { model: '@cf/meta/llama-4-scout-17b-16e-instruct', extra: {} },
+};
 const DAILY_LIMIT = 20; // messages per visitor per day
 const MAX_CHARS = 500; // per visitor message
 const MAX_REPLY = 1500; // characters per reply, so it can't be used as a free writing tool
@@ -89,16 +96,19 @@ async function yalla(request, env) {
     .map((t) => ({ role: t.role, content: t.content.slice(0, t.role === 'user' ? MAX_CHARS : MAX_REPLY) }));
   if (turns.at(-1)?.role !== 'user') return json({ error: 'Bad request' }, 400);
 
-  if (await overLimit(request)) return json({ limit: true });
+  const pick = MODELS[body.variant] || MODELS.fast;
+  if (!body.variant && await overLimit(request)) return json({ limit: true });
   const where = SECTIONS.includes(body.context) ? `The visitor is on the ${body.context} section of the page.\n\n` : '';
 
   try {
-    const stream = await env.AI.run(MODEL, {
+    const input = {
       messages: [{ role: 'system', content: `${RULES}\n${where}SITE FACTS\n\n${FACTS}` }, ...turns],
-      max_tokens: 900, // the model reasons first, and that counts
+      max_tokens: 900, // a reasoning model thinks first, and that counts
       temperature: 0.4,
       stream: true,
-    });
+    };
+    // if the model won't take the extra setting, run it without rather than fail the visitor
+    const stream = await env.AI.run(pick.model, { ...input, ...pick.extra }).catch(() => env.AI.run(pick.model, input));
     return new Response(plainText(stream), {
       headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
     });

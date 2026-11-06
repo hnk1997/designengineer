@@ -581,6 +581,8 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .btn--ghost:hover .btn-label { background: var(--glass-hover); }
 
 /* the green square marks every WhatsApp button */
+.ico--wa { background: #25d366; }
+.ico.ico--wa svg, .ico.ico--wa svg:last-child, a:hover .ico.ico--wa svg { position: static; width: 20px; height: 20px; fill: currentColor; stroke: none; transform: none; }
 .btn--green { gap: 2px; }
 .btn--green .ico { background: #25d366; transition: background-color 0.3s var(--ease-out); }
 .btn--green .ico svg { position: static; width: 20px; height: 20px; fill: currentColor; stroke: none; transform: none; }
@@ -2846,7 +2848,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .art-role { margin: 0 0 20px; font-size: 15px; color: rgba(11, 12, 15, 0.6); }
 .art-cta { display: inline-flex; gap: 2px; color: inherit; text-decoration: none; }
 .art-cta .pill--light { background: var(--paper-ink); color: #fff; }
-.art-wa { display: block; width: fit-content; margin-top: 12px; font-size: 15px; line-height: 1.4; color: inherit; text-decoration: underline; text-decoration-color: #25d366; text-underline-offset: 3px; }
 
 .prose { max-width: 680px; font-size: 19px; line-height: 1.65; color: rgba(11, 12, 15, 0.8); }
 .prose > p:first-child { font-size: clamp(21px, 1.8vw, 25px); line-height: 1.45; letter-spacing: -0.01em; color: var(--paper-ink); }
@@ -3457,6 +3458,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
 @starting-style { .yalla[open]::backdrop { background: rgba(5, 5, 5, 0); } }
 html.yalla-open { overflow: hidden; }
+html.yalla-lock body { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
 .yalla > :not(.yc-fluid) { position: relative; z-index: 1; }
 
 .yalla-bar { flex: none; display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 10px 0 var(--gutter); border-bottom: 1px solid var(--hair); }
@@ -3567,7 +3569,9 @@ html.yalla-open { overflow: hidden; }
   .yalla-float { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
-  .yalla { border-left: 0; }
+  .yalla { inset: var(--yt, 0px) 0 auto 0; width: 100%; height: var(--yh, 100dvh); border-left: 0; overscroll-behavior: none; }
+  .yalla-bar { padding-top: env(safe-area-inset-top); }
+  .yalla.is-short .yalla-who { display: none; }
   .yc-tile--hello { width: 76px; height: 76px; padding: 6.5px; }
   .yalla-lede { margin-top: 22px; }
   }
