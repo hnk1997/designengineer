@@ -222,7 +222,7 @@ with a pulsing blue dot, one line.
 **Pricing** (`.pricing`, `#pricing`): paper band after How I work, left-aligned like every other section.
 The head is just the `Pricing` label, so the plans come first. Under the plans, `.price-custom` holds
 `Need a custom plan? Just ask.` with a WhatsApp button (`.btn--wa`: white label, green square,
-white glyph). A toggle, Projects and Monthly (`.price-tabs`: white thumb in a soft track, sentence case;
+white glyph). A toggle, Projects and Partnerships (`.price-tabs`: white thumb in a soft track, sentence case;
 `ui.js initPricing`, arrow keys work), with `Ask for the full rate card on WhatsApp` opposite it, with a
 WhatsApp glyph so it's clear where it goes. Both panels share 1 grid cell so switching never moves the page.
 **Plan card** (`.plan`): 4 white columns in 1 panel split by hairlines. Name, best for, price, CTA, then

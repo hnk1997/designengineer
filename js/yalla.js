@@ -13,7 +13,7 @@
   const WRITTEN = [
     [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, app design from AED 20,000, and web apps from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
     [/\b(how long|timelines?|weeks?|deadline|turnaround)\b/i, 'A landing page takes about 2 weeks, a website 4–6 weeks, a web app 6–10 weeks and app design 4–8 weeks. Hasan can tell you what’s realistic for yours.'],
-    [/\b(monthly|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and UI/UX support is AED 10,000 a month for 50 hours. Both are paid monthly in advance, and you can cancel anytime.'],
+    [/\b(monthly|partnerships?|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and UI/UX support is AED 10,000 a month for 50 hours. Both are paid monthly in advance, and you can cancel anytime.'],
     [/\b(agenc\w*|white.?label)\b/i, 'White-label is built for agencies. Hasan joins your team under your name, and your client sees your logo, not his.'],
     [/\b(mobile|ios|android|apps?)\b/i, 'Hasan designs mobile apps and makes a coded prototype, then hands over to your developers. He builds the front end of websites and web platforms himself.'],
     [/\b(seo|geo|google|search)\b/i, 'SEO and GEO are part of every landing page, website and platform, so you can be found on search engines and AI assistants.'],
@@ -639,7 +639,7 @@
         const tabs = el('div', 'yalla-tabs');
         tabs.setAttribute('role', 'tablist');
         card.append(tabs);
-        const lists = ['Projects', 'Monthly'].map((name, i) => {
+        const lists = ['Projects', 'Partnerships'].map((name, i) => {
           const list = el('div', 'yalla-plans');
           list.hidden = i > 0;
           const tab = el('button', 'yalla-tab', name);
