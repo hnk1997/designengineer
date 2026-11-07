@@ -167,7 +167,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 | `pointer: coarse` | 44px controls, press feedback instead of hover, no tap highlight |
 | `hover: hover and pointer: fine` | Hover effects (arrow rolls, What I do diagrams, WhatsApp label) |
 
-**Layers (z-index):** content 2–5 · menu 40 · nav 50 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
+**Layers (z-index):** content 2–5 · menu 40 · nav 50 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
 
 ---
 
@@ -193,13 +193,10 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 
 **Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`.
 
-**Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
-inverts on `[data-dark]` sections, hides on Pricing and while the menu is open.
-
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 
 **WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and every
-article's nav, sticky button, menu and aside, which all say `WhatsApp me` (`.ico--wa`) instead of Get in touch. `.btn--green` is the green glyph square on any button. All pre-fill a message;
+article's nav, menu and aside, which all say `WhatsApp me` (`.ico--wa`) instead of Get in touch. `.btn--green` is the green glyph square on any button. All pre-fill a message;
 the general one is `Hi Hasan, can we talk?`
 
 Honest about what isn't ready; never a fake link.

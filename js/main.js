@@ -2,7 +2,7 @@
 // straight from disk. Everything here works without the 3D scene; the scene is
 // loaded later by index.html, and only on devices marked `full` (see <head>).
 (() => {
-  const { createStage, Annotations, initRolls, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initPricing, initYalla } = window.HC;
+  const { createStage, Annotations, initRolls, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initServices, initPricing, initYalla } = window.HC;
 
   const root = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,7 +36,6 @@
   initCopy();
   initAnchors();
   initTitle();
-  const ctaFloat = initCtaFloat();
 
   /* ── First visit: the blueprint (styles.css) ──
      The headline fills in line by line as the page really gets ready: a little once it's
@@ -196,10 +195,6 @@
     // The nav scrolls with the page: its logo turns dark once the shrinking frame no
     // longer sits behind it (both measured from the top of the page)
     nav.classList.toggle('on-light', held + top * k > NAV_H / 2);
-    // Is the dark frame behind the sticky button (top right, in view)?
-    const frameTop = held + top * k - y;
-    const frameBottom = held + size.h - bottom * k - y;
-    ctaFloat.setHeroDark(frameTop < NAV_H / 2 && frameBottom > NAV_H / 2 && sides * k < 160);
   }
 
   /* ── Frame loop: runs only while there's something to draw ── */

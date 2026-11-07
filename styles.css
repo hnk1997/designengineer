@@ -226,26 +226,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 .menu-btn { display: none; }
 
-/* Sticky Get in touch: same place and size as the nav's own button */
-.cta-float {
-  position: fixed;
-  top: 20px;
-  right: var(--gutter);
-  z-index: 55;
-  display: inline-flex;
-  gap: 2px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: opacity 0.35s var(--ease-out), transform 0.5s var(--ease-out), visibility 0s linear 0.5s;
-}
-.cta-float.is-shown { opacity: 1; visibility: visible; transform: none; transition: opacity 0.35s var(--ease-out), transform 0.5s var(--ease-out), visibility 0s; }
-.menu-open .cta-float { opacity: 0; visibility: hidden; } /* the open menu has its own Get in touch */
-/* on light backgrounds it inverts so it never washes out */
-.cta-float .pill--light, .cta-float .pill--light:hover { background: var(--paper-ink); color: #fff; }
-.cta-float.on-dark .pill--light { background: var(--ink); color: var(--paper-ink); }
-.cta-float.on-dark .pill--light:hover { background: #fff; }
-
 .menu {
   position: fixed;
   inset: 0;

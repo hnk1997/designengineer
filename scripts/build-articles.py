@@ -202,9 +202,8 @@ def whatsapp_ctas(nav):
     """Articles lead to WhatsApp, not the homepage's contact section."""
     link = f'href="{WA_URL}" target="_blank" rel="noopener"'
     icon = f'<span class="ico ico--wa" aria-hidden="true">{WA_GLYPH}</span>'
-    nav = re.sub(r'(<a class="(?:nav-cta intro|cta-float)"[^>]*?)href="[^"]*"([^>]*>)\s*(<span class="pill pill--light"><span data-roll>)Get in touch(</span></span>)\s*<span class="ico" aria-hidden="true">.*?</span>\s*</a>',
+    nav = re.sub(r'(<a class="nav-cta intro"[^>]*?)href="[^"]*"([^>]*>)\s*(<span class="pill pill--light"><span data-roll>)Get in touch(</span></span>)\s*<span class="ico" aria-hidden="true">.*?</span>\s*</a>',
                  lambda m: f'{m[1]}{link}{m[2]}{m[3]}WhatsApp me{m[4]}{icon}</a>', nav, flags=re.S)
-    nav = nav.replace('this copy of its Get in touch button stays', 'this copy of its WhatsApp button stays')
     return re.sub(r'<a class="menu-cta" href="[^"]*">Get in touch</a>', f'<a class="menu-cta" {link}>WhatsApp me</a>', nav)
 
 
@@ -344,7 +343,7 @@ def page(a, nxt, nav):
 
   <script src="../js/analytics.js"></script>
   <script src="../js/ui.js"></script>
-  <script>window.HC.initRolls(); window.HC.initMenu(); window.HC.initBento(); window.HC.initCtaFloat();</script>
+  <script>window.HC.initRolls(); window.HC.initMenu(); window.HC.initBento();</script>
   <!-- WhatsApp, always a thumb away -->
 </body>
 </html>

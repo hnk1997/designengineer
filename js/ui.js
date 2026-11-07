@@ -451,37 +451,6 @@
     }).observe(root);
   }
 
-  /* Sticky Get in touch: shows once the nav has scrolled out of view, in the nav's own
-     spot. It turns dark on light backgrounds and stays light on dark ones ([data-dark]
-     sections, and the hero frame, which main.js reports through setHeroDark). */
-  function initCtaFloat() {
-    const cta = document.querySelector('[data-cta-float]');
-    const nav = document.querySelector('[data-nav]');
-    if (!cta || !nav || !('IntersectionObserver' in window)) return { setHeroDark() {} };
-    let shown = false;
-    let heroDark = false;
-    let pricing = false;
-    const under = new Set();
-    const update = () => {
-      cta.classList.toggle('is-shown', shown && !pricing);
-      cta.classList.toggle('on-dark', heroDark || under.size > 0);
-      cta.setAttribute('aria-hidden', String(!shown || pricing));
-      cta.tabIndex = shown && !pricing ? 0 : -1;
-    };
-    new IntersectionObserver(([e]) => { shown = !e.isIntersecting; update(); }).observe(nav);
-    // only the top strip of the screen counts, where the button sits
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
-      update();
-    }, { rootMargin: '0px 0px -93% 0px' });
-    document.querySelectorAll('[data-dark]').forEach((el) => io.observe(el));
-    // Pricing has its own buttons, so this one steps aside while the section fills the middle of the screen
-    const section = document.getElementById('pricing');
-    if (section) new IntersectionObserver(([e]) => { pricing = e.isIntersecting; update(); }, { rootMargin: '-50% 0px -50% 0px' }).observe(section);
-    update();
-    return { setHeroDark(v) { if (v !== heroDark) { heroDark = v; update(); } } };
-  }
-
   /* Clicking the email copies it. The clipboard API where it's allowed; otherwise a hidden
      field and the old copy command. The hint under it confirms, for screen readers too. */
   function initCopy() {
@@ -655,5 +624,5 @@
     });
   }
 
-  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initCtaFloat, initServices, initPricing });
+  Object.assign((window.HC = window.HC || {}), { warmClip: warm, initRolls, scramble, initMenu, initQuotes, initReveal, initShowcase, initBento, initProcess, initCopy, initAnchors, initTitle, initServices, initPricing });
 })();

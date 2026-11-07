@@ -53,7 +53,7 @@
   const PLACES = [
     ['.yalla', 'yalla'], ['.plan', 'pricing_plan'], ['#pricing', 'pricing'], ['.menu', 'menu'], ['.contact', 'footer'],
     ['#services', 'services'], ['#process', 'how_i_work'], ['#faq', 'faq'], ['.art-cta', 'article_aside'],
-    ['.cta-float', 'sticky_button'], ['.nav-cta', 'nav'],
+    ['.nav-cta', 'nav'],
   ];
   document.addEventListener('click', (e) => {
     const link = e.target.closest('a[href*="wa.me"]');
