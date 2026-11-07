@@ -1962,6 +1962,8 @@ img.screen-page { height: auto; }
 .process .sec-head { margin-bottom: 88px; }
 /* title left, Hasan right: "you talk to the person doing the work", and here he is */
 .process .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+.process-title { display: grid; gap: 20px; }
+.process-title .sec-label { padding-top: 0; }
 .me { flex: none; display: flex; align-items: flex-end; gap: 14px; margin: 0; }
 .me img { flex: none; width: clamp(216px, 16vw, 264px); height: auto; aspect-ratio: 1; object-fit: cover; }
 .me figcaption { max-width: 15ch; font-size: 15px; line-height: 1.3; color: var(--ink-2); }
