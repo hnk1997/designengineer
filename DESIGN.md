@@ -89,7 +89,7 @@ Two grounds, one ink each, one accent. The palette comes from the hasannawaz.com
 | `--paper-line` | `rgba(11,12,15,.08)` | Hairlines on `--paper` (section rules use `.16`) |
 | `--blue` | `#2563eb` | The accent: lede payoffs, `.ico` squares, active rules, links on hover, the `.sq` marker |
 | `--rose` | `#e11d48` | Glow only (hero, footer, Why me tiles) |
-| `--orange` | `#f97316` | Glow; status dot "taking on projects"; Yalla's logo square |
+| `--orange` | `#f97316` | Glow; Yalla's logo, the hero button's logo square and the progress bar |
 | Purple | `#7c3aed` | Yalla's fluid glow only |
 | `--glass` | `rgba(20,22,28,.56)` + 16px blur | Nav pills and cards over the 3D |
 | `--glass-strong` | `rgba(20,22,28,.82)` | Pills when blur is off (`.perf-low`) |
@@ -167,7 +167,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 | `pointer: coarse` | 44px controls, press feedback instead of hover, no tap highlight |
 | `hover: hover and pointer: fine` | Hover effects (arrow rolls, What I do diagrams, WhatsApp label) |
 
-**Layers (z-index):** content 2–5 · menu 40 · nav 50 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
+**Layers (z-index):** content 2–5 · menu 40 · nav 50 · testimonial bar 54 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
 
 ---
 
@@ -192,6 +192,8 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Icon square** (`.ico`): `--ctl` square, `--blue` fill, white 14px stroke icon, 1.5 stroke.
 
 **Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`.
+
+**Testimonial bar** (`.proof-bar`): replaces the floating button on Pricing only. White, square, 1 small photo, a short real quote trimmed with `…`, name and role. 68px tall, bottom centre on desktop; 48px, at the top on phones, because Yalla has the bottom corner. Changes every 4s and glides in and out.
 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
 inverts on `[data-dark]` sections, hides while the menu is open.
@@ -241,12 +243,12 @@ row open. Homepage: label and lede sticky on the left, list on the right, after 
 
 **Yalla** (`.yalla-float`, `.yalla`, `js/yalla.js`): the AI assistant, built to show product thinking. Mark: `.yc`, a white Y
 with curved arms and 2 pill eyes, in an orange circle. It's the 1 round shape in the UI, because it's a character. It moves
-like 1: anticipation, squash and stretch, overshoot; eyes dart, never drift. Launcher: hidden while the hero's Scope button or the footer is on screen; a contextual label + the orange mark,
+like 1: anticipation, squash and stretch, overshoot; eyes dart, never drift. Launcher: hidden while the hero's Solve my problem button or the footer is on screen; after 15s on Pricing its label types `Not sure which plan fits?` once, and shows on phones for that moment; a contextual label + the orange mark,
 bottom right, hides over the footer and under the menu, mark only on phones. Panel: a white `<dialog>` from the right,
 500px wide, full screen on phones, 0.6s `--ease-out`, with a subtle blue, orange and purple fluid glow behind (`.yc-fluid`).
 Colour has jobs: orange is Yalla (logo, send, brief meter; a soft tint for the primary action and your messages), blue is anything tappable, green
 is WhatsApp. No gradients on controls.
-Keep it sparse, so it doesn't look AI-generated. Opening screen: logo with `Yalla` and `Hasan’s AI assistant` beside it, a heading that follows the section, 1 soft orange action,
+Keep it sparse, so it doesn't look AI-generated. Opening screen: logo with `Yalla`, `Hasan’s AI assistant` and a small `Runs on karak` tag beside it, a heading that follows the section and fades to a new question when a role is picked, an `I am` row of white pills (solid orange with white text when chosen), 1 soft orange action,
 3 plain rows; the header stays empty until a chat starts. WhatsApp is always in the header (`.yalla-hwa`). Replies are plain
 streaming text with no avatars, like Claude's chat. Inside the panel, chat elements have soft corners (bubble, composer, chips, brief card), the 1 exception to square UI; quick reply pills are a light orange tint with a thin orange outline and normal ink text, and sit under the latest message, wrapping rather than scrolling sideways, with a thin orange progress bar under the panel header during Solve my problem; the small thinking character and status are replaced by the reply. Cards reuse page content. `.yalla-brief` is the live brief bar. Yalla says "I" for itself and "Hasan" for Hasan, and never claims to be him. Its voice is Dubai English: a sharp friend, mostly English, at most 1 Arabic word a message (yalla, khalas, wallah, shukran, tamam…), and now and then a local reference (karak, Sheikh Zayed Road, Salik). Never mashallah, inshallah or bas. Have a native speaker check new lines.
 

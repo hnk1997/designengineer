@@ -3105,7 +3105,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .proof-item img { width: 32px; height: 32px; }
   .proof-item b { font-size: 13px; }
   .proof-item span span { font-size: 11px; }
-  .yalla-says { display: none; } /* keeps the button compact: Yalla says it in the chat */
   .btn-label { padding: 0 12px; }
   .hero-foot { grid-template-columns: 1fr; gap: 16px; }
   .hero-intro { font-size: 15px; max-width: none; }
