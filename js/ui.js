@@ -335,7 +335,7 @@
       };
       for (let k = 0; k < MAX; k++) add(); // start full, so the tile is never empty
       loops.set(logTile, {
-        start: () => { if (!reduced && !timer) timer = setInterval(add, 1900); },
+        start: () => { if (!reduced && !timer) timer = setInterval(() => { if (!document.documentElement.classList.contains('yalla-open')) add(); }, 1900); },
         stop: () => { clearInterval(timer); timer = 0; },
       });
     }
@@ -373,7 +373,7 @@
         cell.classList.add('is-swapping');
       };
       loops.set(brandTile, {
-        start: () => { if (!reduced && !timer) timer = setInterval(swap, 1800); },
+        start: () => { if (!reduced && !timer) timer = setInterval(() => { if (!document.documentElement.classList.contains('yalla-open')) swap(); }, 1800); },
         stop: () => { clearInterval(timer); timer = 0; },
       });
     }
@@ -617,7 +617,28 @@
 
   /* The sticky WhatsApp button steps aside over the footer, which has its own WhatsApp line */
   /* Pricing: 2 tabs of plans. Both panels stay in the same grid cell, so the page never moves. */
+  // the quotes by the prices take turns, only while they're on screen
+  function initPriceQuotes() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('[data-price-quotes]').forEach((box) => {
+      const items = [...box.querySelectorAll('.pq')];
+      let at = 0;
+      let timer = 0;
+      const next = () => {
+        if (document.hidden || document.documentElement.classList.contains('yalla-open')) return;
+        items[at].classList.remove('is-on');
+        at = (at + 1) % items.length;
+        items[at].classList.add('is-on');
+      };
+      new IntersectionObserver(([e]) => {
+        clearInterval(timer);
+        if (e.isIntersecting) timer = setInterval(next, 6000);
+      }).observe(box);
+    });
+  }
+
   function initPricing() {
+    initPriceQuotes();
     const list = document.querySelector('[data-price-tabs]');
     if (!list) return;
     const tabs = [...list.querySelectorAll('[role="tab"]')];

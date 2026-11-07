@@ -545,10 +545,15 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 }
 
 .hero-ctas {
-  display: inline-grid;
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 40px;
 }
+.hero-ctas button.btn { padding: 0; border: 0; background: none; font-family: inherit; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.btn--yalla { gap: 2px; }
+/* Yalla saying it: a small chat bubble off the logo, its corner pointing back at the mark */
+.yalla-says { align-self: center; margin-left: 10px; padding: 7px 11px; border-radius: 12px 12px 12px 3px; background: var(--glass); box-shadow: inset 0 0 0 1px rgba(243, 243, 243, 0.14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--ink-2); font-size: 13px; font-weight: 400; line-height: 1; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 
 .btn {
   display: flex;
@@ -691,13 +696,16 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   overflow: hidden;
 }
 .quote-by {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  gap: 4px 10px;
   min-width: 0;
   font-size: 11px;
   line-height: 1.2;
   white-space: nowrap;
 }
+.quote-face { grid-row: 1 / 3; width: 40px; height: 40px; object-fit: cover; }
 .quote-by span {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -993,25 +1001,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   color: rgba(11, 12, 15, 0.62);
 }
 /* Case studies aren't up yet: the button is there, plainly switched off */
-.showcase-cta {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: var(--ctl-lg, 40px);
-  margin-top: 28px;
-  padding: 0 16px;
-  border: 1px dashed rgba(11, 12, 15, 0.28);
-  background: transparent;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(11, 12, 15, 0.5);
-  cursor: not-allowed;
-}
-.showcase-cta::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: rgba(11, 12, 15, 0.3); }
 
 /* Right: a stage that stays in view. Each project's device sits on its own layer;
    the next layer is revealed by an upward wipe tied to scroll (--reveal, set by ui.js). */
@@ -2194,13 +2183,14 @@ img.screen-page { height: auto; }
 }
 .pricing .sec-head { margin-bottom: 56px; }
 .price-lead { display: grid; justify-items: start; gap: 28px; }
+.reply-note { margin: -16px 0 0; font-size: 14px; line-height: 1.3; color: rgba(11, 12, 15, 0.62); }
 
 /* WhatsApp button on paper: white label, green square */
 .btn--wa .btn-label { background: #fff; color: var(--paper-ink); box-shadow: inset 0 0 0 1px var(--paper-line); }
 .btn--wa:hover .btn-label { background: #fff; }
 
 /* the toggle: a white thumb sliding in a soft track */
-.price-switch { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-bottom: 60px; }
+.price-switch { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 44px; }
 .price-card {
   display: inline-flex;
   align-items: center;
@@ -2213,6 +2203,7 @@ img.screen-page { height: auto; }
   text-underline-offset: 3px;
   transition: color 0.3s var(--ease-out);
 }
+.pricing > .price-card { margin-top: 28px; }
 .price-card svg { flex: none; width: 18px; height: 18px; fill: #1fbe5b; }
 @media (hover: hover) and (pointer: fine) {
   .price-card:hover { color: var(--blue); text-decoration-color: var(--blue); }
@@ -2320,6 +2311,13 @@ img.screen-page { height: auto; }
 .plan--top .plan-cta:hover .btn-label { background: #1d4ed8; }
 .plan--top .plan-cta .ico { background: #1d4ed8; }
 
+.price-quote { display: grid; flex: 0 1 420px; margin: 0; padding: 20px; background: #fff; }
+.pq { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity 0.6s var(--ease-out), visibility 0s 0.6s; }
+.pq.is-on { opacity: 1; visibility: visible; transition-delay: 0s; }
+.price-quote blockquote { margin: 0; font-size: 16px; line-height: 1.4; letter-spacing: -0.01em; color: var(--paper-ink); }
+.price-quote figcaption { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 13px; line-height: 1.3; color: rgba(11, 12, 15, 0.62); }
+.price-quote .quote-face { width: 52px; height: 52px; }
+.price-quote--foot { display: none; }
 .price-note { margin: 24px 0 0; font-size: 15px; line-height: 1.45; color: rgba(11, 12, 15, 0.62); }
 
 @media (max-width: 1180px) {
@@ -2330,6 +2328,8 @@ img.screen-page { height: auto; }
 @media (max-width: 767px) {
   .pricing { padding: 64px var(--gutter) 88px; }
   .pricing .sec-head { margin-bottom: 40px; }
+  .price-switch .price-quote { display: none; }
+  .price-quote--foot { display: grid; margin-top: 24px; }
   .price-switch { margin-bottom: 12px; }
   .price-tabs { grid-template-columns: repeat(2, 120px); }
   .price-tabs::before { width: 120px; }
@@ -2885,23 +2885,23 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 
 /* ── Hiring note: a small band before the footer ──────────── */
 /* ── Currently building ────────────────────────────────────── */
-.building { position: relative; padding: 72px var(--gutter) 96px; background: var(--paper); color: var(--paper-ink); }
-.building .sec-head { margin-bottom: 40px; }
+.building { position: relative; padding: 56px var(--gutter) 64px; background: var(--paper); color: var(--paper-ink); }
+.building .sec-head { margin-bottom: 28px; }
 .building::before { content: ""; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: var(--paper-line); }
 /* smaller cards, in the right-hand column under the headline (like the lede) */
-.build-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; margin: 0 0 0 calc((100% - 24px) / 3 + 24px); padding: 0; list-style: none; }
+.build-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; max-width: 680px; margin: 0 0 0 calc((100% - 24px) / 3 + 24px); padding: 0; list-style: none; }
 .build { display: grid; align-content: start; gap: 12px; min-width: 0; }
 /* the clip, in a plain rounded frame */
 .build-media {
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   border-radius: 10px;
   background: #0b0c0f;
   box-shadow: 0 1px 2px rgba(11, 12, 15, 0.06), 0 28px 56px -32px rgba(11, 12, 15, 0.35);
 }
 .build-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
-.build-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding-top: 8px; }
-.build-name { margin: 0; line-height: 0; }
+.build-meta { display: grid; justify-items: start; gap: 8px; padding-top: 8px; } /* status always under the name: Kuraimi's long name can't share a line */
+.build-name { display: flex; align-items: center; min-height: 22px; margin: 0; line-height: 0; } /* same height either way, so both statuses line up */
 /* each project's own logo, sized by eye so the two sit at the same visual weight */
 .build-logo { display: block; width: auto; }
 .build-logo--bc { height: 17px; }
@@ -2913,81 +2913,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .build-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); animation: build-pulse 1.8s var(--ease-out) infinite paused; }
 .build.is-playing .build-dot { animation-play-state: running; }
 @keyframes build-pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45); } 100% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); } }
-.build-line { max-width: 44ch; margin: 0; font-size: 15px; line-height: 1.45; color: rgba(11, 12, 15, 0.62); }
-
-/* ── Hiring note: a banner between rules, all of it one link ── */
-.hiring { padding: 0 var(--gutter) 128px; background: var(--paper); color: var(--paper-ink); }
-.hire {
-  position: relative;
-  z-index: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 24px;
-  align-items: start;
-  padding: 44px 0 48px;
-  border-top: 1px solid rgba(11, 12, 15, 0.16);
-  border-bottom: 1px solid rgba(11, 12, 15, 0.16);
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.4s var(--ease-out);
-}
-/* hover: blue wipes up from the bottom rule and fills the band, edge to edge */
-.hire::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: -1px calc(var(--gutter) * -1);
-  background: var(--blue);
-  transform: scaleY(0);
-  transform-origin: 50% 100%;
-  transition: transform 0.6s var(--ease-out);
-}
-.hire-row { display: contents; }
-.hire-label { display: flex; align-items: center; padding-top: 0.7em; }
-.hire-label .sq { transition: background-color 0.4s var(--ease-out); }
-.hire-main { display: grid; justify-items: start; gap: 28px; }
-.hire-text {
-  display: block;
-  max-width: 28ch;
-  font-size: clamp(26px, 2.8vw, 44px);
-  font-weight: 500;
-  line-height: 1.12;
-  letter-spacing: -0.035em;
-  text-wrap: pretty;
-}
-.hire-text span { color: var(--blue); transition: color 0.4s var(--ease-out); }
-.hire-cta { display: inline-flex; gap: 2px; height: 40px; }
-/* solid, so no frosted glass: blurring the blue fill as it moves underneath made the button flicker */
-.hire-cta .pill { height: 40px; padding: 0 18px; background: var(--paper-ink); color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out); }
-.hire-cta .ico { width: 40px; height: 40px; transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out); }
-/* the arrow points up and out: it leaves diagonally */
-.hire-cta .ico svg:last-child { transform: translate(-260%, 260%); } /* parked clear of the box at any control size */
-/* the reveal's transition would replace the band's own colour fade, so the text turned white before the
-   blue reached it; this keeps both (and the colour waits a beat for the fill to arrive) */
-.reveal-ready [data-reveal] .hire {
-  transition: opacity 0.9s var(--ease-out), transform 1.1s var(--ease-out), color 0.35s var(--ease-out);
-  transition-delay: var(--d, 0s), var(--d, 0s), 0.08s;
-}
-/* hover is for mice: on a touch screen a tap would leave the band stuck half blue */
-@media (hover: hover) and (pointer: fine) {
-  .hire:hover::before { transform: none; }
-  .hire:hover { color: #fff; }
-  .hire:hover .hire-label .sq { background: #fff; }
-  .hire:hover .hire-text span { color: rgba(255, 255, 255, 0.7); }
-  .hire:hover .hire-cta .pill { background: #fff; color: var(--paper-ink); }
-  .hire:hover .hire-cta .ico { background: var(--paper-ink); color: #fff; }
-  .hire:hover .hire-cta .ico svg:first-child { transform: translate(260%, -260%); }
-  .hire:hover .hire-cta .ico svg:last-child { transform: none; }
-}
-.hire:focus-visible::before { transform: none; }
-.hire:focus-visible { color: #fff; }
-.hire:focus-visible .hire-label .sq { background: #fff; }
-.hire:focus-visible .hire-text span { color: rgba(255, 255, 255, 0.7); }
-.hire:focus-visible .hire-cta .pill { background: #fff; color: var(--paper-ink); }
-.hire:focus-visible .hire-cta .ico { background: var(--paper-ink); color: #fff; }
-.hire:focus-visible .hire-cta .ico svg:first-child { transform: translate(260%, -260%); }
-.hire:focus-visible .hire-cta .ico svg:last-child { transform: none; }
-
+.build-line { max-width: 44ch; margin: 0; font-size: 14px; line-height: 1.45; color: rgba(11, 12, 15, 0.62); }
 
 /* the work section starts close to its top edge; keep its label clear of the nav */
 .showcase { scroll-margin-top: 40px; }
@@ -3027,6 +2953,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 }
 .wa-big svg { flex: none; width: 0.86em; height: 0.86em; fill: #25d366; }
 .wa-big:hover, .wa-big:focus-visible { background-size: 100% 0.04em; }
+.wa-note { margin: 0; font-size: 15px; line-height: 1.3; color: var(--ink-2); }
 .wa-num { margin: 0; font-size: clamp(18px, 2vw, 24px); font-weight: 500; letter-spacing: -0.02em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .contact-email { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 20px; }
 .mail {
@@ -3198,11 +3125,9 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .process .sec-head { margin-bottom: 56px; }
   .ways { margin-top: 88px; }
   .thoughts { padding: 64px var(--gutter) 88px; }
-  .building { padding: 56px var(--gutter) 72px; }
-  .build-list { grid-template-columns: 1fr; gap: 40px; margin-left: 0; }
-  .hiring { padding-bottom: 88px; }
-  .hire { grid-template-columns: 1fr; gap: 16px; padding: 28px 0 32px; }
-  .hire-label { padding-top: 0; }
+  .building { padding: 40px var(--gutter) 48px; }
+  .build-list { grid-template-columns: 1fr; gap: 40px; max-width: none; margin-left: 0; }
+  .build-media { aspect-ratio: 2 / 1; }
   .contact { padding: 72px var(--gutter) 20px; background-size: auto, auto, auto, calc((100% - 2 * var(--gutter)) / 3) 100%; } /* the 3 glows, then the column lines */
   .contact .sec-head { margin-bottom: 64px; }
   .contact-mail { gap: 20px; }
@@ -3272,7 +3197,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   }
   .showcase-media { display: none; }
   .showcase-name { font-size: clamp(34px, 9vw, 52px); }
-  .showcase-cta { margin-top: 12px; }
 
   /* Steps run down the left instead of across */
   .steps-list { grid-template-columns: 1fr; gap: 40px; padding-left: 32px; }
@@ -3311,9 +3235,9 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .btn .ico { width: 44px; height: 44px; }
   .tile--quotes .ico { width: 44px; height: 44px; }
   .logo { min-height: 44px; }
-  .foot-top { display: inline-flex; align-items: center; min-height: 44px; }
+  .foot-top, .foot-link { display: inline-flex; align-items: center; min-height: 44px; }
   .mail { padding-block: 12px; }
-  .pill, .ico, .btn, .menu-btn, .post-row, .hire, .social { transition: transform 0.15s var(--ease-out); }
+  .pill, .ico, .btn, .menu-btn, .post-row, .social { transition: transform 0.15s var(--ease-out); }
   .pill:active, .ico:active, .btn:active, .menu-btn:active, .social:active { transform: scale(0.97); }
 }
 
@@ -3354,6 +3278,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yc-tile { display: block; flex: none; width: 60px; height: 60px; padding: 5px; border-radius: 50%; background: var(--orange); } /* no clipping: it can jump out of its square */
 .yc-tile--bar { width: 38px; height: 38px; padding: 3px; }
 .yc-tile--hello { width: 88px; height: 88px; padding: 7.5px; }
+.yc-tile--btn { width: auto; height: auto; aspect-ratio: 1; padding: 4px; border-radius: 0; } /* square, like the other buttons' icon blocks; as tall as the button */
 .yc-tile--think { width: 30px; height: 30px; padding: 2.5px; }
 
 /* held moods. One-off moves (wave, jump, nod…) are played by js/yalla.js */
@@ -3418,6 +3343,8 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 @keyframes yalla-shine { to { background-position: -200% 0; } }
 @keyframes yalla-rise { from { opacity: 0; transform: translateY(8px); } }
 
+/* the page holds still behind the sheet: anything moving there reads as flicker through the backdrop */
+html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::after { animation-play-state: paused !important; }
 .yalla-float {
   position: fixed;
   z-index: 56;
@@ -3465,7 +3392,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   transition: transform 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete;
 }
 .yalla[open] { display: flex; transform: none; }
-.yalla.is-settled { will-change: auto; }
 @starting-style { .yalla[open] { transform: translateX(100%); } }
 .yalla::backdrop { background: rgba(5, 5, 5, 0); transition: background-color 0.6s var(--ease-out), display 0.6s allow-discrete, overlay 0.6s allow-discrete; }
 .yalla[open]::backdrop { background: rgba(11, 12, 15, 0.28); }
@@ -3489,11 +3415,12 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla-field { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
 .yalla-field input { min-width: 0; height: 36px; padding: 0 10px; border: 0; border-radius: 0; background: rgba(11, 12, 15, 0.044); color: var(--ink); font: inherit; font-size: 16px; }
 .yalla-go { justify-self: start; margin-top: 4px; }
+.yalla-ready-note { margin: 10px 0 0; font-size: 13px; line-height: 1.3; color: var(--ink-2); }
 
 .yalla-scroll { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 24px var(--gutter); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--hair) transparent; }
 .yalla-hello { margin-top: auto; }
 .yalla-hello[hidden] { display: none; }
-.yalla-lede { margin: 24px 0 28px; font-size: min(40px, calc((100vw - 2 * var(--gutter)) / 12)); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; text-wrap: balance; } /* sized to stay on 1 line */
+.yalla-lede { min-height: 2.1em; margin: 24px 0 28px; font-size: min(40px, calc((100vw - 2 * var(--gutter)) / 12)); font-weight: 500; line-height: 1.05; letter-spacing: -0.045em; text-wrap: balance; } /* sized to stay on 1 line */
 
 .yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
 .yalla-id { margin: 0 auto 0 2px; font-size: 18px; font-weight: 500; letter-spacing: -0.02em; transition: opacity 0.4s var(--ease-out); }
@@ -3505,11 +3432,18 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla-who-text { display: grid; gap: 2px; margin: 0; }
 .yalla-who-text b { font-size: 24px; font-weight: 500; line-height: 1.1; letter-spacing: -0.025em; }
 .yalla-who-text span { font-size: 15px; line-height: 1.3; color: var(--ink-2); }
+.yalla-karak { display: inline-flex; align-items: center; justify-self: start; gap: 5px; height: 24px; margin-top: 6px; padding: 0 10px 0 7px; border-radius: 12px; background: rgba(249, 115, 22, 0.12); color: var(--ink); font-size: 12px; font-style: normal; font-weight: 500; line-height: 1; }
+.yalla-karak svg { width: 15px; height: 15px; fill: none; stroke: #9a3412; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.yalla-karak-tea { fill: #d97706; stroke: none; }
 .yalla-start { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; border: 0; border-radius: 14px; background: rgba(249, 115, 22, 0.12); color: var(--paper-ink); font: inherit; text-align: left; cursor: pointer; transition: background-color 0.3s var(--ease-out); }
 .yalla-start span { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
 .yalla-start svg { color: #c2410c; }
 .yalla-start svg, .yalla-option svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 0.3s var(--ease-out); }
 .yalla-options { display: grid; margin-top: 6px; }
+.yalla-roles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -12px 0 20px; }
+.yalla-roles span { margin-right: 2px; font-size: 14px; color: var(--ink-2); }
+.yalla-role { height: 32px; padding: 0 12px; border: 0; border-radius: 16px; background: #fff; box-shadow: inset 0 0 0 1px var(--hair); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out); }
+.yalla-role[aria-pressed="true"] { background: var(--orange); box-shadow: none; color: #fff; font-weight: 500; }
 .yalla-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 16px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 15px; text-align: left; cursor: pointer; transition: padding-left 0.3s var(--ease-out); }
 .yalla-option svg { opacity: 0; color: var(--ink-2); }
 
@@ -3550,8 +3484,11 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yalla-ready-line b { font-weight: 400; }
 
 .yalla-dock { flex: none; padding: 0 var(--gutter) calc(12px + env(safe-area-inset-bottom)); }
-.yalla-nexts { display: flex; gap: 6px; margin-right: calc(var(--gutter) * -1); padding: 0 var(--gutter) 10px 0; overflow-x: auto; scrollbar-width: none; }
+.yalla-nexts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; } /* under the latest message, where the eye already is */
 .yalla-nexts:empty { display: none; }
+.yalla-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: rgba(249, 115, 22, 0.14); }
+.yalla-progress[hidden] { display: none; }
+.yalla-progress i { display: block; height: 100%; background: var(--orange); transform: scaleX(0); transform-origin: left; transition: transform 0.5s var(--ease-out); }
 .yalla-next { flex: none; display: flex; align-items: center; height: 34px; padding: 0 13px; border: 0; border-radius: 17px; background: rgba(249, 115, 22, 0.12); box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.4); color: var(--ink); font: inherit; font-size: 14px; text-decoration: none; white-space: nowrap; cursor: pointer; animation: yalla-rise 0.5s var(--ease-out) backwards; transition: background-color 0.3s var(--ease-out); }
 .yalla-form { position: relative; display: flex; align-items: flex-end; gap: 2px; padding: 5px; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px var(--hair), 0 4px 16px -8px rgba(11, 12, 15, 0.16); }
 .yalla-form:focus-within { box-shadow: inset 0 0 0 1px rgba(11, 12, 15, 0.22), 0 4px 16px -8px rgba(11, 12, 15, 0.16); }
@@ -3574,6 +3511,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 }
 @media (pointer: coarse) {
   .yalla-next, .yalla-tool { height: 44px; }
+  .yalla-role { height: 38px; -webkit-tap-highlight-color: transparent; }
   .yalla-float { -webkit-tap-highlight-color: transparent; }
   .yalla-float:focus-visible { outline: none; }
   .yalla-field input { height: 44px; }
@@ -3583,6 +3521,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .yalla-float-label { display: none; }
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
   .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; }
+  html.yalla-covered, html.yalla-covered body { background: #fff; } /* a dark page must never show past the sheet as the browser bars move */
   html.yalla-covered main, html.yalla-covered footer, html.yalla-covered header { visibility: hidden; } /* nothing moving behind it */
   .yalla.is-settled { box-shadow: 0 0 0 100vh #fff; } /* only once it's in place: earlier, this flashes the page white */
   .yalla.is-settled::backdrop { background: #fff; }
@@ -3615,7 +3554,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .drift-ok { opacity: 1; }
   .cv, .cv *, .cv *::before, .cv *::after, .svc-viz * { animation: none !important; }
   .build-dot { animation: none !important; }
-  .hire::before { transition: none; }
   .way-viz *, .way-viz *::before, .way-viz *::after { animation: none !important; }
   .vp-track { --st: 5; }
   .vb { --wk: 12; }

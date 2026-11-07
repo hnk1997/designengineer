@@ -10,7 +10,7 @@
   const WA = 'https://wa.me/971547945306?text=';
   const DAILY = 50;
   const LIMIT = 'Khalas, I’m done for today. Hasan can answer this directly.';
-  const FIELDS = [['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
+  const FIELDS = [['problem', 'Problem'], ['detail', 'Details'], ['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
   const TOPICS = {
     pricing: {
       re: /\b(pric\w*|costs?|how much|rates?|aed|plans?)\b/i,
@@ -27,26 +27,114 @@
   };
   // scoping is guided and written, so it's instant, costs nothing and works even if the model is down
   // the flavour goes at the start and the end. In between it reacts to the answer, in plain words
+  // it starts from the problem, not the deliverable: people know what's wrong before they know what to buy.
+  // the second question is what makes the suggestion genuine: it's the one that changes the plan
+  const PROBLEMS = {
+    'I need to launch something fast': {
+      say: 'Fast is good. What are you launching?',
+      options: [{ text: 'A campaign or offer', plan: 'landing' }, { text: 'A new business', plan: 'website' }],
+    },
+    'My site isn’t bringing in clients': {
+      say: 'A site should earn its keep. What should it sell?',
+      options: [{ text: 'One offer', plan: 'landing' }, { text: 'The whole business', plan: 'website' }],
+    },
+    'I have a product idea to build': {
+      say: 'The fun part. Where will people use it?',
+      options: [{ text: 'In a browser', plan: 'webapp' }, { text: 'On their phone', plan: 'app' }, { text: 'Not sure yet', plan: 'webapp', unsure: true }],
+    },
+    'My app is hard to use': {
+      say: 'That’s costing you users. Do you have developers?',
+      options: [{ text: 'Yes, we do', plan: 'app', note: 'Has developers' }, { text: 'Not yet', plan: 'app', note: 'No developers yet', noDev: true }],
+    },
+    'My team needs extra hands': {
+      say: 'Happy to help. Is it one project, or ongoing?',
+      options: [{ text: 'Ongoing', plan: 'whitelabel' }, { text: 'One project', plan: 'agency' }],
+    },
+    'I need ongoing help': {
+      say: 'Good to keep things moving. Is it a live site, or an app in development?',
+      options: [{ text: 'A live site', plan: 'maintain' }, { text: 'An app in development', plan: 'appcare' }],
+    },
+  };
+  const KNOWN = 'I already know what I need';
+  // who's asking: founders want speed, agencies want extra hands, product leads want quality.
+  // it changes the question, the order of the problems and which work comes first
+  const ROLES = {
+    'A founder': {
+      label: 'a founder',
+      hello: 'Ahlan. What’s slowing you down?',
+      first: 'Yalla, grab a karak. What’s slowing you down?',
+      problems: ['I have a product idea to build', 'I need to launch something fast', 'My site isn’t bringing in clients'],
+      work: ['GrowthMotive', 'The Birdwatcher'],
+    },
+    'An agency': {
+      label: 'an agency',
+      hello: 'Ahlan. What does your team need?',
+      first: 'Yalla, grab a karak. What does your team need?',
+      problems: ['My team needs extra hands', 'I need to launch something fast'],
+      work: ['Cadillac IQ', 'The Birdwatcher'],
+    },
+    'A product lead': {
+      label: 'a product lead',
+      hello: 'Ahlan. What needs to be better?',
+      first: 'Yalla, grab a karak. What needs to be better?',
+      problems: ['My app is hard to use', 'I need ongoing help', 'My team needs extra hands'],
+      work: ['McNomNoms', 'Cadillac IQ'],
+    },
+  };
+  // keep in step with the rate card in index.html and llms.txt. card is the plan's name there
+  const PLANS = {
+    landing: { what: 'A landing page', name: 'a landing page', card: 'Landing page', from: 7500, time: 'about 2 weeks' },
+    website: { what: 'A website', name: 'a website', card: 'Website', from: 15000, time: 'about 4–6 weeks', slow: true },
+    webapp: { what: 'A web app', name: 'a web app', card: 'Platform', from: 20000, time: 'about 6–10 weeks', slow: true },
+    app: { what: 'App design', name: 'app design', card: 'App UI/UX', from: 20000, time: 'about 4–8 weeks', slow: true, note: ' Hasan designs it and your developers build it.' },
+    maintain: { what: 'Monthly site support', name: 'the Maintain plan', card: 'Maintain', monthly: 'AED 3,500 a month for 16 hours' },
+    appcare: { what: 'Monthly app design support', name: 'the App UI/UX support plan', card: 'App UI/UX support', monthly: 'AED 5,000 a month for 25 hours' },
+    whitelabel: { what: 'White-label', card: 'White-label', custom: 'Sounds like White-label: 80 hours a month, under your name. Hasan shares the pricing directly.' },
+    agency: { what: 'An agency project', custom: 'Sounds like a one-off project under your name. Hasan shares the pricing directly.' },
+  };
+  const PROJECTS = { 'A landing page': 'landing', 'A website': 'website', 'A web app': 'webapp', 'A mobile app': 'app' };
+  const FIT = { Yes: 'Works for me', 'It’s a stretch': 'A stretch', 'Need something smaller': 'Need something smaller' };
   const SCOPE = [
-    { key: 'what', chips: ['A website', 'A landing page', 'A web app', 'A mobile app'] },
+    { key: 'problem', chips: (brief) => [...new Set([...(ROLES[brief.who]?.problems || []), ...Object.keys(PROBLEMS)]), KNOWN], say: () => 'What’s getting in the way right now?' },
     {
-      key: 'who',
-      say: (a) => ({ 'A website': 'Nice. Who’s it for?', 'A landing page': 'Good, quick to get live. Who’s it for?', 'A web app': 'Now we’re talking. Who’s going to use it?', 'A mobile app': 'Fun. Who’s going to use it?' }[a] || 'Love it. Who’s it for?'),
-      chips: ['My startup', 'My company', 'An agency client'],
+      key: 'detail',
+      say: (a) => PROBLEMS[a]?.say || 'Got it. Which of these is closest?',
+      chips: (brief) => (PROBLEMS[brief.problem]?.options || []).map((o) => o.text),
+    },
+    {
+      key: 'what',
+      say: (a) => (a === KNOWN ? 'Good. What are we building?' : 'Got it. Which of these is closest?'),
+      chips: () => Object.keys(PROJECTS),
     },
     {
       key: 'when',
-      say: (a) => ({ 'My startup': 'Early days, the best part. When do you want it live?', 'My company': 'Got it. When do you want it live?', 'An agency client': 'White-label is built for that. When’s it due?' }[a] || 'Got it. When do you want it live?'),
-      chips: ['Within a month', 'In 2–3 months', 'No fixed date'],
+      say: (a, brief = {}) => ({ 'My app is hard to use': 'Got it. When do you want it sorted?', 'My team needs extra hands': 'Got it. When do you need someone?' }[brief.problem] || 'Got it. When do you want it live?'),
+      chips: () => ['Within a month', 'In 2–3 months', 'No fixed date'],
     },
-    {
-      key: 'budget',
-      say: (a) => ({ 'Within a month': 'Tight, but let’s see. Any rough budget in mind?', 'In 2–3 months': 'That’s a comfortable runway. Any rough budget in mind?', 'No fixed date': 'Even better, no rush. Any rough budget in mind?' }[a] || 'Noted. Any rough budget in mind?'),
-      chips: ['Under AED 15,000', 'AED 15,000–30,000', 'AED 30,000+', 'Not sure yet'],
-    },
+    { key: 'fit', say: () => 'Does that work for you?', chips: () => Object.keys(FIT) },
   ];
+  // the payoff: they get a plan, a price and a timeline before being asked to message anyone
+  const verdict = (brief, pick) => {
+    const plan = PLANS[pick?.plan];
+    if (!plan) return '';
+    if (plan.custom) return plan.custom;
+    if (plan.monthly) return `Sounds like ${plan.name}: ${plan.monthly}. Hasan confirms what fits.`;
+    const from = `AED ${plan.from.toLocaleString('en-US')}`;
+    if (pick.unsure) return `Sounds like a web app or app design. Both start from ${from}, and Hasan can help you decide.`;
+    const note = pick.noDev ? ' Hasan designs it, and you’d need developers to build it.' : (plan.note || '');
+    const who = note ? 'He' : 'Hasan';
+    const base = `Sounds like ${plan.name}. It starts from ${from} and usually takes ${plan.time}`;
+    if (plan.slow && brief.when === 'Within a month') return `${base}, so a month is tight.${note} ${who} can tell you what’s possible.`;
+    return `${base}.${note} ${who} confirms the final price.`;
+  };
+  const closing = (answer, pick) => {
+    const done = 'Khalas, your brief is ready.';
+    if (answer === 'It’s a stretch') return `Fair enough. Hasan can look at what to trim. ${done}`;
+    if (answer !== 'Need something smaller') return done;
+    return PLANS[pick?.plan]?.from > 7500 ? `No problem. A landing page starts from AED 7,500, and Hasan can tell you what fits. ${done}` : `No problem. Hasan can tell you what fits. ${done}`;
+  };
   const STARTERS = {
-    scope: { ask: 'Scope my project', say: 'Yalla, grab a karak. This takes 1 minute. What are we building?' },
+    scope: { ask: 'Solve my problem', say: 'Yalla, grab a karak. What’s getting in the way right now?' },
     pricing: { ask: 'What does it cost?', say: 'Yalla, here’s where things start. Hasan confirms the final price once the scope is clear. So, what are we building?', card: 'pricing' },
     work: { ask: 'Show me the work', say: 'Here’s the good stuff. Tap any of them to see it on the page. What are you thinking of building?', card: 'work' },
     process: { ask: 'How does it work?', say: 'Simple, and faster than Sheikh Zayed Road at 6pm. You talk to Hasan the whole way. What are you working on?', card: 'process' },
@@ -94,12 +182,16 @@
     let ready = false;
     let section = '';
     let step = -1; // where we are in SCOPE, -1 when not scoping
+    let pick = null; // the plan the answers point to
+    let held = []; // videos paused while the sheet is open
+    let run = 0; // New chat moves this on, so a flow still typing knows to stop
     const goLinks = new Set();
 
     /* ── the character ──
        One-off moves are played with the Web Animations API, using the old rules: anticipate, squash and
        stretch, overshoot, settle, and let the arms follow a beat behind. CSS holds the moods. */
-    const hosts = [panel, opener];
+    const heroCta = document.querySelector('[data-yalla-scope]');
+    const hosts = [panel, opener, heroCta].filter(Boolean); // every Yalla on the page moves together
     const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
     const parts = (sel) => hosts.flatMap((h) => [...h.querySelectorAll(sel)]);
     const play = (sel, frames, opts) => {
@@ -255,12 +347,12 @@
       // says hi from the corner a few times, until it's been opened
       const greet = (n) => {
         setTimeout(() => {
-          if (!visits && !document.hidden && !opener.classList.contains('is-away')) moves.wave();
+          if (!visits && !document.hidden) moves.wave();
           if (n > 1) greet(n - 1);
         }, n === 3 ? 7000 : 30000);
       };
       greet(3);
-      opener.addEventListener('pointerenter', () => { if (fine) moves.wave(); });
+      [opener, heroCta].forEach((n) => n?.addEventListener('pointerenter', () => { if (fine) moves.wave(); }));
       if (fine) {
         let queued = false;
         window.addEventListener('pointermove', (e) => {
@@ -269,7 +361,8 @@
           queued = true;
           requestAnimationFrame(() => {
             queued = false;
-            const face = panel.open ? panel.querySelector('.yc-tile--bar') : opener.querySelector('.yc-tile');
+            const inHero = heroCta && opener.classList.contains('is-away');
+            const face = panel.open ? panel.querySelector('.yc-tile--bar') : (inHero ? heroCta : opener).querySelector('.yc-tile');
             const r = face.getBoundingClientRect();
             const dx = e.clientX - (r.left + r.width / 2);
             const dy = e.clientY - (r.top + r.height / 2);
@@ -284,7 +377,7 @@
     window.HC.yallaMoves = moves; // handy for checking poses
 
     const setLabel = () => {
-      opener.querySelector('.yalla-float-label').textContent = Object.values(brief).some(Boolean) ? 'Back to your brief' : (LAUNCH[section] || 'Ask Yalla');
+      opener.querySelector('.yalla-float-label').textContent = (brief.what || brief.problem) ? 'Back to your brief' : (LAUNCH[section] || 'Ask Yalla');
     };
 
     /* ── holding the page still while Yalla is open ── */
@@ -348,8 +441,10 @@
     /* ── open, close, moving to the page ── */
     const open = () => {
       document.documentElement.classList.add('yalla-open');
+      held = [...document.querySelectorAll('main video')].filter((v) => !v.paused);
+      held.forEach((v) => v.pause()); // nothing moves behind the sheet
       lock();
-      if (!history.length) $('[data-yalla-title]').textContent = HELLO[section] || 'Ahlan. What are we building?';
+      if (!history.length) $('[data-yalla-title]').textContent = ROLES[brief.who]?.hello || HELLO[section] || 'Ahlan. What’s getting in the way?';
       panel.classList.remove('is-settled'); // never carried over from the last time
       visits += 1;
       lastActive = performance.now();
@@ -371,6 +466,8 @@
     // runs straight away, not just on the dialog's close event, which can arrive late
     const tidy = () => {
       document.documentElement.classList.remove('yalla-open');
+      held.forEach((v) => v.play().catch(() => {}));
+      held = [];
       panel.classList.remove('is-settled');
       document.documentElement.classList.remove('yalla-covered');
       unlock();
@@ -397,8 +494,18 @@
     };
 
     const foot = document.querySelector('#contact');
-    if ('IntersectionObserver' in window) {
-      if (foot) new IntersectionObserver(([e]) => opener.classList.toggle('is-away', e.isIntersecting), { threshold: 0.15 }).observe(foot);
+    if (!('IntersectionObserver' in window)) opener.classList.remove('is-away');
+    else {
+      // out of the way while the hero's own Scope button or the footer is on screen
+      const away = { hero: false, foot: false };
+      const watch = (target, key, threshold) => {
+        if (target) new IntersectionObserver(([e]) => {
+          away[key] = e.isIntersecting;
+          opener.classList.toggle('is-away', away.hero || away.foot);
+        }, { threshold }).observe(target);
+      };
+      watch(document.querySelector('.hero-ctas'), 'hero', 0);
+      watch(foot, 'foot', 0.15);
       const seen = new IntersectionObserver((list) => {
         list.forEach((e) => { if (e.isIntersecting) section = e.target.id; else if (section === e.target.id) section = ''; });
         setLabel();
@@ -422,7 +529,10 @@
     // the conversation stays anchored to the bottom, with everything earlier right above it. It follows
     // new words unless the visitor has scrolled up to read, and sending a message brings them back down
     let sticky = true;
-    const bottom = () => log.offsetTop + log.offsetHeight;
+    const bottom = () => {
+      const last = nextRow.childElementCount ? nextRow : log;
+      return last.offsetTop + last.offsetHeight;
+    };
     const gap = () => bottom() + 24 + kb - (scroller.scrollTop + scroller.clientHeight);
     scroller.addEventListener('scroll', () => { sticky = gap() < 120; }, { passive: true });
     const toEnd = () => {
@@ -542,7 +652,14 @@
       work() {
         const card = el('div', 'yalla-work');
         const posters = [...new Set([...document.querySelectorAll('[data-showcase] video[poster]')].map((v) => v.getAttribute('poster')))];
-        document.querySelectorAll('.showcase-step').forEach((step, i) => {
+        const first = ROLES[brief.who]?.work || [];
+        const rank = (step) => {
+          const at = first.indexOf(step.querySelector('.showcase-name').textContent);
+          return at < 0 ? first.length : at;
+        };
+        const steps = [...document.querySelectorAll('.showcase-step')];
+        [...steps].sort((a, b) => rank(a) - rank(b)).forEach((step) => {
+          const i = steps.indexOf(step); // posters follow the page's order
           const b = el('button', 'yalla-work-item');
           b.type = 'button';
           if (posters[i]) {
@@ -624,7 +741,7 @@
       });
       const go = waButton('Yalla, send it to Hasan', briefText());
       goLinks.add(go);
-      card.append(go);
+      card.append(go, el('p', 'yalla-ready-note', 'Hasan usually replies within a few hours.'));
       if (readyEl) { // it updates where it is, so the thread doesn't jump
         goLinks.delete(readyEl.querySelector('a'));
         readyEl.replaceWith(card);
@@ -657,6 +774,15 @@
     };
 
     /* ── quick answers, only while scoping. Typing always works too ── */
+    const bar = $('[data-yalla-progress]');
+    let barTimer = 0;
+    const setProgress = (share) => {
+      clearTimeout(barTimer);
+      bar.hidden = share == null;
+      if (share == null) return;
+      bar.firstElementChild.style.transform = `scaleX(${share})`;
+      if (share === 1) barTimer = setTimeout(() => setProgress(null), 1100);
+    };
     const renderNext = (items) => {
       nextRow.replaceChildren();
       (items || []).forEach((text) => {
@@ -668,15 +794,32 @@
     };
 
     /* ── there's always something to do next ── */
-    const OPTIONS = [['Scope my project', 'scope'], ['What does it cost?', 'pricing'], ['Show me the work', 'work'], ['How does it work?', 'process']];
+    const OPTIONS = [['Solve my problem', 'scope'], ['What does it cost?', 'pricing'], ['Show me the work', 'work'], ['How does it work?', 'process']];
     let usedOptions = new Set();
     const keepGoing = () => {
       if (step >= 0 && SCOPE[step]) {
-        renderNext(SCOPE[step].chips);
+        const { key, chips } = SCOPE[step];
+        renderNext(chips(brief));
+        // seeing the end makes people finish
+        const plan = PLANS[pick?.plan];
+        const short = plan?.monthly || plan?.custom;
+        setProgress(({ problem: 1, detail: 2, what: 2, when: 3, fit: short ? 3 : 4 }[key]) / (short ? 4 : 5));
+        toEnd();
         return;
       }
+      if (!bar.hidden) setProgress(1);
       nextRow.replaceChildren();
-      OPTIONS.filter(([, name]) => !usedOptions.has(name) && !(name === 'scope' && ready)).slice(0, 2).forEach(([text, name]) => {
+      const card = ready && !usedOptions.has('included') && [...document.querySelectorAll('.plan')].find((n) => n.querySelector('.plan-name').textContent === PLANS[pick?.plan]?.card);
+      if (card) {
+        const b = el('button', 'yalla-next', 'What’s included?');
+        b.type = 'button';
+        b.addEventListener('click', () => {
+          usedOptions.add('included');
+          planDetail(card);
+        });
+        nextRow.append(b);
+      }
+      OPTIONS.filter(([, name]) => !usedOptions.has(name) && !(name === 'scope' && ready)).slice(0, card ? 1 : 2).forEach(([text, name]) => {
         const b = el('button', 'yalla-next', text);
         b.type = 'button';
         b.addEventListener('click', () => starter(name));
@@ -687,6 +830,7 @@
       a.target = '_blank';
       a.rel = 'noopener';
       nextRow.append(a);
+      toEnd();
     };
 
     /* ── written answers ── */
@@ -711,20 +855,59 @@
       usedOptions.add(name);
       renderNext([]);
       anchor(say(st.ask, true));
-      history.push({ role: 'user', content: st.ask }, { role: 'assistant', content: st.say });
+      const opening = (name === 'scope' && ROLES[brief.who]?.first) || st.say;
+      history.push({ role: 'user', content: st.ask }, { role: 'assistant', content: opening });
       if (name === 'scope') {
         step = 0;
         scopeNext();
       }
-      await reveal(st.say);
+      const mine = run;
+      await reveal(opening);
+      if (mine !== run) return;
       if (st.card) showCard(st.card);
       keepGoing();
       toEnd();
       if (fine) input.focus();
     };
+    let titleTimer = 0;
+    const swapTitle = (text) => {
+      const title = $('[data-yalla-title]');
+      if (calm || !panel.open || title.textContent === text) {
+        title.textContent = text;
+        return;
+      }
+      clearTimeout(titleTimer);
+      title.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 130, easing: 'ease-out', fill: 'forwards' });
+      titleTimer = setTimeout(() => { // a timer, so the words still change if animations are held back
+        title.getAnimations().forEach((n) => n.cancel());
+        title.textContent = text;
+        title.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+      }, 130);
+    };
+    const roleButtons = [...panel.querySelectorAll('[data-role]')];
+    const setRole = (who) => {
+      if (who) brief.who = who;
+      else delete brief.who;
+      roleButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.role === who)));
+      swapTitle(ROLES[who]?.hello || HELLO[section] || 'Ahlan. What’s getting in the way?');
+    };
+    roleButtons.forEach((b) => b.addEventListener('click', () => {
+      const on = brief.who === b.dataset.role;
+      setRole(on ? '' : b.dataset.role);
+      if (!on) {
+        track('yalla_option', { yalla_option: b.dataset.role });
+        moves.nod();
+      }
+    }));
     panel.addEventListener('click', (e) => {
       const b = e.target.closest('[data-start]');
       if (b) starter(b.dataset.start);
+    });
+    // the hero button skips the opening screen and goes straight into scoping
+    heroCta?.addEventListener('click', () => {
+      const fresh = !history.length;
+      open();
+      if (fresh) setTimeout(() => starter('scope'), 350); // once the panel is mostly in
     });
 
     // a plan opens up in the chat. WhatsApp is only ever a button that says so
@@ -749,8 +932,39 @@
 
     /* ── guided scoping ── */
     const scopeNext = () => {
-      while (step >= 0 && step < SCOPE.length && brief[SCOPE[step].key]) step += 1;
+      const plan = PLANS[pick?.plan];
+      const settled = {
+        problem: () => brief.problem || brief.what,
+        detail: () => pick || brief.detail || !PROBLEMS[brief.problem],
+        what: () => pick || brief.what,
+        when: () => brief.when || plan?.monthly,
+        fit: () => brief.budget || !plan || plan.custom,
+      };
+      while (step >= 0 && step < SCOPE.length && settled[SCOPE[step].key]()) step += 1;
       if (step >= SCOPE.length) step = -1;
+    };
+    const record = (key, text) => {
+      if (key === 'problem') {
+        if (text !== KNOWN) brief.problem = text.slice(0, 120);
+        if (PROBLEMS[text]) track('yalla_option', { yalla_option: text });
+      } else if (key === 'detail') {
+        const option = PROBLEMS[brief.problem]?.options.find((o) => o.text === text);
+        brief.detail = (option?.note || text).slice(0, 120);
+        if (option) {
+          pick = option;
+          brief.what = PLANS[option.plan].what;
+        }
+      } else if (key === 'what') {
+        brief.what = text.slice(0, 120);
+        if (PROJECTS[text]) {
+          pick = { plan: PROJECTS[text] };
+          brief.what = PLANS[pick.plan].what;
+        }
+      } else if (key === 'fit') {
+        brief.budget = (FIT[text] || text).slice(0, 120);
+      } else {
+        brief[key] = text.slice(0, 120);
+      }
     };
     // a tapped answer, or the fallback when the model can't be reached
     async function scopeAnswer(text, echoed) {
@@ -759,20 +973,30 @@
       renderNext([]);
       if (!echoed) anchor(say(text, true));
       moves.nod();
-      brief[key] = text.slice(0, 120);
+      record(key, text);
       paintBrief();
       step += 1;
       scopeNext();
       const q = SCOPE[step];
-      const line = q ? q.say(text) : 'Khalas, your brief is ready.';
+      const suggestion = verdict(brief, pick);
+      if (suggestion) usedOptions.add('pricing'); // they've just been told
+      let line;
+      if (q && q.key !== 'fit') line = q.say(text, brief);
+      else if (q) line = `${suggestion} ${q.say()}`;
+      else if (key === 'fit') line = closing(text, pick);
+      else line = `${suggestion} Khalas, your brief is ready.`.trim();
       history.push({ role: 'user', content: text }, { role: 'assistant', content: line });
+      const mine = run;
       await reveal(line);
+      if (mine !== run) return;
       if (!q && paintBrief()) {
         ready = true;
         readyCard();
         celebrate();
         await sleep(900);
+        if (mine !== run) return;
         await reveal('Anything you want to ask before you send it?');
+        if (mine !== run) return;
       }
       keepGoing();
       toEnd();
@@ -813,6 +1037,8 @@
       }
       if (!chatId) chatId = `${Date.now()}-${Math.random().toString(36).slice(2, 10).padEnd(6, '0')}`;
       history.push({ role: 'user', content: question });
+      // typed instead of tapped: their own words are the problem, and scoping moves on
+      if (step >= 0 && SCOPE[step]?.key === 'problem' && !question.includes('?')) brief.problem = question.slice(0, 120);
       track('yalla_message');
       const topic = topicOf(question);
       moves.nod();
@@ -837,7 +1063,7 @@
         const res = await fetch('/api/yalla', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: history.slice(-12), context: section, chat: chatId }),
+          body: JSON.stringify({ messages: brief.who ? [{ role: 'user', content: `For context: I’m ${ROLES[brief.who]?.label || brief.who}.` }, { role: 'assistant', content: 'Noted.' }, ...history.slice(-10)] : history.slice(-12), context: section, chat: chatId }),
           signal: request.signal,
         });
         if (!res.ok) throw new Error(res.status);
@@ -907,6 +1133,7 @@
           again.type = 'button';
           again.addEventListener('click', () => ask(question));
           nextRow.replaceChildren(again);
+          toEnd();
         }
         return;
       }
@@ -935,6 +1162,9 @@
       chatId = '';
       offered = false;
       usedOptions = new Set();
+      pick = null;
+      run += 1;
+      setProgress(null);
       brief = {};
       shown = {};
       ready = false;
@@ -946,6 +1176,7 @@
       sticky = true;
       input.placeholder = 'Message Yalla';
       hello.hidden = false;
+      setRole('');
       fresh.hidden = true;
       tracker.hidden = true;
       setOpen(false);

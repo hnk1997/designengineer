@@ -58,7 +58,7 @@ over coffee: confident, specific, never salesy.
 - Don't name awards on project cards; *"award-winning"* is enough. The 6x award claim lives in
   the stats and the Why me tile.
 - Labels and button text are UPPERCASE via CSS, written in sentence case in the HTML
-  (`Get in touch`, `Case study coming soon`).
+  (`Get in touch`).
 - No index numbers or "Fig." labels as decoration (no "01 / 04", "Fig. 01").
 - Keep visitors on the site: articles are republished here, never linked out to Medium.
   External links only in the footer socials and the portfolio banner.
@@ -68,7 +68,7 @@ over coffee: confident, specific, never salesy.
 |---|---|
 | Section lede: statement, then blue payoff | *"You get the designer and the developer. **They just happen to be the same person.**"* |
 | Card line: what it is, in one breath | *"An Islamic microfinance bank in Yemen. Leading the design of its new banking app."* |
-| Status, small caps | `IN PROGRESS` · `TAKING ON NEW PROJECTS` · `TAP TO COPY` |
+| Status, small caps | `IN PROGRESS` · `TAP TO COPY` |
 | Rotating tab title when the visitor leaves | *"No handoffs were harmed"*, *"Figma, meet production"*, *"QA'd on every breakpoint"* |
 
 ---
@@ -84,7 +84,7 @@ Two grounds, one ink each, one accent. The palette comes from the hasannawaz.com
 | `--ink` | `#f3f3f3` | Text on `--dark` |
 | `--ink-2` | `rgba(243,243,243,.68)` | Secondary text on `--dark` (8.5:1) |
 | `--ink-3` | `rgba(243,243,243,.42)` | Tertiary labels on `--dark` only (3.7:1, uppercase labels ≥12px, never body) |
-| `--paper` | `#eceef1` | Light ground: stats, work, why, services, articles, building, hiring |
+| `--paper` | `#eceef1` | Light ground: stats, work, why, services, articles, building |
 | `--paper-ink` | `#0b0c0f` | Text on `--paper` (16.8:1) |
 | `--paper-line` | `rgba(11,12,15,.08)` | Hairlines on `--paper` (section rules use `.16`) |
 | `--blue` | `#2563eb` | The accent: lede payoffs, `.ico` squares, active rules, links on hover, the `.sq` marker |
@@ -175,7 +175,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 
 All are plain HTML + `styles.css`. Markup patterns below are the real ones; copy them.
 
-**Button** (`.btn`): white label block + blue arrow square, 2px apart, 40px tall.
+**Button** (`.btn`): white label block + blue arrow square, 2px apart, 40px tall. The hero's only button is Solve my problem (`.btn--yalla`): a white label with the orange Yalla logo square and a small chat bubble (`.yalla-says`, Takes 1 minute), which opens Yalla straight into scoping. Its logo breathes, blinks, waves and follows the cursor like the launcher.
 ```html
 <a class="btn" href="#contact" data-roll-host>
   <span class="btn-label"><span data-roll>Get in touch</span></span>
@@ -196,11 +196,12 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
 inverts on `[data-dark]` sections, hides while the menu is open.
 
+**Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
+
 **WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and every
 article's nav, sticky button, menu and aside, which all say `WhatsApp me` (`.ico--wa`) instead of Get in touch. `.btn--green` is the green glyph square on any button. All pre-fill a message;
 the general one is `Hi Hasan, can we talk?`
 
-**Disabled CTA** (`.showcase-cta`): dashed 1px outline, grey dot, `Case study coming soon`.
 Honest about what isn't ready; never a fake link.
 
 **Showcase** (`[data-showcase]`): Selected work. Desktop: steps scroll on the left, a sticky
@@ -235,19 +236,19 @@ naming that plan (`?text=`). The lead button and rate card link have their own. 
 swipeable row with the next card peeking under 768px.
 
 **FAQ** (`.faq`, `.faq-item`): native `<details>` rows with hairlines, a "+" that turns to "×" when open, first
-row open. Homepage: label and lede sticky on the left, list on the right, before Hiring. Articles: `.art-faq`,
+row open. Homepage: label and lede sticky on the left, list on the right, after Pricing. Articles: `.art-faq`,
 "Quick answers", under the text. The answer text stays in the HTML for crawlers.
 
 **Yalla** (`.yalla-float`, `.yalla`, `js/yalla.js`): the AI assistant, built to show product thinking. Mark: `.yc`, a white Y
 with curved arms and 2 pill eyes, in an orange circle. It's the 1 round shape in the UI, because it's a character. It moves
-like 1: anticipation, squash and stretch, overshoot; eyes dart, never drift. Launcher: a contextual label + the orange mark,
+like 1: anticipation, squash and stretch, overshoot; eyes dart, never drift. Launcher: hidden while the hero's Scope button or the footer is on screen; a contextual label + the orange mark,
 bottom right, hides over the footer and under the menu, mark only on phones. Panel: a white `<dialog>` from the right,
 500px wide, full screen on phones, 0.6s `--ease-out`, with a subtle blue, orange and purple fluid glow behind (`.yc-fluid`).
 Colour has jobs: orange is Yalla (logo, send, brief meter; a soft tint for the primary action and your messages), blue is anything tappable, green
 is WhatsApp. No gradients on controls.
 Keep it sparse, so it doesn't look AI-generated. Opening screen: logo with `Yalla` and `Hasan’s AI assistant` beside it, a heading that follows the section, 1 soft orange action,
 3 plain rows; the header stays empty until a chat starts. WhatsApp is always in the header (`.yalla-hwa`). Replies are plain
-streaming text with no avatars, like Claude's chat. Inside the panel, chat elements have soft corners (bubble, composer, chips, brief card), the 1 exception to square UI; quick reply pills are a light orange tint with a thin orange outline and normal ink text; the small thinking character and status are replaced by the reply. Cards reuse page content. `.yalla-brief` is the live brief bar. Yalla says "I" for itself and "Hasan" for Hasan, and never claims to be him. Its voice is Dubai English: a sharp friend, mostly English, at most 1 Arabic word a message (yalla, khalas, wallah, shukran, tamam…), and now and then a local reference (karak, Sheikh Zayed Road, Salik). Never mashallah, inshallah or bas. Have a native speaker check new lines.
+streaming text with no avatars, like Claude's chat. Inside the panel, chat elements have soft corners (bubble, composer, chips, brief card), the 1 exception to square UI; quick reply pills are a light orange tint with a thin orange outline and normal ink text, and sit under the latest message, wrapping rather than scrolling sideways, with a thin orange progress bar under the panel header during Solve my problem; the small thinking character and status are replaced by the reply. Cards reuse page content. `.yalla-brief` is the live brief bar. Yalla says "I" for itself and "Hasan" for Hasan, and never claims to be him. Its voice is Dubai English: a sharp friend, mostly English, at most 1 Arabic word a message (yalla, khalas, wallah, shukran, tamam…), and now and then a local reference (karak, Sheikh Zayed Road, Salik). Never mashallah, inshallah or bas. Have a native speaker check new lines.
 
 **Footer contact** (`.wa-big`, `.mail`): WhatsApp leads as huge type with its green glyph and a green underline sweep on hover; the number sits under it. The email is a small line below. Clicking it copies it, a blue selection and `Copied` badge appear, and the note beside it confirms.
 

@@ -223,6 +223,7 @@
     const elapsed = (now - last) / 1000;
     last = now;
     if (!live || !heroVisible) return;
+    if (root.classList.contains('yalla-open')) { rafId = requestAnimationFrame(tick); return; } // held still behind Yalla
     // Resolution changes are applied before drawing, never after, so no frame is shown blank
     if (perf.pending) {
       stage.setPixelRatio(perf.pending);
