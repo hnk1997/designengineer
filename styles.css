@@ -1960,6 +1960,11 @@ img.screen-page { height: auto; }
   color: var(--ink);
 }
 .process .sec-head { margin-bottom: 88px; }
+/* title left, Hasan right: "you talk to the person doing the work", and here he is */
+.process .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+.me { flex: none; display: flex; align-items: flex-end; gap: 14px; margin: 0; }
+.me img { flex: none; width: clamp(216px, 16vw, 264px); height: auto; aspect-ratio: 1; object-fit: cover; }
+.me figcaption { max-width: 15ch; font-size: 15px; line-height: 1.3; color: var(--ink-2); }
 
 /* Steps: the blue rule fills with scroll (--p, set by ui.js) */
 .steps { --p: 0; position: relative; }
@@ -2021,168 +2026,6 @@ img.screen-page { height: auto; }
 .steps.is-live .step > :not(.step-dot) { opacity: 0.35; transition: opacity 0.5s var(--ease-out); }
 .steps.is-live .step.is-on > :not(.step-dot) { opacity: 1; }
 .steps.is-live .step.is-on .step-dot { background: var(--blue); box-shadow: none; }
-
-/* Ways to work together: three cards (not links). Each diagram plays once,
-   as the cards reveal (.ways.is-in), after the cards have risen into place. */
-.ways { margin-top: 128px; }
-.ways-label { display: flex; align-items: center; margin-bottom: 24px; }
-.ways-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.way {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  min-height: 440px;
-  padding: 22px 24px 24px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.035);
-  box-shadow: inset 0 0 0 1px var(--hair);
-  color: var(--ink);
-}
-.way-viz { flex: 1; display: grid; align-content: center; min-height: 128px; }
-.way-copy { display: grid; gap: 10px; }
-.way-title { margin: 0; font-size: clamp(26px, 2.2vw, 34px); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
-.way-body { margin: 0; max-width: 34ch; font-size: 15px; line-height: 1.45; color: var(--ink-2); }
-.way-foot { margin: 0; padding-top: 16px; border-top: 1px solid var(--hair); color: var(--ink-3); }
-
-.vp-ends { display: flex; justify-content: space-between; margin-top: 14px; color: var(--ink-3); }
-.vp-ends b { font-weight: 500; }
-
-/* Diagrams loop on a shared 6s clock, paused until the card is on screen (.is-playing).
-   Integer custom properties step through the ticks and weeks, so everything stays in sync. */
-@property --st { syntax: "<integer>"; inherits: true; initial-value: 0; }
-@property --wk { syntax: "<integer>"; inherits: true; initial-value: 0; }
-.way-viz *, .way-viz *::before, .way-viz *::after { animation-play-state: paused; }
-.way.is-playing .way-viz *, .way.is-playing .way-viz *::before, .way.is-playing .way-viz *::after { animation-play-state: running; }
-
-/* A project: one run, kick-off to launch */
-.vp-track {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  height: 1px;
-  background: var(--hair);
-  animation: vp-steps 6s linear infinite;
-}
-.vp-track::before {
-  content: "";
-  position: absolute;
-  inset: -0.5px 0;
-  background: var(--blue);
-  transform-origin: 0 0;
-  animation: vp-fill 6s var(--ease-io) infinite;
-}
-.vp-track i {
-  position: relative;
-  width: 9px;
-  height: 9px;
-  margin-top: -4px;
-  background: var(--dark);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-}
-.vp-track i::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--blue);
-  opacity: clamp(0, calc(var(--st) - var(--n)), 1);
-}
-/* launch: lights up white and pings once it's reached */
-.vp-track i:last-child::after { background: var(--ink); box-shadow: 0 0 0 calc(clamp(0, calc(var(--st) - 4), 1) * 5px) rgba(243, 243, 243, 0.14); }
-@keyframes vp-fill {
-  0% { transform: scaleX(0); opacity: 1; }
-  55% { transform: scaleX(1); }
-  86% { transform: scaleX(1); opacity: 1; }
-  94%, 100% { transform: scaleX(1); opacity: 0; }
-}
-@keyframes vp-steps {
-  0% { --st: 0; }
-  55% { --st: 5; }
-  86% { --st: 5; }
-  94%, 100% { --st: 0; }
-}
-
-/* A partnership: a release lands every week */
-.vb { display: flex; align-items: flex-end; gap: 5px; height: 96px; animation: vb-weeks 6s linear infinite; }
-.vb i {
-  position: relative;
-  flex: 1;
-  height: calc(var(--h) * 100%);
-  background: rgba(255, 255, 255, 0.07);
-}
-.vb i::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--blue);
-  transform: scaleY(clamp(0, calc(var(--wk) - var(--n)), 1));
-  transform-origin: 50% 100%;
-}
-@keyframes vb-weeks {
-  0% { --wk: 0; }
-  70% { --wk: 12; }
-  88% { --wk: 12; }
-  96%, 100% { --wk: 0; }
-}
-
-/* White-label: your name drops into the slot */
-.vw-slot {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 128px;
-  border: 1px dashed rgba(255, 255, 255, 0.28);
-  color: var(--ink-3);
-  animation: vw-slot 6s var(--ease-out) infinite;
-}
-.vw-slot > * { grid-area: 1 / 1; }
-/* corner handles, as on a selected frame */
-.vw-slot::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  background:
-    linear-gradient(var(--ink), var(--ink)) 0 0 / 7px 7px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 100% 0 / 7px 7px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 0 100% / 7px 7px no-repeat,
-    linear-gradient(var(--ink), var(--ink)) 100% 100% / 7px 7px no-repeat;
-  opacity: 0;
-  animation: vw-handles 6s var(--ease-out) infinite;
-}
-.vw-ph { animation: vw-ph 6s var(--ease-out) infinite; }
-.vw-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  opacity: 0;
-  animation: vw-logo 6s var(--ease-out) infinite;
-}
-.vw-logo i { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); box-shadow: inset -6px 0 0 var(--blue); }
-@keyframes vw-ph {
-  0%, 14% { opacity: 1; }
-  22%, 86% { opacity: 0; }
-  96%, 100% { opacity: 1; }
-}
-@keyframes vw-logo {
-  0%, 16% { opacity: 0; transform: translate3d(0, -22px, 0) scale(0.96); }
-  30% { opacity: 1; transform: none; }
-  84% { opacity: 1; transform: none; }
-  92%, 100% { opacity: 0; transform: none; }
-}
-@keyframes vw-slot {
-  0%, 26% { border-color: rgba(255, 255, 255, 0.28); }
-  32%, 84% { border-color: var(--blue); }
-  92%, 100% { border-color: rgba(255, 255, 255, 0.28); }
-}
-@keyframes vw-handles {
-  0%, 28% { opacity: 0; }
-  34%, 84% { opacity: 1; }
-  92%, 100% { opacity: 0; }
-}
 
 /* ── Thought leadership ───────────────────────────────────── */
 /* ── Pricing: 1 white panel of plans on paper, a toggle, every plan a WhatsApp link ── */
@@ -2332,6 +2175,9 @@ img.screen-page { height: auto; }
 @media (max-width: 767px) {
   .pricing { padding: 64px var(--gutter) 88px; }
   .pricing .sec-head { margin-bottom: 40px; }
+  .process .sec-head { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .me { align-items: center; }
+  .me img { width: 132px; }
   .price-switch .price-card { display: none; }
   .price-card--foot { display: inline-flex; margin-top: 16px; }
   .price-switch { margin-bottom: 4px; } /* just clears the Most popular tag, which slides under here when the plans are swiped */
@@ -3132,7 +2978,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .svc-body { font-size: 16px; }
   .process { padding: 72px var(--gutter) 88px; }
   .process .sec-head { margin-bottom: 56px; }
-  .ways { margin-top: 88px; }
   .thoughts { padding: 64px var(--gutter) 88px; }
   .building { padding: 40px var(--gutter) 48px; }
   .build-list { grid-template-columns: 1fr; gap: 40px; max-width: none; margin-left: 0; }
@@ -3214,9 +3059,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .step { padding-top: 0; gap: 10px; }
   .step-dot { top: 1px; left: -32px; }
   .step-title { margin-top: 2px; }
-  .ways-grid { grid-template-columns: 1fr; }
-  .way { min-height: 0; gap: 24px; }
-  .way-viz { min-height: 112px; }
 }
 
 /* ── Lighter budget (.perf-low) ───────────────────────────────
@@ -3565,10 +3407,4 @@ html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::
   .drift-ok { opacity: 1; }
   .cv, .cv *, .cv *::before, .cv *::after, .svc-viz * { animation: none !important; }
   .build-dot { animation: none !important; }
-  .way-viz *, .way-viz *::before, .way-viz *::after { animation: none !important; }
-  .vp-track { --st: 5; }
-  .vb { --wk: 12; }
-  .vw-ph { opacity: 0; }
-  .vw-logo, .vw-slot::before { opacity: 1; }
-  .vw-slot { border-color: var(--blue); }
 }

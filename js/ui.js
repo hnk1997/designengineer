@@ -419,8 +419,9 @@
 
     let at = [];   // where each step sits along the rule, 0..1
     let raf = 0;
+    let vertical = false;
     const measure = () => {
-      const vertical = line.offsetHeight > line.offsetWidth;
+      vertical = line.offsetHeight > line.offsetWidth;
       const len = vertical ? line.offsetHeight : line.offsetWidth;
       at = steps.map((s) => (vertical ? s.offsetTop - line.offsetTop : s.offsetLeft) / Math.max(1, len));
     };
@@ -428,9 +429,9 @@
       raf = 0;
       const r = root.getBoundingClientRect();
       const vh = window.innerHeight;
-      // Starts as the steps come up past 85% of the screen; done over the steps'
-      // own height, or half the screen when they're laid out across
-      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / Math.max(r.height, vh * 0.5)));
+      // Starts as the steps come up the screen, and finishes while they're still in view: there's
+      // little page after them, so every step has to light up before the section scrolls away
+      const p = Math.min(1, Math.max(0, (vh * 0.92 - r.top) / (vertical ? r.height * 0.9 : vh * 0.3)));
       root.style.setProperty('--p', p.toFixed(4));
       steps.forEach((s, i) => s.classList.toggle('is-on', p > 0 && p >= at[i] - 0.001));
     };
