@@ -80,6 +80,8 @@ Shipped to hasannawaz.com in this session (newest last):
 - McNomNoms "Tap to tickle me" bubble fixed (no ghosting); GrowthMotive re-recorded so each Box plays its animation.
 - **Phone-size reels** (≤599px wide screens): about a third of the size, no visible quality difference.
 
+Latest round on hasannawaz.com: Solve my problem as the main CTA, problem-first Yalla with roles and a progress bar, new section order, client photos, the testimonial bar and Pricing nudge on Pricing, and written Yalla answers when the AI runs out (details in §5).
+
 Shipped to product.hasannawaz.com:
 - Link-preview cards: every page has a 1200×630 JPG in `assets/og/` (WebP previews were being dropped by WhatsApp/LinkedIn/iMessage). Home and About use a designed card (source `hasancooks2-workspace/og-cards/portfolio.html`, `#about` for the About variant).
 - Title briefly changed to "Product Designer", then **back to "Senior Product Designer"** at Hasan's request (home headline, titles, descriptions, preview cards). Past job titles and case-study "Role" lines were never changed.
