@@ -479,7 +479,7 @@
     // on Pricing the short quotes take the button's place, one every 4s
     const section = document.getElementById('pricing');
     if (section && proof) {
-      new IntersectionObserver(([e]) => { pricing = e.isIntersecting; update(); }, { rootMargin: '-20% 0px -40% 0px' }).observe(section);
+      new IntersectionObserver(([e]) => { pricing = e.isIntersecting; update(); }, { rootMargin: '-80% 0px -20% 0px' }).observe(section); // a line low on the screen, so it goes as soon as the FAQ arrives
       const items = [...proof.children];
       let at = 0;
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {

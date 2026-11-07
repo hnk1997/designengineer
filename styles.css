@@ -3529,6 +3529,7 @@ html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::
 @media (max-width: 767px) {
   .yalla-float { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
   .yalla-float-label { display: none; }
+  .yalla-float.is-nudging .yalla-float-label { display: flex; } /* phones only show the label for the nudge */
   .yc-tile:not([class*="--"]) { width: 52px; height: 52px; padding: 4.5px; }
   .yalla { inset: 0; width: 100%; height: 100dvh; border-left: 0; overscroll-behavior: none; }
   html.yalla-covered, html.yalla-covered body { background: #fff; } /* a dark page must never show past the sheet as the browser bars move */

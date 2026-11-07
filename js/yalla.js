@@ -181,6 +181,8 @@
     let section = '';
     let step = -1; // where we are in SCOPE, -1 when not scoping
     let pick = null; // the plan the answers point to
+    let nudging = false; // Yalla's label is offering help on Pricing
+    let endNudge = () => {};
     let held = []; // videos paused while the sheet is open
     let run = 0; // New chat moves this on, so a flow still typing knows to stop
     const goLinks = new Set();
@@ -375,6 +377,7 @@
     window.HC.yallaMoves = moves; // handy for checking poses
 
     const setLabel = () => {
+      if (nudging) return;
       opener.querySelector('.yalla-float-label').textContent = (brief.what || brief.problem) ? 'Back to your brief' : (LAUNCH[section] || 'Ask Yalla');
     };
 
@@ -461,7 +464,15 @@
       setTimeout(moves.wave, 620);
       if (fine) input.focus();
     };
-    opener.addEventListener('click', open);
+    opener.addEventListener('click', () => {
+      if (!nudging) {
+        open();
+        return;
+      }
+      endNudge();
+      track('yalla_option', { yalla_option: 'pricing nudge' });
+      startScope();
+    });
     // runs straight away, not just on the dialog's close event, which can arrive late
     const tidy = () => {
       document.documentElement.classList.remove('yalla-open');
@@ -903,11 +914,69 @@
       if (b) starter(b.dataset.start);
     });
     // the hero button skips the opening screen and goes straight into scoping
-    heroCta?.addEventListener('click', () => {
+    const startScope = () => {
       const fresh = !history.length;
       open();
       if (fresh) setTimeout(() => starter('scope'), 350); // once the panel is mostly in
-    });
+    };
+    heroCta?.addEventListener('click', startScope);
+
+    // lingering on Pricing usually means comparing or unsure, so Yalla offers help once, in its own label.
+    // It types, so the change gets noticed. Yalla never opens itself
+    const prices = document.getElementById('pricing');
+    if (prices && 'IntersectionObserver' in window) {
+      const label = opener.querySelector('.yalla-float-label');
+      const line = 'Not sure which plan fits?';
+      let wait = 0;
+      let fade = 0;
+      let typing = 0;
+      let offered = false;
+      let spent = 0; // time on Pricing adds up, so scrolling around and tapping the tabs doesn't restart it
+      let since = 0;
+      endNudge = () => {
+        clearTimeout(fade);
+        clearTimeout(typing);
+        if (!nudging) return;
+        nudging = false;
+        opener.classList.remove('is-nudging');
+        setLabel();
+      };
+      const offer = () => {
+        if (offered || history.length) return;
+        if (panel.open || document.hidden) { // another browser tab, say: it waits and shows on their return
+          wait = setTimeout(offer, 1000);
+          return;
+        }
+        offered = true;
+        nudging = true;
+        opener.classList.add('is-nudging');
+        moves.wave();
+        fade = setTimeout(endNudge, 9000);
+        if (calm) {
+          label.textContent = line;
+          return;
+        }
+        let shown = 0;
+        const type = () => {
+          shown += 1;
+          label.textContent = line.slice(0, shown);
+          if (shown < line.length) typing = setTimeout(type, 38);
+        };
+        label.textContent = '';
+        type();
+      };
+      new IntersectionObserver(([e]) => {
+        clearTimeout(wait);
+        if (e.isIntersecting) {
+          since = performance.now();
+          wait = setTimeout(offer, Math.max(0, 15000 - spent));
+        } else {
+          if (since) spent += performance.now() - since;
+          since = 0;
+          endNudge();
+        }
+      }, { rootMargin: '-80% 0px -20% 0px' }).observe(prices);
+    }
 
     // a plan opens up in the chat. WhatsApp is only ever a button that says so
     const planDetail = async (plan) => {
