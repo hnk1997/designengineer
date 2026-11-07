@@ -2037,8 +2037,10 @@ img.screen-page { height: auto; }
   background: var(--paper);
   color: var(--paper-ink);
 }
-.pricing .sec-head { margin-bottom: 56px; }
+.pricing .sec-head { margin-bottom: 32px; }
+.pricing .sec-label { margin: 0; }
 .price-lead { display: grid; justify-items: start; gap: 28px; }
+.price-custom { margin-top: 80px; }
 .reply-note { margin: -16px 0 0; font-size: 14px; line-height: 1.3; color: rgba(11, 12, 15, 0.62); }
 
 /* WhatsApp button on paper: white label, green square */
@@ -2176,7 +2178,8 @@ img.screen-page { height: auto; }
 /* phones: the plans become a row you swipe, with the next one peeking in, so the page stays short */
 @media (max-width: 767px) {
   .pricing { padding: 64px var(--gutter) 88px; }
-  .pricing .sec-head { margin-bottom: 40px; }
+  .pricing .sec-head { margin-bottom: 24px; }
+  .price-custom { margin-top: 56px; }
   .process .sec-head { flex-direction: column; align-items: flex-start; gap: 20px; }
   .me { align-items: center; }
   .me img { width: 132px; }

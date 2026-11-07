@@ -11,9 +11,9 @@
   const DAILY = 50;
   // when the day's AI runs out, Yalla keeps helping from these. Facts only: keep in step with llms.txt
   const WRITTEN = [
-    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, and web apps and app design from AED 20,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
+    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, app design from AED 20,000, and web apps from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
     [/\b(how long|timelines?|weeks?|deadline|turnaround)\b/i, 'A landing page takes about 2 weeks, a website 4–6 weeks, a web app 6–10 weeks and app design 4–8 weeks. Hasan can tell you what’s realistic for yours.'],
-    [/\b(monthly|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and App UI/UX support is AED 5,000 a month for 25 hours. Both are paid monthly in advance, and you can cancel anytime.'],
+    [/\b(monthly|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and UI/UX support is AED 10,000 a month for 50 hours. Both are paid monthly in advance, and you can cancel anytime.'],
     [/\b(agenc\w*|white.?label)\b/i, 'White-label is built for agencies. Hasan joins your team under your name, and your client sees your logo, not his.'],
     [/\b(mobile|ios|android|apps?)\b/i, 'Hasan designs mobile apps and makes a coded prototype, then hands over to your developers. He builds the front end of websites and web platforms himself.'],
     [/\b(seo|geo|google|search)\b/i, 'SEO and GEO are part of every landing page, website and platform, so you can be found on search engines and AI assistants.'],
@@ -97,10 +97,10 @@
   const PLANS = {
     landing: { what: 'A landing page', name: 'a landing page', card: 'Landing page', from: 7500, time: 'about 2 weeks' },
     website: { what: 'A website', name: 'a website', card: 'Website', from: 15000, time: 'about 4–6 weeks', slow: true },
-    webapp: { what: 'A web app', name: 'a web app', card: 'Platform', from: 20000, time: 'about 6–10 weeks', slow: true },
+    webapp: { what: 'A web app', name: 'a web app', card: 'Platform', from: 25000, time: 'about 6–10 weeks', slow: true },
     app: { what: 'App design', name: 'app design', card: 'App UI/UX', from: 20000, time: 'about 4–8 weeks', slow: true, note: ' Hasan designs it and your developers build it.' },
     maintain: { what: 'Monthly site support', name: 'the Maintain plan', card: 'Maintain', monthly: 'AED 3,500 a month for 16 hours' },
-    appcare: { what: 'Monthly app design support', name: 'the App UI/UX support plan', card: 'App UI/UX support', monthly: 'AED 5,000 a month for 25 hours' },
+    appcare: { what: 'Monthly UI/UX support', name: 'the UI/UX support plan', card: 'UI/UX support', monthly: 'AED 10,000 a month for 50 hours' },
     whitelabel: { what: 'White-label', card: 'White-label', custom: 'Sounds like White-label: 80 hours a month, under your name. Hasan shares the pricing directly.' },
     agency: { what: 'An agency project', custom: 'Sounds like a one-off project under your name. Hasan shares the pricing directly.' },
   };
