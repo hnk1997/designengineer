@@ -93,7 +93,7 @@
     agency: { what: 'An agency project', custom: 'Sounds like a one-off project under your name. Hasan shares the pricing directly.' },
   };
   const PROJECTS = { 'A landing page': 'landing', 'A website': 'website', 'A web app': 'webapp', 'A mobile app': 'app' };
-  const FIT = { Yes: 'Works for me', 'It’s a stretch': 'A stretch', 'Need something smaller': 'Need something smaller' };
+  const FIT = { 'Sounds good': 'Sounds good', 'I’d like to talk it through': 'I’d like to talk it through' };
   const SCOPE = [
     { key: 'problem', chips: (brief) => [...new Set([...(ROLES[brief.who]?.problems || []), ...Object.keys(PROBLEMS)]), KNOWN], say: () => 'What’s getting in the way right now?' },
     {
@@ -127,11 +127,9 @@
     if (plan.slow && brief.when === 'Within a month') return `${base}, so a month is tight.${note} ${who} can tell you what’s possible.`;
     return `${base}.${note} ${who} confirms the final price.`;
   };
-  const closing = (answer, pick) => {
+  const closing = (answer) => {
     const done = 'Khalas, your brief is ready.';
-    if (answer === 'It’s a stretch') return `Fair enough. Hasan can look at what to trim. ${done}`;
-    if (answer !== 'Need something smaller') return done;
-    return PLANS[pick?.plan]?.from > 7500 ? `No problem. A landing page starts from AED 7,500, and Hasan can tell you what fits. ${done}` : `No problem. Hasan can tell you what fits. ${done}`;
+    return answer === 'I’d like to talk it through' ? `Good idea. Hasan can walk you through it. ${done}` : done;
   };
   const STARTERS = {
     scope: { ask: 'Solve my problem', say: 'Yalla, grab a karak. What’s getting in the way right now?' },
@@ -983,7 +981,7 @@
       let line;
       if (q && q.key !== 'fit') line = q.say(text, brief);
       else if (q) line = `${suggestion} ${q.say()}`;
-      else if (key === 'fit') line = closing(text, pick);
+      else if (key === 'fit') line = closing(text);
       else line = `${suggestion} Khalas, your brief is ready.`.trim();
       history.push({ role: 'user', content: text }, { role: 'assistant', content: line });
       const mine = run;
@@ -1189,11 +1187,7 @@
     });
 
     if (!fine) {
-      input.addEventListener('pointerdown', () => {
-        if (document.activeElement === input) return;
-        setKb(guess());
-        setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 700); // a scroll, not a tap
-      });
+      // lift only once it's focused: moving the box during the tap pulls it out from under the finger, and the keyboard never opens
       input.addEventListener('focus', () => { if (!kb) setKb(guess()); });
       input.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 80));
     }
