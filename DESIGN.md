@@ -107,8 +107,7 @@ labels, never sentences.
 - Blue on `--dark` is 3.9:1: fine for 24px+ display text and icons, not for small text.
 - White on WhatsApp green is 2:1, which is why the button carries a white glyph, never small
   white text at rest (the hover label is 12px uppercase at 500, accepted as a brand exception).
-- Section grounds alternate dark and paper. The floating CTA reads `[data-dark]` sections and
-  inverts itself to stay visible.
+- Section grounds alternate dark and paper.
 
 ---
 
@@ -186,12 +185,12 @@ Hover (mouse only): the label's letters roll up (`data-roll`) and the arrow slid
 while its twin slides in. The twin is parked at `translateX(-260%)` so it never peeks into a
 44px box. Diagonal arrows (`↗`, external links) leave diagonally the same way.
 
-**Pill** (`.pill`): glass, 12px uppercase, `--ctl` tall. Nav links and the floating CTA's label.
+**Pill** (`.pill`): glass, 12px uppercase, `--ctl` tall. Nav links.
 `.pill--light` = `--ink` fill with `--paper-ink` text.
 
 **Icon square** (`.ico`): `--ctl` square, `--blue` fill, white 14px stroke icon, 1.5 stroke.
 
-**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`.
+**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`. Why me and What I do keep to 2 lines at every width, with the blue line on its own; How I work does on desktop and flows to 3 lines on phones and tablets. Each title answers its own question (why you, what you get, how it works), so they don't repeat each other.
 
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 
@@ -230,7 +229,7 @@ WhatsApp glyph so it's clear where it goes. Both panels share 1 grid cell so swi
 timeline or hours and a check list. `.plan--top` is the "Most popular" plan: 2px blue edge, blue tab on
 top, the 1 solid blue button. Other CTAs are blue tint with a blue arrow square. No black buttons here.
 Every CTA reads `Enquire on WhatsApp`, with a diagonal arrow (`.ico--out`) and a short pre-filled message
-naming that plan (`?text=`). The lead button and rate card link have their own. White-label and Sprint show `Enquire`, never a price. 2 columns under 1180px, a
+naming that plan (`?text=`). The custom plan button and rate card link have their own. White-label and Sprint show `Enquire`, never a price. 2 columns under 1180px, a
 swipeable row with the next card peeking under 768px.
 
 **FAQ** (`.faq`, `.faq-item`): native `<details>` rows with hairlines, a "+" that turns to "×" when open, first
