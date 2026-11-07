@@ -1593,8 +1593,8 @@ img.screen-page { height: auto; }
 .sec-lede { text-wrap: pretty; }
 .sec-lede, .stats-lede, .why-lede { margin: 0; }
 .sec-lede span { color: var(--blue); }
-.why-lede span, #services-lede span { display: block; } /* 2 lines: the statement, then the blue line */
-@media (min-width: 1024px) { #process-lede span { display: block; } } /* too long for 2 lines on phones and tablets, so it flows there */
+.why-lede span { display: block; } /* 2 lines: the statement, then the blue line */
+@media (min-width: 1024px) { #services-lede span, #process-lede span { display: block; } } /* these flow on phones and tablets, so no word sits alone */
 
 /* ── What I do: service rows ───────────────────────────────── */
 .services {
@@ -3385,4 +3385,4 @@ html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::
 }
 
 /* the smallest phones: these titles stay on 2 lines */
-@media (max-width: 374px) { .why-lede, #services-lede { font-size: 7vw; } }
+@media (max-width: 374px) { .why-lede { font-size: 7vw; } }

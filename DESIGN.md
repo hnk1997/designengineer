@@ -36,7 +36,7 @@ over coffee: confident, specific, never salesy.
 
 **Do**
 - Write in the first person, to "you": *"You talk to the person doing the work."*
-- Lead with the claim, then the twist in blue: *"From research to launch day.
+- Lead with the claim, then the twist in blue: *"From first interview to launch day.
   **Every stage, covered.**"*
 - Be specific and concrete: *"Weekly check-ins with real builds you can click, not slides about
   progress."*
@@ -190,7 +190,7 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 
 **Icon square** (`.ico`): `--ctl` square, `--blue` fill, white 14px stroke icon, 1.5 stroke.
 
-**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`. Why me and What I do keep to 2 lines at every width, with the blue line on its own; How I work does on desktop and flows to 3 lines on phones and tablets. Each title answers its own question (why you, what you get, how it works), so they don't repeat each other.
+**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`. Why me keeps to 2 lines at every width, with the blue line on its own. What I do and How I work do on desktop and flow on phones and tablets, so no word sits alone. Each title answers its own question (why you, what you get, how it works), so they don't repeat each other.
 
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 
