@@ -174,7 +174,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 
 All are plain HTML + `styles.css`. Markup patterns below are the real ones; copy them.
 
-**Button** (`.btn`): white label block + blue arrow square, 2px apart, 40px tall. The hero's only button is Solve my problem (`.btn--yalla`): a white label with the orange Yalla logo square and a small chat bubble (`.yalla-says`, Takes 1 minute), which opens Yalla straight into scoping. Its logo breathes, blinks, waves and follows the cursor like the launcher.
+**Button** (`.btn`): white label block + blue arrow square, 2px apart, 40px tall. The hero's only button is Solve my problem (`.btn--yalla`): a white label with the orange Yalla logo square, which opens Yalla straight into scoping. Its logo breathes, blinks, waves and follows the cursor like the launcher.
 ```html
 <a class="btn" href="#contact" data-roll-host>
   <span class="btn-label"><span data-roll>Get in touch</span></span>
@@ -190,7 +190,7 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 
 **Icon square** (`.ico`): `--ctl` square, `--blue` fill, white 14px stroke icon, 1.5 stroke.
 
-**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`. Why me keeps to 2 lines at every width, with the blue line on its own. What I do and How I work do on desktop and flow on phones and tablets, so no word sits alone. Each title answers its own question (why you, what you get, how it works), so they don't repeat each other.
+**Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`. On the homepage the section labels are hidden (`.label.mark`): the words are `.sr-only` and the square becomes an 11px crosshair (`currentColor`), like the stats and What I do rules, so each section is marked and the titles don't move. Only sections whose title sits to the right of the label get it (Track record, Currently building, Why me, What I do, Thought leadership, footer); Selected work, How I work, Pricing and FAQ use `.mark--plain`, which hides it. Selected work has no project name caption under the device either. Why me and Currently building keep to 2 lines at every width, with the blue line on its own. What I do, How I work and Thought leadership do on desktop (1024px and up) and flow on phones and tablets, so no word sits alone. Each title answers its own question (why you, what you get, how it works), so they don't repeat each other.
 
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 

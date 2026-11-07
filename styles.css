@@ -102,6 +102,18 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   text-transform: uppercase;
 }
 .muted { color: var(--ink-3); }
+/* section labels: the words are for screen readers only, and the square becomes a small crosshair like the
+   ones on the stats and What I do rules. It stays under the label's line height, so the titles don't move */
+.label.mark .sq {
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat,
+    linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
+}
+/* only sections whose title sits to the right of the label get the crosshair */
+.label.mark--plain .sq { visibility: hidden; }
+.label.mark::after { content: "\200b"; }
 
 .sq {
   display: inline-block;
@@ -532,8 +544,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 }
 .hero-ctas button.btn { padding: 0; border: 0; background: none; font-family: inherit; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 .btn--yalla { flex: none; gap: 2px; width: fit-content; }
-/* Yalla saying it: a small chat bubble off the logo, its corner pointing back at the mark */
-.yalla-says { align-self: center; margin-left: 10px; padding: 7px 11px; border-radius: 12px 12px 12px 3px; background: var(--glass); box-shadow: inset 0 0 0 1px rgba(243, 243, 243, 0.14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--ink-2); font-size: 13px; font-weight: 400; line-height: 1; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 
 .btn {
   display: flex;
@@ -1017,12 +1027,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   opacity: 0;
 }
 .stage-layer.is-wiping .wipe-edge { opacity: 1; }
-.showcase-caption {
-  display: flex;
-  justify-content: space-between;
-  color: rgba(11, 12, 15, 0.55);
-}
-.showcase-caption [data-caption-idx] { color: var(--paper-ink); font-variant-numeric: tabular-nums; }
 
 /* ── Device mockups ──────────────────────────────────────────
    Screens slot exactly into the frames' screen areas (measured from the source files).
@@ -1593,8 +1597,8 @@ img.screen-page { height: auto; }
 .sec-lede { text-wrap: pretty; }
 .sec-lede, .stats-lede, .why-lede { margin: 0; }
 .sec-lede span { color: var(--blue); }
-.why-lede span { display: block; } /* 2 lines: the statement, then the blue line */
-@media (min-width: 1024px) { #services-lede span, #process-lede span { display: block; } } /* these flow on phones and tablets, so no word sits alone */
+.why-lede span, #building-title span { display: block; } /* 2 lines: the statement, then the blue line */
+@media (min-width: 1024px) { #services-lede span, #process-lede span, #thoughts-lede span { display: block; } } /* these flow on phones and tablets, so no word sits alone */
 
 /* ── What I do: service rows ───────────────────────────────── */
 .services {
@@ -2719,7 +2723,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .building .sec-head { margin-bottom: 28px; }
 .building::before { content: ""; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: var(--paper-line); }
 /* smaller cards, in the right-hand column under the headline (like the lede) */
-.build-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; max-width: 680px; margin: 0 0 0 calc((100% - 24px) / 3 + 24px); padding: 0; list-style: none; }
+.build-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; max-width: 960px; margin: 0 0 0 calc((100% - 24px) / 3 + 24px); padding: 0; list-style: none; }
 .build { display: grid; align-content: start; gap: 12px; min-width: 0; }
 /* the clip, in a plain rounded frame */
 .build-media {
@@ -3014,7 +3018,6 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
     pointer-events: none;
   }
   .showcase-stage { position: relative; height: 100%; padding: 20px 0 8px; }
-  .showcase-caption { display: none; }
   .showcase-steps { display: block; }
   .showcase-step {
     min-height: calc(100svh - var(--stage-h));
@@ -3385,4 +3388,4 @@ html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::
 }
 
 /* the smallest phones: these titles stay on 2 lines */
-@media (max-width: 374px) { .why-lede { font-size: 7vw; } }
+@media (max-width: 374px) { .why-lede, #building-title { font-size: 7vw; } }

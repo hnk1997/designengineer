@@ -214,9 +214,6 @@
     const list = root.querySelector('.showcase-steps');
     const steps = [...root.querySelectorAll('[data-step]')];
     const layers = [...root.querySelectorAll('[data-layer]')];
-    const capIdx = root.querySelector('[data-caption-idx]');
-    const capName = root.querySelector('[data-caption-name]');
-    const names = steps.map((s) => s.querySelector('.showcase-name').textContent);
     const n = steps.length;
     const wide = matchMedia('(min-width: 900px)');
     const WIPE = 0.3; // the wipe runs across this many blocks, centred on each boundary
@@ -228,8 +225,6 @@
       if (a === active) return;
       active = a;
       steps.forEach((s, i) => s.classList.toggle('is-active', i === a));
-      if (capIdx) capIdx.textContent = `${pad(a + 1)} / ${pad(n)}`;
-      capName.textContent = names[a];
     };
 
     const aside = root.querySelector('.showcase-aside');
