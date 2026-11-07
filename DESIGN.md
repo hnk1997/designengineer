@@ -194,7 +194,7 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`.
 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
-inverts on `[data-dark]` sections, hides while the menu is open.
+inverts on `[data-dark]` sections, hides on Pricing and while the menu is open.
 
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 

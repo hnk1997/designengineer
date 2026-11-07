@@ -460,12 +460,13 @@
     if (!cta || !nav || !('IntersectionObserver' in window)) return { setHeroDark() {} };
     let shown = false;
     let heroDark = false;
+    let pricing = false;
     const under = new Set();
     const update = () => {
-      cta.classList.toggle('is-shown', shown);
+      cta.classList.toggle('is-shown', shown && !pricing);
       cta.classList.toggle('on-dark', heroDark || under.size > 0);
-      cta.setAttribute('aria-hidden', String(!shown));
-      cta.tabIndex = shown ? 0 : -1;
+      cta.setAttribute('aria-hidden', String(!shown || pricing));
+      cta.tabIndex = shown && !pricing ? 0 : -1;
     };
     new IntersectionObserver(([e]) => { shown = !e.isIntersecting; update(); }).observe(nav);
     // only the top strip of the screen counts, where the button sits
@@ -474,6 +475,9 @@
       update();
     }, { rootMargin: '0px 0px -93% 0px' });
     document.querySelectorAll('[data-dark]').forEach((el) => io.observe(el));
+    // Pricing has its own buttons, so this one steps aside while the section fills the middle of the screen
+    const section = document.getElementById('pricing');
+    if (section) new IntersectionObserver(([e]) => { pricing = e.isIntersecting; update(); }, { rootMargin: '-50% 0px -50% 0px' }).observe(section);
     update();
     return { setHeroDark(v) { if (v !== heroDark) { heroDark = v; update(); } } };
   }
