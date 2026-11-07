@@ -260,7 +260,7 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 - Letter-by-letter typing on Yalla's heading (clunky, it fades now). It's fine on the short Pricing nudge.
 - A dark quote card, a bigger quote card by the prices, and the sticky testimonial bar that replaced them.
 - A sticky Get in touch button (removed 2026-11-07; the nav button, menu and Yalla remain).
-- "2 project slots open this month" in the hero and pricing: Hasan felt it looked cheap. Crossed-out discount prices were also ruled out.
+- "2 project slots open this month" in the hero and pricing: Hasan felt it looked cheap, then asked for it again on Pricing on 2026-11-07, as a quiet label beside the tabs (`.price-slots`). Keep the number true by hand. Crossed-out discount prices were also ruled out.
 - A second WhatsApp button in the hero: 1 button is enough there.
 - Pricing v1: outlined tabs with a blue fill, black CTA buttons, separate cards with a dark popular card ("needs to feel more SaaS").
 - Dark-glow or "fluid glow" hiring banner; a moving ticker; dark article thumbnails; card hover shadows/lifts.

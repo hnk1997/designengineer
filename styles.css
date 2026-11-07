@@ -2034,6 +2034,9 @@ img.screen-page { height: auto; }
   transition: color 0.3s var(--ease-out);
 }
 .price-card--foot { display: none; }
+.price-left { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.price-slots { display: flex; align-items: center; gap: 8px; margin: 0; color: rgba(11, 12, 15, 0.62); white-space: nowrap; }
+.price-slots i { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
 .price-card svg { flex: none; width: 18px; height: 18px; fill: #1fbe5b; }
 @media (hover: hover) and (pointer: fine) {
   .price-card:hover { color: var(--blue); text-decoration-color: var(--blue); }
