@@ -36,8 +36,8 @@ over coffee: confident, specific, never salesy.
 
 **Do**
 - Write in the first person, to "you": *"You talk to the person doing the work."*
-- Lead with the claim, then the twist in blue: *"Research, design, build, QA and launch.
-  **Agencies split that across 5 people. I don't.**"*
+- Lead with the claim, then the twist in blue: *"From research to launch day.
+  **Every stage, covered.**"*
 - Be specific and concrete: *"Weekly check-ins with real builds you can click, not slides about
   progress."*
 - Use dry wit sparingly, once per block at most: *"Judged by people who are very hard to
@@ -66,7 +66,7 @@ over coffee: confident, specific, never salesy.
 **Patterns that recur**
 | Pattern | Example |
 |---|---|
-| Section lede: statement, then blue payoff | *"You get the designer and the developer. **They just happen to be the same person.**"* |
+| Section lede: statement, then blue payoff | *"6x award-winning work. **Without the agency around it.**"* |
 | Card line: what it is, in one breath | *"An Islamic microfinance bank in Yemen. Leading the design of its new banking app."* |
 | Status, small caps | `IN PROGRESS` · `TAP TO COPY` |
 | Rotating tab title when the visitor leaves | *"No handoffs were harmed"*, *"Figma, meet production"*, *"QA'd on every breakpoint"* |
@@ -167,7 +167,7 @@ Arial at 97% size) so nothing jumps when the font arrives. Weights in use: **400
 | `pointer: coarse` | 44px controls, press feedback instead of hover, no tap highlight |
 | `hover: hover and pointer: fine` | Hover effects (arrow rolls, What I do diagrams, WhatsApp label) |
 
-**Layers (z-index):** content 2–5 · menu 40 · nav 50 · testimonial bar 54 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
+**Layers (z-index):** content 2–5 · menu 40 · nav 50 · floating Get in touch 55 · Yalla 56. The Yalla panel is a `<dialog>` in the top layer.
 
 ---
 
@@ -192,8 +192,6 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 **Icon square** (`.ico`): `--ctl` square, `--blue` fill, white 14px stroke icon, 1.5 stroke.
 
 **Section head** (`.sec-head`): `.label.sec-label` with `.sq` + `.sec-lede` with a blue `<span>`.
-
-**Testimonial bar** (`.proof-bar`): replaces the floating button on Pricing only. White, square, 1 small photo, a short real quote trimmed with `…`, name and role. 68px tall, bottom centre on desktop; 48px, at the top on phones, because Yalla has the bottom corner. Changes every 4s and glides in and out.
 
 **Floating Get in touch** (`.cta-float`): fixed top right, appears once the nav scrolls away,
 inverts on `[data-dark]` sections, hides while the menu is open.

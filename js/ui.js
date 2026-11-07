@@ -460,15 +460,12 @@
     if (!cta || !nav || !('IntersectionObserver' in window)) return { setHeroDark() {} };
     let shown = false;
     let heroDark = false;
-    let pricing = false;
-    const proof = document.querySelector('[data-proof-bar]');
     const under = new Set();
     const update = () => {
-      cta.classList.toggle('is-shown', shown && !pricing);
-      if (proof) proof.classList.toggle('is-shown', shown && pricing);
+      cta.classList.toggle('is-shown', shown);
       cta.classList.toggle('on-dark', heroDark || under.size > 0);
-      cta.setAttribute('aria-hidden', String(!shown || pricing));
-      cta.tabIndex = shown && !pricing ? 0 : -1;
+      cta.setAttribute('aria-hidden', String(!shown));
+      cta.tabIndex = shown ? 0 : -1;
     };
     new IntersectionObserver(([e]) => { shown = !e.isIntersecting; update(); }).observe(nav);
     // only the top strip of the screen counts, where the button sits
@@ -477,19 +474,6 @@
       update();
     }, { rootMargin: '0px 0px -93% 0px' });
     document.querySelectorAll('[data-dark]').forEach((el) => io.observe(el));
-    // on Pricing the short quotes take the button's place, one every 4s
-    const section = document.getElementById('pricing');
-    if (section && proof) {
-      new IntersectionObserver(([e]) => { pricing = e.isIntersecting; update(); }, { rootMargin: '-80% 0px -20% 0px' }).observe(section); // a line low on the screen, so it goes as soon as the FAQ arrives
-      const items = [...proof.children];
-      let at = 0;
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
-        if (!pricing || document.hidden || document.documentElement.classList.contains('yalla-open')) return;
-        items[at].classList.remove('is-on');
-        at = (at + 1) % items.length;
-        items[at].classList.add('is-on');
-      }, 4000);
-    }
     update();
     return { setHeroDark(v) { if (v !== heroDark) { heroDark = v; update(); } } };
   }
