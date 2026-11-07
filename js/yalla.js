@@ -398,7 +398,7 @@
       lockedAt = null;
     }
     /* The sheet never moves or resizes for the keyboard: that's what looked jerky, and left gaps. Only the
-       message box lifts. It lifts the moment you tap, before Safari decides anything, so the box is
+       message box lifts. It lifts as the tap ends, before Safari decides anything, so the box is
        already clear of the keyboard and Safari has no reason to shove the whole page up. */
     const vv = window.visualViewport;
     let kb = 0;
@@ -413,6 +413,7 @@
       if (Math.abs(n - kb) < 2) return;
       kb = n;
       panel.style.setProperty('--kb', `${n}px`);
+      panel.classList.toggle('has-kb', n > 0); // the box needs a solid back once it's over the chat
       const until = performance.now() + 380;
       const follow = () => {
         toEnd();
@@ -1187,7 +1188,15 @@
     });
 
     if (!fine) {
-      // lift only once it's focused: moving the box during the tap pulls it out from under the finger, and the keyboard never opens
+      // lift as the finger comes up: any earlier pulls the box out from under the tap and the keyboard never
+      // opens; any later and Safari has already shoved the whole page up to make room
+      let downY = 0;
+      input.addEventListener('pointerdown', (e) => { downY = e.clientY; });
+      input.addEventListener('pointerup', (e) => {
+        if (document.activeElement === input || Math.abs(e.clientY - downY) > 10) return;
+        setKb(guess());
+        setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 700);
+      });
       input.addEventListener('focus', () => { if (!kb) setKb(guess()); });
       input.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== input) setKb(0); }, 80));
     }

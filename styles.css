@@ -561,7 +561,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   margin-top: 40px;
 }
 .hero-ctas button.btn { padding: 0; border: 0; background: none; font-family: inherit; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
-.btn--yalla { gap: 2px; }
+.btn--yalla { flex: none; gap: 2px; width: fit-content; }
 /* Yalla saying it: a small chat bubble off the logo, its corner pointing back at the mark */
 .yalla-says { align-self: center; margin-left: 10px; padding: 7px 11px; border-radius: 12px 12px 12px 3px; background: var(--glass); box-shadow: inset 0 0 0 1px rgba(243, 243, 243, 0.14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--ink-2); font-size: 13px; font-weight: 400; line-height: 1; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 
@@ -3242,7 +3242,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   :root { --ctl: 44px; --ctl-lg: 44px; }
   html { -webkit-tap-highlight-color: transparent; }
   .btn { height: 44px; }
-  .btn .ico { width: 44px; height: 44px; }
+  .btn .ico, .btn .yc-tile--btn { width: 44px; height: 44px; }
   .tile--quotes .ico { width: 44px; height: 44px; }
   .logo { min-height: 44px; }
   .foot-top, .foot-link { display: inline-flex; align-items: center; min-height: 44px; }
@@ -3288,7 +3288,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 .yc-tile { display: block; flex: none; width: 60px; height: 60px; padding: 5px; border-radius: 50%; background: var(--orange); } /* no clipping: it can jump out of its square */
 .yc-tile--bar { width: 38px; height: 38px; padding: 3px; }
 .yc-tile--hello { width: 88px; height: 88px; padding: 7.5px; }
-.yc-tile--btn { width: auto; height: auto; aspect-ratio: 1; padding: 4px; border-radius: 0; } /* square, like the other buttons' icon blocks; as tall as the button */
+.yc-tile--btn { width: 40px; height: 40px; padding: 4px; border-radius: 0; box-sizing: border-box; } /* a fixed size: Safari stretches a tile sized by aspect-ratio to the full width */
 .yc-tile--think { width: 30px; height: 30px; padding: 2.5px; }
 
 /* held moods. One-off moves (wave, jump, nod…) are played by js/yalla.js */
@@ -3537,6 +3537,7 @@ html.yalla-open main *, html.yalla-open main *::before, html.yalla-open main *::
   .yalla.is-settled::backdrop { background: #fff; }
   .yalla-dock { transform: translateY(calc(var(--kb, 0px) * -1)); transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1); }
   .yalla-scroll { padding-bottom: calc(24px + var(--kb, 0px)); }
+  .yalla.has-kb .yalla-dock { background: #fff; box-shadow: 0 -16px 16px -4px #fff; }
   .yalla-bar { padding-top: env(safe-area-inset-top); }
   .yc-tile--hello { width: 76px; height: 76px; padding: 6.5px; }
   .yalla-lede { margin-top: 22px; }
