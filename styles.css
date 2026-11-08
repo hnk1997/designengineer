@@ -2842,13 +2842,20 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
 
 .socials {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   margin: 120px 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--hair);
 }
 .socials li + li { box-shadow: inset 1px 0 0 var(--hair); }
+/* small laptops and tablets: 6 links don't fit in a row, so 2 rows of 3 */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .socials { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .socials li:nth-child(3n + 1) { box-shadow: none; }
+  .socials li:nth-child(3n + 1) .social { padding-left: 0; }
+  .socials li:nth-child(n + 4) { border-top: 1px solid var(--hair); }
+}
 .social {
   position: relative;
   z-index: 0;
@@ -2959,7 +2966,7 @@ p.faq-a { max-width: 60ch; margin: 0; padding: 0 40px 26px 0; font-size: 17px; l
   .socials { grid-template-columns: 1fr; margin-top: 72px; }
   .socials li + li { box-shadow: inset 0 1px 0 var(--hair); }
   .social, .socials li + li .social { padding: 18px 0; }
-  .foot { flex-wrap: wrap; margin-top: 56px; }
+  .foot { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4px 16px; margin-top: 56px; } /* 2 tidy columns: year and place, then Privacy and Back to top */
   .posts { grid-template-columns: 1fr; gap: 40px; }
   .posts-more { margin-top: 64px; }
   .post-row { grid-template-columns: minmax(0, 1fr) var(--ctl); gap: 10px 16px; padding: 20px 0; }
