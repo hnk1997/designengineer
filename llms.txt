@@ -1,6 +1,6 @@
 # Hasan Nawaz
 
-> Hasan Nawaz is a design engineering partner in Dubai. He designs and builds websites and web apps, and designs mobile apps, for founders, agencies and product teams. One person does the research, design, front end, QA and launch.
+> Hasan Nawaz is a design engineering partner in Dubai. He designs and builds websites and web apps, and designs mobile apps, for founders, agencies and product teams. He helps them decide what's worth building, then designs and ships it to enterprise standard. One person makes the calls and does the research, design, front end, QA and launch.
 
 - Based in Dubai, United Arab Emirates. 7+ years of experience.
 - 6x award-winning, including Cannes Lions and the Loeries.
@@ -11,6 +11,7 @@
 
 ## Services
 
+- Product and tech advice on its own: audits, discovery and advisory
 - Research, design, design systems, front-end build, SEO and GEO, QA, analytics and launch
 - Ways to work: a fixed-scope project, a monthly partnership, or white-label for agencies
 
@@ -26,7 +27,7 @@ Every project includes 2 weeks of support after handoff.
 
 Partnerships (billed monthly):
 - Maintain: AED 3,500 a month, 16 hours
-- UI/UX support: AED 10,000 a month, 50 hours
+- Consultant: AED 7,000 a month, 25 hours: product strategy, UX and product audits, tech and stack advice, design and build reviews, roadmap and priorities
 - White-label: 80 hours a month, pricing on enquiry
 - Sprint: 160 hours a month, pricing on enquiry
 
@@ -45,7 +46,10 @@ Full rate card available on request.
 I’m a design engineering partner in Dubai with 7+ years of experience. I work with founders, agencies and product teams, and I’m 6x award-winning, including Cannes Lions and the Loeries.
 
 **What does a design engineering partner do?**
-Research, design, build, QA and launch, all from 1 person. You talk to whoever is doing the work, and what you approved is what ships.
+I help you make the right product and tech decisions, then design, build, QA and launch what we decide, all as 1 person. You talk to whoever is making the calls and doing the work, and what you approved is what ships.
+
+**Can I hire you just for advice?**
+Yes. Audits, discovery and advisory are all ways to work with me, one-off or monthly on the Consultant plan. I look at your product, your data or your plans and tell you what I’d do, and you decide who builds it.
 
 **How much does a website cost in Dubai?**
 With me, a website starts from AED 15,000 and a landing page from AED 7,500. App UI/UX starts from AED 20,000 and platforms from AED 25,000. The full rate card is available on request.
@@ -63,7 +67,7 @@ I design them and make a coded prototype, then hand over to your developers. I b
 Yes. White-label is built for agencies. I join your team under your name, and your client sees your logo, not mine.
 
 **Do you offer monthly support?**
-Yes. Maintain starts at AED 3,500 a month for live websites, and there are plans for apps and big launches too. Paid monthly in advance. Cancel anytime.
+Yes. Maintain starts at AED 3,500 a month for live websites, and there are plans for design and tech advice, agencies and big launches too. Paid monthly in advance. Cancel anytime.
 
 **How many projects do you take on at once?**
 2 at a time, so yours gets my full attention. If I’m full, I’ll tell you when I can start.

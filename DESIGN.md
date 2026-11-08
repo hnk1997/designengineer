@@ -32,12 +32,15 @@ a senior engineer built it.
 ## 2. Tone of voice
 
 Human, first person, plain-spoken, with a dry edge. Like a senior designer talking to a founder
-over coffee: confident, specific, never salesy.
+over coffee: confident, specific, never salesy. He comes across as the expert you go to for design
+and tech advice, who then builds it: judgment first, execution second.
 
 **Do**
-- Write in the first person, to "you": *"You talk to the person doing the work."*
-- Lead with the claim, then the twist in blue: *"From first interview to launch day.
-  **Every stage, covered.**"*
+- Write in the first person, to "you": *"You talk to the person making the calls. And doing the work."*
+- Lead with judgment, then the making: *"Before anything’s drawn, I tell you what’s worth building,
+  what isn’t, and why."* Avoid coverage words that make him sound like a pair of hands ("every stage, covered").
+- Lead with the claim, then the twist in blue: *"From the first hard question
+  **to launch day.**"*
 - Be specific and concrete: *"Weekly check-ins with real builds you can click, not slides about
   progress."*
 - Use dry wit sparingly, once per block at most: *"Judged by people who are very hard to
@@ -194,7 +197,7 @@ while its twin slides in. The twin is parked at `translateX(-260%)` so it never 
 
 **Reply promise:** `I usually reply within a few hours` sits at the 3 decision points only: pricing, the footer and Yalla's brief card, not on every button.
 
-**WhatsApp entry points:** Yalla, menu (`.menu-wa`), the We talk step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and every
+**WhatsApp entry points:** Yalla, menu (`.menu-wa`), the I diagnose step (`.step-link`), end of What I do (`.svc-cta`), pricing, footer, and every
 article's nav, menu and aside, which all say `WhatsApp me` (`.ico--wa`) instead of Get in touch. `.btn--green` is the green glyph square on any button. All pre-fill a message;
 the general one is `Hi Hasan, can we talk?`
 
@@ -226,7 +229,7 @@ white glyph). A toggle, Projects and Partnerships (`.price-tabs`: white thumb in
 `ui.js initPricing`, arrow keys work), with `Ask for the full rate card on WhatsApp` opposite it, with a
 WhatsApp glyph so it's clear where it goes. Both panels share 1 grid cell so switching never moves the page.
 **Plan card** (`.plan`): 4 white columns in 1 panel split by hairlines. Name, best for, price, CTA, then
-timeline or hours and a check list. `.plan--top` is the "Most popular" plan: 2px blue edge, blue tab on
+timeline or hours and a check list. `.plan--top` is the "Promoted" plan (tag text changed from Most popular on 2026-11-09): 2px blue edge, blue tab on
 top, the 1 solid blue button. Other CTAs are blue tint with a blue arrow square. No black buttons here.
 Every CTA reads `Enquire on WhatsApp`, with a diagonal arrow (`.ico--out`) and a short pre-filled message
 naming that plan (`?text=`). The custom plan button and rate card link have their own. White-label and Sprint show `Enquire`, never a price. 2 columns under 1180px, a

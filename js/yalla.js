@@ -11,14 +11,15 @@
   const DAILY = 50;
   // when the day's AI runs out, Yalla keeps helping from these. Facts only: keep in step with llms.txt
   const WRITTEN = [
-    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, app design from AED 20,000, and web apps from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
-    [/\b(how long|timelines?|weeks?|deadline|turnaround)\b/i, 'A landing page takes about 2 weeks, a website 4–6 weeks, a web app 6–10 weeks and app design 4–8 weeks. Hasan can tell you what’s realistic for yours.'],
-    [/\b(monthly|partnerships?|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and UI/UX support is AED 10,000 a month for 50 hours. Both are paid monthly in advance, and you can cancel anytime.'],
+    [/\b(advice|advise|advisory|audits?|consult\w*|second opinion|discovery)\b/i, 'Yes, you can hire Hasan just for advice: audits, discovery and advisory. He looks at your product, your data or your plans and tells you what he’d do, and you decide who builds it.'],
+    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, App UI/UX from AED 20,000, and platforms from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
+    [/\b(how long|timelines?|weeks?|deadline|turnaround)\b/i, 'A landing page takes about 2 weeks, a website 4–6 weeks, a platform 6–10 weeks and App UI/UX 4–8 weeks. Hasan can tell you what’s realistic for yours.'],
+    [/\b(monthly|partnerships?|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 3,500 a month for 16 hours on a live site, and the Consultant plan is AED 7,000 a month for 25 hours of product and tech advice. Both are paid monthly in advance, and you can cancel anytime.'],
     [/\b(agenc\w*|white.?label)\b/i, 'White-label is built for agencies. Hasan joins your team under your name, and your client sees your logo, not his.'],
     [/\b(mobile|ios|android|apps?)\b/i, 'Hasan designs mobile apps and makes a coded prototype, then hands over to your developers. He builds the front end of websites and web platforms himself.'],
     [/\b(seo|geo|google|search)\b/i, 'SEO and GEO are part of every landing page, website and platform, so you can be found on search engines and AI assistants.'],
     [/\b(portfolio|case stud\w*|examples?|clients?|work|projects?)\b/i, 'Here’s the good stuff. Tap any of them to see it on the page.', 'work'],
-    [/\b(process|steps?|start\w*|how (do|does) (it|this|you))\b/i, 'You talk to Hasan the whole way. It starts with a short call about the problem, then you agree scope, timeline and cost in writing before anything starts.', 'process'],
+    [/\b(process|steps?|start\w*|how (do|does) (it|this|you))\b/i, 'You talk to Hasan the whole way. It starts with a short call where he tells you honestly what he’d do, even if that isn’t hiring him, then you agree scope, timeline and cost in writing before anything starts.', 'process'],
     [/\b(who|about|hasan|experience|awards?)\b/i, 'Hasan is a design engineering partner in Dubai with 7+ years of experience. He’s 6x award-winning, including Cannes Lions and the Loeries.'],
   ];
   const RESTING = 'I’m on a karak break, so I can’t answer that one right now. I can still scope your project, or Hasan can answer directly.';
@@ -63,8 +64,8 @@
       options: [{ text: 'Ongoing', plan: 'whitelabel' }, { text: 'One project', plan: 'agency' }],
     },
     'I need ongoing help': {
-      say: 'Good to keep things moving. Is it a live site, or an app in development?',
-      options: [{ text: 'A live site', plan: 'maintain' }, { text: 'An app in development', plan: 'appcare' }],
+      say: 'Good to keep things moving. Is it a live site, or advice on the big calls?',
+      options: [{ text: 'A live site', plan: 'maintain' }, { text: 'Product and tech advice', plan: 'consult' }],
     },
   };
   const KNOWN = 'I already know what I need';
@@ -97,10 +98,10 @@
   const PLANS = {
     landing: { what: 'A landing page', name: 'a landing page', card: 'Landing page', from: 7500, time: 'about 2 weeks' },
     website: { what: 'A website', name: 'a website', card: 'Website', from: 15000, time: 'about 4–6 weeks', slow: true },
-    webapp: { what: 'A web app', name: 'a web app', card: 'Platform', from: 25000, time: 'about 6–10 weeks', slow: true },
-    app: { what: 'App design', name: 'app design', card: 'App UI/UX', from: 20000, time: 'about 4–8 weeks', slow: true, note: ' Hasan designs it and your developers build it.' },
+    webapp: { what: 'A web app', name: 'a platform', card: 'Platform', from: 25000, time: 'about 6–10 weeks', slow: true },
+    app: { what: 'App design', name: 'an App UI/UX project', card: 'App UI/UX', from: 20000, time: 'about 4–8 weeks', slow: true, note: ' Hasan designs it and your developers build it.' },
     maintain: { what: 'Monthly site support', name: 'the Maintain plan', card: 'Maintain', monthly: 'AED 3,500 a month for 16 hours' },
-    appcare: { what: 'Monthly UI/UX support', name: 'the UI/UX support plan', card: 'UI/UX support', monthly: 'AED 10,000 a month for 50 hours' },
+    consult: { what: 'Design and tech advice', name: 'the Consultant plan', card: 'Consultant', monthly: 'AED 7,000 a month for 25 hours' },
     whitelabel: { what: 'White-label', card: 'White-label', custom: 'Sounds like White-label: 80 hours a month, under your name. Hasan shares the pricing directly.' },
     agency: { what: 'An agency project', custom: 'Sounds like a one-off project under your name. Hasan shares the pricing directly.' },
   };
@@ -132,7 +133,7 @@
     if (plan.custom) return plan.custom;
     if (plan.monthly) return `Sounds like ${plan.name}: ${plan.monthly}. Hasan confirms what fits.`;
     const from = `AED ${plan.from.toLocaleString('en-US')}`;
-    if (pick.unsure) return `Sounds like a web app or app design. Both start from ${from}, and Hasan can help you decide.`;
+    if (pick.unsure) return `Sounds like a Platform or App UI/UX project. Platforms start from AED 25,000 and App UI/UX from AED 20,000, and Hasan can help you decide.`;
     const note = pick.noDev ? ' Hasan designs it, and you’d need developers to build it.' : (plan.note || '');
     const who = note ? 'He' : 'Hasan';
     const base = `Sounds like ${plan.name}. It starts from ${from} and usually takes ${plan.time}`;

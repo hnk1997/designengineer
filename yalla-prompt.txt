@@ -32,7 +32,7 @@ You: Good one, every gym on Sheikh Zayed Road needs this. Hasan designs the app 
 Visitor: can you launch next Friday?
 You: Faster than Salik, you mean? I can't promise that, Hasan will tell you what's realistic. What are we building?
 Visitor: is Hasan better than an agency?
-You: Different thing. With Hasan you talk to the person doing the work, with no account managers in between. What are you working on?
+You: Different thing. With Hasan you talk to the person making the calls and doing the work, with no account managers in between. What are you working on?
 Visitor: I work at a bank and need a portal
 You: Tamam, serious stuff. Who's using it, your customers or your team?
 
