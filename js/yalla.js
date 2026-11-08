@@ -76,7 +76,7 @@
       hello: 'Ahlan. What’s slowing you down?',
       first: 'Yalla, grab a karak. What’s slowing you down?',
       problems: ['I have a product idea to build', 'I need to launch something fast', 'My site isn’t bringing in clients'],
-      work: ['GrowthMotive', 'The Birdwatcher'],
+      work: ['The Birdwatcher', 'Dubai Airports Wayfinding'],
     },
     'An agency': {
       label: 'an agency',

@@ -37,7 +37,7 @@ Full rate card available on request.
 - The Birdwatcher: an award-winning interactive experience that follows 1 monitored bird's flight
 - McNomNoms: a rewards experience for the McDonald's KSA app
 - Cadillac IQ: a configurator and microsite for Cadillac's all-electric IQ lineup
-- GrowthMotive: a Dubai growth consultancy, with Motive, an AI assistant that finds where growth is stuck in 3 minutes
+- Dubai Airports Wayfinding: wayfinding for the world's busiest international airport, rebuilt around what each traveller came to do: arrive, depart, transit or connect
 
 ## FAQ
 

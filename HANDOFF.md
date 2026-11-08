@@ -88,7 +88,7 @@ Shipped to product.hasannawaz.com:
 - About → Work Experience: new **Design Engineering Partner** (Independent · 2026 - Present) with the partner paragraph (§8); MRM MENAT now 2024 - 2026.
 - Home shows the top 4 case studies (Sastaticket search to book, Sastaticket Wallet, Aramco, Design System) and a "See more case studies" button (`.hn-more-cta`, `hn-cta hn-cta-secondary`) to the new **`case-studies.html`**: the same shell as the home page (nav, glow, cards, footer) with KFH Capital, Dubai Airports, Cadillac and Kia, a "More case studies" heading instead of the photo hero, and a "Back to selected case studies" button. It was cut from `index.html` by script; if the home page's card markup changes, rebuild it the same way (or edit both).
 
-Optional cleanup still open: `assets/work/kia-tasman*` and `assets/work/dubai-airports*` are unused (kept in case he switches back); `assets/building/growthmotive-logo.svg` and the `.build-logo--gm` CSS rule are unused; each step's hidden `.showcase-media` copy of the device markup is never shown (`display: none` everywhere) and could go.
+Optional cleanup still open: `assets/work/kia-tasman*` and `assets/work/growthmotive*` are unused (kept in case he switches back); Dubai Airports has no `-m` phone-size files (its phone reel is small already); `assets/building/growthmotive-logo.svg` and the `.build-logo--gm` CSS rule are unused; each step's hidden `.showcase-media` copy of the device markup is never shown (`display: none` everywhere) and could go.
 
 ---
 
@@ -102,7 +102,7 @@ Static HTML, one `styles.css`, classic scripts on `window.HC` (`js/ui.js`, `js/t
    - **Mobile scroll:** on touch screens the hold-back and frame shrink run as CSS scroll-driven animations (`hero-hold`, `hero-shrink` in `styles.css`) so they stay in step with the finger; desktop keeps the JS version (`applyScroll` in `main.js`). Address-bar resizes no longer resize the canvas. A pinned (sticky) version was tried and rejected.
    - Gotcha: `--drift` is registered as an `<integer>` `@property` for the Why me tile, so CSS reads the hero's `--drift: 0.7` as 0. JS falls back to 0.7, and the `hero-hold` keyframe writes 0.7 out. Don't rely on `var(--drift)` in hero CSS.
 2. **Stats / Track record** — in this order: 6x awards, 15+ enterprise brands, 2M+ people, 10+ industries (count-up).
-3. **Selected work** (`#work`) — sticky device stage with wipes between projects. Order: **The Birdwatcher** (laptop) · **McNomNoms** (phone) · **Cadillac IQ** (laptop) · **GrowthMotive** (laptop).  On phones/tablets the stage pins to the top half and the text scrolls below. Clips play only while their layer shows. The phone mockup is sized off the laptop (1.5× the laptop's height, via container units on `.stage-layers`); 1.2× was too small, full stage height too big.
+3. **Selected work** (`#work`) — sticky device stage with wipes between projects. Order: **The Birdwatcher** (laptop) · **McNomNoms** (phone) · **Cadillac IQ** (laptop) · **Dubai Airports Wayfinding** (phone). GrowthMotive was swapped out for Dubai Airports on 2026-11-08; its reel files stay in `assets/work/` in case he switches back.  On phones/tablets the stage pins to the top half and the text scrolls below. Clips play only while their layer shows. The phone mockup is sized off the laptop (1.5× the laptop's height, via container units on `.stage-layers`); 1.2× was too small, full stage height too big.
 4. **Currently building** (compact, right after the work, because it shows Hasan is busy) — BrokerConnector (looping 3D city clip) and Kuraimi Islamic Microfinance Bank (logo bloom + home-screen teaser).
 5. **Why me** — title "6x award-winning work. Without the agency around it.", then bento tiles (1 partner no drift, activity log, brands, 6x award wreath, quotes with client photos from `assets/people/`).
 6. **What I do** (`#services`) — title "From first interview to launch day. Every stage, covered.", then 5 rows (Research, Design, Build, QA, Launch). Desktop: hover plays the row's diagram. Touch: the row crossing mid-screen plays.
@@ -182,11 +182,11 @@ Current reels and how each was made:
 | The Birdwatcher | Hasan's screen recording `~/Desktop/Screen Recording 2026-10-28 at 4.46.12 AM.mov` | `reel cut` + `scripts/reel/birdwatcher.json` |
 | McNomNoms | Figma SVGs `~/Desktop/mcnomnoms/` | `journey.js` + `scripts/reel/mcnomnoms/journey.html` → `render.py` (scale 1.5) → `reel frames` (H.264 1.4 Mbps, HEVC 0.94 Mbps) |
 | Cadillac IQ | Hasan's recording `~/Desktop/cadillac scroller2.mp4` (the lineup carousel), used whole | `reel cut` + `scripts/reel/cadillac.json` (1.5x, `zoom: 1.06`). Earlier versions in `hasancooks2-workspace/old-reels/` |
-| GrowthMotive | Live site https://www.growthmotive.co/ via `capture.py VIRTUAL=1`; takes in `hasancooks2-workspace/recordings/` | `reel cut` + `scripts/reel/growthmotive.json` (28.5 s, H.264 1.4 Mbps / HEVC 1.1 Mbps). Hero + Motive from `growthmotive-motive-flow.mp4`, stats and the wipe into Work from `growthmotive-home-boxes-work.mp4`, the 4 Boxes from `growthmotive-boxes-long.mp4` |
+| GrowthMotive (unused now) | Live site https://www.growthmotive.co/ via `capture.py VIRTUAL=1`; takes in `hasancooks2-workspace/recordings/` | `reel cut` + `scripts/reel/growthmotive.json` (28.5 s, H.264 1.4 Mbps / HEVC 1.1 Mbps). Hero + Motive from `growthmotive-motive-flow.mp4`, stats and the wipe into Work from `growthmotive-home-boxes-work.mp4`, the 4 Boxes from `growthmotive-boxes-long.mp4` |
 | BrokerConnector (building) | Local site `~/Desktop/Shortcuts/BrokerConnector/BrokerConnector 3/index.html` | `capture.py` with seam crossfade (8 s loop), 1200×750 |
 | Kuraimi (building) | Figma SVGs `~/Downloads/Kuraimi/` | `scripts/reel/kuraimi/journey.html` → `render.py`, 1200×750 |
 | Kia Tasman (unused now) | Figma SVGs `~/Desktop/kia tasman/` | `scripts/reel/kia/journey.html` |
-| Dubai Airports (unused now) | Figma SVGs `~/Desktop/dxb/` | `scripts/reel/dxb/journey.html` |
+| Dubai Airports | Figma SVGs `~/Desktop/dxb/` | `scripts/reel/dxb/journey.html` |
 
 **GrowthMotive Boxes take, to redo it:** the Boxes switch on click (`.acc__item`), and clicking an open one does nothing, so the take calls the site's own `window.GMBoxes.open(item)`. Viewport 1512×982, `SETUP` scrolls `.services__grid` to 163 px from the top, `ACTIONS` open Box 0–3 at 1.2 / 5.0 / 8.8 / 12.6 s (3.8 s each), `LOOP=18`, `XFADE=0`. The site leaves GrowthBox's "+AED 2.4M" label up when LoyaltyBox opens; an action at 12.64 s clears any `.boxviz` leaf whose text contains "AED". Box animations live in the site's `js/main.js` (`services()`, `FX`).
 
@@ -282,7 +282,7 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 1. **Phone number:** the CVs say +971 54 **477** 5306; the website's WhatsApp link says +971 54 **794** 5306. Ask Hasan which is right and fix the other.
 2. Portfolio "Download Resume" button (About page) links a Google Drive file nobody here can see; ask Hasan to check it's the CV he wants.
 3. When a case study is ready, add a real link to that project in Selected work.
-4. GrowthMotive reel is 28.5 s; if he finds it long, drop CRMBox or trim the opening (~22 s).
+4. GrowthMotive is out of Selected work. The LinkedIn role text (§8) still names it, which is fine since it's real work, but Hasan may want to update it.
 5. Optional: a thin blue loading line on a device screen while its reel buffers (offered, not built). Phones could also preload all 4 reels now that the phone files are small.
 6. **Check on a real phone:** the keyboard fix, the jump when it opens, the Solve my problem button width (the logo block stretched in Safari) and blinking behind Yalla. None can be proven in a desktop browser. Inspect Element never shows a phone keyboard.
 7. **Hasan to answer:** should the hero button show the I am row first (it skips it now)? Does he take one-off agency projects? Is the work order in `ROLES` right?
