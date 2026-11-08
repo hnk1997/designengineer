@@ -102,17 +102,9 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   text-transform: uppercase;
 }
 .muted { color: var(--ink-3); }
-/* section labels: the words are for screen readers only, and the square becomes a small crosshair like the
-   ones on the stats and What I do rules. It stays under the label's line height, so the titles don't move */
-.label.mark .sq {
-  width: 11px;
-  height: 11px;
-  background:
-    linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat,
-    linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
-}
-/* only sections whose title sits to the right of the label get the crosshair */
-.label.mark--plain .sq { visibility: hidden; }
+/* section labels are hidden: the words stay for screen readers, and the hidden square plus an invisible
+   character keep each label's size, so the titles sit exactly where they did */
+.label.mark .sq { visibility: hidden; }
 .label.mark::after { content: "\200b"; }
 
 .sq {
