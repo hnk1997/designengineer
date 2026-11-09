@@ -613,6 +613,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 .hero-intro {
   max-width: 34ch;
+  text-wrap: pretty; /* keeps the 3 full lines, but never leaves 1 word alone on the last */
   font-size: 18px;
   line-height: 1.4;
   letter-spacing: -0.01em;
