@@ -6,7 +6,7 @@
   const DIMS = { w: 3.2, d: 1.95, t: 0.07 };
 
   const LAYERS = [
-    { key: 'idea', idx: '01', name: 'Idea', meta: 'Napkin sketch, taken seriously', glow: 0.9, anchor: [0.75, -0.55] },
+    { key: 'idea', idx: '01', name: 'Diagnose', meta: 'What’s worth building, and what isn’t', glow: 0.9, anchor: [0.75, -0.55] },
     { key: 'structure', idx: '02', name: 'Structure', meta: 'Flows, wireframes, the boring bits that matter', glow: 0.75, anchor: [0.62, -0.35] },
     { key: 'design', idx: '03', name: 'Design', meta: 'Interface and design system', glow: 0.32, anchor: [0.7, -0.5] },
     { key: 'build', idx: '04', name: 'Build', meta: 'Production front-end, not a prototype', glow: 0.8, anchor: [0.66, -0.3] },
