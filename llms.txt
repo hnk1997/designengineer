@@ -26,7 +26,7 @@ Projects, starting prices:
 Every project includes 2 weeks of support after handoff.
 
 Partnerships (billed monthly):
-- Maintain: AED 3,500 a month, 16 hours
+- Maintain: AED 5,000 a month, 20 hours
 - Consultant: AED 7,000 a month, 25 hours: product strategy, UX and product audits, tech and stack advice, design and build reviews, roadmap and priorities
 - White-label: 80 hours a month, pricing on enquiry
 - Sprint: 160 hours a month, pricing on enquiry
@@ -67,7 +67,7 @@ I design them and make a coded prototype, then hand over to your developers. I b
 Yes. White-label is built for agencies. I join your team under your name, and your client sees your logo, not mine.
 
 **Do you offer monthly support?**
-Yes. Maintain starts at AED 3,500 a month for live websites, and there are plans for design and tech advice, agencies and big launches too. Paid monthly in advance. Cancel anytime.
+Yes. Maintain starts at AED 5,000 a month for live websites, and there are plans for design and tech advice, agencies and big launches too. Paid monthly in advance. Cancel anytime.
 
 **How many projects do you take on at once?**
 2 at a time, so yours gets my full attention. If I’m full, I’ll tell you when I can start.
