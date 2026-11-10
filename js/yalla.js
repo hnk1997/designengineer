@@ -23,7 +23,7 @@
     [/\b(who|about|hasan|experience|awards?)\b/i, 'Hasan is a design engineering partner in Dubai with 7+ years of experience. He’s 6x award-winning, including Cannes Lions and the Loeries.'],
   ];
   const RESTING = 'I’m on a karak break, so I can’t answer that one right now. I can still scope your project, or Hasan can answer directly.';
-  const FIELDS = [['problem', 'Problem'], ['detail', 'Details'], ['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
+  const FIELDS = [['problem', 'Problem'], ['cause', 'Situation'], ['detail', 'Details'], ['what', 'Project'], ['who', 'For'], ['when', 'Timing'], ['budget', 'Budget']];
   const TOPICS = {
     pricing: {
       re: /\b(pric\w*|costs?|how much|rates?|aed|plans?)\b/i,
@@ -41,22 +41,48 @@
   // scoping is guided and written, so it's instant, costs nothing and works even if the model is down
   // the flavour goes at the start and the end. In between it reacts to the answer, in plain words
   // it starts from the problem, not the deliverable: people know what's wrong before they know what to buy.
-  // the second question is what makes the suggestion genuine: it's the one that changes the plan
+  // the second question is what makes the suggestion genuine: it's the one that changes the plan.
+  // some problems get a diagnosis first: Yalla offers the likely causes, so the visitor never has to
+  // diagnose themselves, and it says honestly when the answer is advice rather than a build
   const PROBLEMS = {
     'I need to launch something fast': {
       say: 'Fast is good. What are you launching?',
       options: [{ text: 'A campaign or offer', plan: 'landing' }, { text: 'A new business', plan: 'website' }],
     },
     'My site isn’t bringing in clients': {
-      say: 'A site should earn its keep. What should it sell?',
+      diagnose: {
+        say: 'A site should earn its keep. It’s usually 1 of 3 things. Which sounds closest?',
+        options: [
+          { text: 'Not many people visit', note: 'Not enough visitors', plan: 'audit', line: 'Then a redesign alone won’t fix it, because the gap is getting found. Hasan would look at your site and numbers first and tell you honestly where to start.' },
+          { text: 'They visit but don’t get in touch', note: 'Visitors don’t get in touch', line: 'That’s usually the site itself: an unclear offer, a slow page or no obvious next step. Very fixable.' },
+          { text: 'I’m not sure', note: 'Not sure why yet', plan: 'audit', line: 'Then don’t guess with a redesign. Hasan can look at your numbers first and tell you which it is.' },
+        ],
+      },
+      say: 'What should it sell?',
       options: [{ text: 'One offer', plan: 'landing' }, { text: 'The whole business', plan: 'website' }],
     },
     'I have a product idea to build': {
-      say: 'The fun part. Where will people use it?',
+      diagnose: {
+        say: 'The fun part. Before anything gets built, how far along is it?',
+        options: [
+          { text: 'Still an idea', note: 'Still an idea', plan: 'audit', line: 'Then the first job is deciding what’s worth building, not building all of it. Hasan would start with discovery: who it’s for, what to make first and what to leave out.' },
+          { text: 'Tested with real users', note: 'Tested with users', line: 'Good, that’s the step most people skip.' },
+          { text: 'Partly built already', note: 'Partly built', line: 'Then it’s worth looking at what’s there before adding more.' },
+        ],
+      },
+      say: 'Where will people use it?',
       options: [{ text: 'In a browser', plan: 'webapp' }, { text: 'On their phone', plan: 'app' }, { text: 'Not sure yet', plan: 'webapp', unsure: true }],
     },
     'My app is hard to use': {
-      say: 'That’s costing you users. Do you have developers?',
+      diagnose: {
+        say: 'That’s costing you users. Where do people get stuck?',
+        options: [
+          { text: 'Signing up', note: 'Stuck at sign-up', line: 'That’s the most expensive place to lose people, and often the quickest to fix.' },
+          { text: 'Finding their way around', note: 'Hard to find things', line: 'That’s usually the structure more than the looks, so the fix starts with the flows.' },
+          { text: 'I’m not sure where', note: 'Not sure where yet', plan: 'audit', line: 'Then the first step is finding out. Hasan can audit the app and your numbers and show you where people drop off.' },
+        ],
+      },
+      say: 'Do you have developers?',
       options: [{ text: 'Yes, we do', plan: 'app', note: 'Has developers' }, { text: 'Not yet', plan: 'app', note: 'No developers yet', noDev: true }],
     },
     'My team needs extra hands': {
@@ -104,14 +130,20 @@
     consult: { what: 'Design and tech advice', name: 'the Consultant plan', card: 'Consultant', monthly: 'AED 7,000 a month for 25 hours' },
     whitelabel: { what: 'White-label', card: 'White-label', custom: 'Sounds like White-label: 80 hours a month, under your name. Hasan shares the pricing directly.' },
     agency: { what: 'An agency project', custom: 'Sounds like a one-off project under your name. Hasan shares the pricing directly.' },
+    audit: { what: 'Advice first: an audit or discovery', card: 'Consultant', custom: 'So start with advice, not a build. Hasan does audits and discovery one-off, or monthly on the Consultant plan at AED 7,000 a month for 25 hours. You decide what happens next.' },
   };
   const PROJECTS = { 'A landing page': 'landing', 'A website': 'website', 'A web app': 'webapp', 'A mobile app': 'app' };
   const FIT = { 'Sounds good': 'Sounds good', 'I’d like to talk it through': 'I’d like to talk it through' };
   const SCOPE = [
     { key: 'problem', chips: (brief) => [...new Set([...(ROLES[brief.who]?.problems || []), ...Object.keys(PROBLEMS)]), KNOWN], say: () => 'What’s getting in the way right now?' },
     {
+      key: 'cause',
+      say: (a, brief = {}) => PROBLEMS[brief.problem]?.diagnose?.say || 'Which sounds closest?',
+      chips: (brief) => (PROBLEMS[brief.problem]?.diagnose?.options || []).map((o) => o.text),
+    },
+    {
       key: 'detail',
-      say: (a) => PROBLEMS[a]?.say || 'Got it. Which of these is closest?',
+      say: (a, brief = {}) => PROBLEMS[brief.problem]?.say || 'Got it. Which of these is closest?',
       chips: (brief) => (PROBLEMS[brief.problem]?.options || []).map((o) => o.text),
     },
     {
@@ -121,7 +153,7 @@
     },
     {
       key: 'when',
-      say: (a, brief = {}) => ({ 'My app is hard to use': 'Got it. When do you want it sorted?', 'My team needs extra hands': 'Got it. When do you need someone?' }[brief.problem] || 'Got it. When do you want it live?'),
+      say: (a, brief = {}) => `Got it. ${brief.what === PLANS.audit.what ? 'When would you like to start?' : { 'My app is hard to use': 'When do you want it sorted?', 'My team needs extra hands': 'When do you need someone?' }[brief.problem] || 'When do you want it live?'}`,
       chips: () => ['Within a month', 'In 2–3 months', 'No fixed date'],
     },
     { key: 'fit', say: () => 'Does that work for you?', chips: () => Object.keys(FIT) },
@@ -826,7 +858,7 @@
         // seeing the end makes people finish
         const plan = PLANS[pick?.plan];
         const short = plan?.monthly || plan?.custom;
-        setProgress(({ problem: 1, detail: 2, what: 2, when: 3, fit: short ? 3 : 4 }[key]) / (short ? 4 : 5));
+        setProgress(({ problem: 1, cause: 2, detail: 2, what: 2, when: 3, fit: short ? 3 : 4 }[key]) / (short ? 4 : 5));
         toEnd();
         return;
       }
@@ -1016,6 +1048,7 @@
       const plan = PLANS[pick?.plan];
       const settled = {
         problem: () => brief.problem || brief.what,
+        cause: () => pick || brief.cause || !PROBLEMS[brief.problem]?.diagnose,
         detail: () => pick || brief.detail || !PROBLEMS[brief.problem],
         what: () => pick || brief.what,
         when: () => brief.when || plan?.monthly,
@@ -1028,6 +1061,13 @@
       if (key === 'problem') {
         if (text !== KNOWN) brief.problem = text.slice(0, 120);
         if (PROBLEMS[text]) track('yalla_option', { yalla_option: text });
+      } else if (key === 'cause') {
+        const option = PROBLEMS[brief.problem]?.diagnose?.options.find((o) => o.text === text);
+        brief.cause = (option?.note || text).slice(0, 120);
+        if (option?.plan) {
+          pick = option;
+          brief.what = PLANS[option.plan].what;
+        }
       } else if (key === 'detail') {
         const option = PROBLEMS[brief.problem]?.options.find((o) => o.text === text);
         brief.detail = (option?.note || text).slice(0, 120);
@@ -1054,6 +1094,7 @@
       renderNext([]);
       if (!echoed) anchor(say(text, true));
       moves.nod();
+      const insight = key === 'cause' ? PROBLEMS[brief.problem]?.diagnose?.options.find((o) => o.text === text)?.line || '' : '';
       record(key, text);
       paintBrief();
       step += 1;
@@ -1066,6 +1107,7 @@
       else if (q) line = `${suggestion} ${q.say()}`;
       else if (key === 'fit') line = closing(text);
       else line = `${suggestion} Khalas, your brief is ready.`.trim();
+      if (insight) line = `${insight} ${line.replace(/^Got it\. /, '')}`;
       history.push({ role: 'user', content: text }, { role: 'assistant', content: line });
       const mine = run;
       await reveal(line);
