@@ -188,6 +188,8 @@ Hover (mouse only): the label's letters roll up (`data-roll`) and the arrow slid
 while its twin slides in. The twin is parked at `translateX(-260%)` so it never peeks into a
 44px box. Diagonal arrows (`↗`, external links) leave diagonally the same way.
 
+**Logo** (`.logo`, `.logo-lockup`): 1 artwork, 341×48 (the mark's height), from Hasan's lockup file (2026-11-10). The mark keeps its blue, white and orange; the letters use `currentColor`, so they turn dark when the nav sits on a light section (`.nav.on-light`). `--logo-h` is 27px on desktop and 23px on phones, which keeps the name at 20px / 17px, as with the old 2-part lockup. On the homepage the logo reloads the page (`href="./"`, `data-reload`, sent to the top first); on articles and privacy it links to the homepage. `scripts/build-articles.py` copies the homepage nav into articles, so change the logo there and rebuild, or edit all 8 pages.
+
 **Pill** (`.pill`): glass, 12px uppercase, `--ctl` tall. Nav links.
 `.pill--light` = `--ink` fill with `--paper-ink` text.
 

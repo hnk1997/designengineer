@@ -194,6 +194,7 @@ def site_nav(index):
     nav = index[start:end].rstrip()
     nav = nav.replace('<header class="nav" data-nav>', '<header class="nav on-light" data-nav>')
     nav = nav.replace('href="#top"', 'href="../index.html"')
+    nav = nav.replace('href="./" aria-label="Hasan Nawaz, home" data-reload', 'href="../index.html" aria-label="Hasan Nawaz, home"')
     nav = re.sub(r'href="#([\w-]+)"', r'href="../index.html#\1"', nav)
     return whatsapp_ctas(nav)
 

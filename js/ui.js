@@ -484,6 +484,11 @@
      however far), and the reader can take over at any moment by scrolling or touching.
      Reduced motion keeps the instant jump. */
   function initAnchors() {
+    // the logo reloads the page; going to the top first means the reload doesn't reopen halfway down
+    document.querySelector('[data-reload]')?.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
     if (reduced) return;
     const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
     let raf = 0;

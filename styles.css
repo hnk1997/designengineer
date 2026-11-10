@@ -189,18 +189,15 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .nav > * { pointer-events: auto; }
 
 .logo {
-  --logo-h: 20px;
+  --logo-h: 27px; /* the name is 35 of the lockup's 48 units: 27px keeps it at 20px, as before */
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--logo-h) * 0.3);  /* lockup rule: gap = 0.3 x mark */
   color: #fff;
   transition: color 0.5s var(--ease-out);
 }
-@media (max-width: 767px) { .logo { --logo-h: 17px; } }
-/* lockup rule: mark height = height of the "h", which spans the wordmark's full height */
-.logo-mark { display: block; flex: none; width: var(--logo-h); height: var(--logo-h); }
-/* 490 x 63.5 artwork; height sets the size */
-.wordmark { display: block; height: var(--logo-h); width: auto; aspect-ratio: 490 / 63.5; }
+@media (max-width: 767px) { .logo { --logo-h: 23px; } } /* name at 17px */
+/* the lockup is 1 artwork (341 x 48, the mark's height); its height sets the size */
+.logo-lockup { display: block; height: var(--logo-h); width: auto; aspect-ratio: 341 / 48; }
 .nav.on-light .logo { color: var(--paper-ink); }
 
 .nav-links { display: flex; gap: 2px; }
