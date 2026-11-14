@@ -12,7 +12,7 @@
   // when the day's AI runs out, Yalla keeps helping from these. Facts only: keep in step with llms.txt
   const WRITTEN = [
     [/\b(advice|advise|advisory|audits?|consult\w*|second opinion|discovery)\b/i, 'Yes, you can hire Hasan just for advice: audits, discovery and advisory. He looks at your product, your data or your plans and tells you what he’d do, and you decide who builds it.'],
-    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 15,000, landing pages from AED 7,500, App UI/UX from AED 20,000, and platforms from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
+    [/\b(pric\w*|costs?|how much|aed|budget|rates?|cheap|expensive|quote)\b/i, 'Websites start from AED 18,000, landing pages from AED 7,500, App UI/UX from AED 20,000, and platforms from AED 25,000. Hasan confirms the final price once the scope is clear.', 'pricing'],
     [/\b(how long|timelines?|weeks?|deadline|turnaround)\b/i, 'A landing page takes about 2 weeks, a website 4–6 weeks, a platform 6–10 weeks and App UI/UX 4–8 weeks. Hasan can tell you what’s realistic for yours.'],
     [/\b(monthly|partnerships?|maintain|maintenance|retainer|ongoing|support)\b/i, 'Maintain is AED 5,000 a month for 20 hours on a live site, and the Consultant plan is AED 7,000 a month for 25 hours of product and tech advice. Both are paid monthly in advance, and you can cancel anytime.'],
     [/\b(agenc\w*|white.?label)\b/i, 'White-label is built for agencies. Hasan joins your team under your name, and your client sees your logo, not his.'],
@@ -123,7 +123,7 @@
   // keep in step with the rate card in index.html and llms.txt. card is the plan's name there
   const PLANS = {
     landing: { what: 'A landing page', name: 'a landing page', card: 'Landing page', from: 7500, time: 'about 2 weeks' },
-    website: { what: 'A website', name: 'a website', card: 'Website', from: 15000, time: 'about 4–6 weeks', slow: true },
+    website: { what: 'A website', name: 'a website', card: 'Website', from: 18000, time: 'about 4–6 weeks', slow: true },
     webapp: { what: 'A web app', name: 'a platform', card: 'Platform', from: 25000, time: 'about 6–10 weeks', slow: true },
     app: { what: 'App design', name: 'an App UI/UX project', card: 'App UI/UX', from: 20000, time: 'about 4–8 weeks', slow: true, note: ' Hasan designs it and your developers build it.' },
     maintain: { what: 'Monthly site support', name: 'the Maintain plan', card: 'Maintain', monthly: 'AED 5,000 a month for 20 hours' },
