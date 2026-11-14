@@ -141,7 +141,7 @@ Static HTML, one `styles.css`, classic scripts on `window.HC` (`js/ui.js`, `js/t
   - Reels that fade in from black (Birdwatcher, Cadillac, GrowthMotive) carry `data-from="0.7"`: the first play starts at 0.7 s and the poster is that frame, so there's no black flash. Seeking needs byte ranges (the Worker; locally `serve.py`).
   - **Phone-size files:** each Selected work `<video>` lists `<name>-m-hevc.mp4` and `<name>-m.mp4` with `media="(max-width: 599px)"` ahead of the full-size sources. Tablets, desktops and landscape phones get full size.
   - Reels keep their names when re-cut and are cached for a day, so a returning visitor can see the old cut for up to a day. Nobody but Hasan has visited yet, so no cache-busting was added; once there are real visitors, add a `?v=` to a reel's links when it's re-cut.
-- **Link previews:** `assets/og.jpg?v=3` (home card) + per-article cards. Bump the `?v=` when the home card changes.
+- **Link previews:** `assets/og.jpg?v=4` (home card) + per-article cards (`?v=2`, set in `scripts/build-articles.py`). Bump the `?v=` when a card changes.
 
 ---
 
@@ -218,7 +218,7 @@ Current reels and how each was made:
   > Recent work includes GrowthMotive and Motive, its AI assistant that finds where growth is stuck in 3 minutes. I'm currently building BrokerConnector and leading design for Kuraimi Islamic Microfinance Bank's new app.
 - **Social covers (final, on the Desktop):** `linkedin-banner.png` (3168×792) + `linkedin-banner-1584x396.png`, `behance-cover-3200x410.png`, `whatsapp-business-cover-1920x1080.png/.jpg`, `medium-header-1500x500.png`. Hasan uploads them.
 - **Design assets from Hasan:** `~/Desktop/mcnomnoms`, `~/Desktop/dxb`, `~/Desktop/kia tasman`, `~/Desktop/Cadillac`, `~/Desktop/cadillac scroller2.mp4`, `~/Downloads/Kuraimi`, `~/Desktop/Shortcuts/Growth Motive` (brand files + the local GrowthMotive site source), `~/Desktop/Shortcuts/BrokerConnector`.
-- **Brand/logo kit:** `~/Desktop/Shortcuts/favicon-site-colours_1`.
+- **Brand/logo kit:** since 2026-11-14 the site logo is "Hasan Nawaz" in Inter Tight inside a blue Figma-style selection box, with a resize hover, and the favicon is a tall white "HN" in a blue selection frame on black (DESIGN.md §6). The link-preview cards (`assets/og.jpg?v=4`, `assets/og/<slug>.jpg?v=2`, sources in `hasancooks2-workspace/og-cards/`) and `assets/logo.svg` use it too. The old flame kit, `~/Desktop/Shortcuts/favicon-site-colours_1`, is retired but still on the social covers (§8), which Hasan uploads himself.
 - The old manual-upload folder `~/Desktop/hasannawaz-site` is obsolete; safe to delete.
 
 ---
@@ -277,6 +277,7 @@ Dark (`#050505`) and paper (`#eceef1`) grounds, one accent blue `#2563EB`; rose/
 - **WhatsApp pre-fill wording** — formal, "saw your website", and warm versions all rejected. Now in use: 1 plain line ("Hi Hasan, can we talk?") on the general links, a message per plan on the pricing CTAs. Full list of WhatsApp entry points in `DESIGN.md` §6. Article pages are edited through `scripts/build-articles.py`; their nav, sticky button, menu and aside all say WhatsApp me instead of Get in touch (`whatsapp_ctas`).
 - CV copy: "Computer Science graduate" (reads junior), process lists (research → design → build…), "product designer turned design engineer", leading with the Aramco dashboard.
 - Phone mockup at full stage height (too big) and at 1.2× the laptop (too small); 1.5× is right.
+- Logo, 2026-11-14: Hasan found the flame-in-brackets logo playful, then rejected a plain wordmark with a blue full stop (generic), stacked Schibsted Grotesk capitals (didn't fit), the H drawn as a Figma path, a script signature, a 6× award superscript (would date) and "hasannawaz." He chose the selection-box name. Don't reopen this without a proper brief.
 
 ---
 

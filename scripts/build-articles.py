@@ -292,12 +292,12 @@ def page(a, nxt, nav):
   <meta property="og:title" content="{e(a["title"])} | Hasan Nawaz">
   <meta property="og:description" content="{e(a["summary"])}">
   <!-- each article has its own preview card at assets/og/<slug>.jpg; a new article needs one made -->
-  <meta property="og:image" content="https://hasannawaz.com/assets/og/{a["slug"]}.jpg">
+  <meta property="og:image" content="https://hasannawaz.com/assets/og/{a["slug"]}.jpg?v=2">
   <meta property="og:image:alt" content="{e(a["title"])}, by Hasan Nawaz">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://hasannawaz.com/assets/og/{a["slug"]}.jpg">
+  <meta name="twitter:image" content="https://hasannawaz.com/assets/og/{a["slug"]}.jpg?v=2">
   <meta name="theme-color" content="#eceef1">
   <link rel="icon" href="../favicon.ico" sizes="48x48">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">

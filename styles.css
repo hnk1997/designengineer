@@ -189,15 +189,63 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .nav > * { pointer-events: auto; }
 
 .logo {
-  --logo-h: 27px; /* the name is 35 of the lockup's 48 units: 27px keeps it at 20px, as before */
   display: inline-flex;
   align-items: center;
   color: #fff;
   transition: color 0.5s var(--ease-out);
 }
-@media (max-width: 767px) { .logo { --logo-h: 23px; } } /* name at 17px */
-/* the lockup is 1 artwork (341 x 48, the mark's height); its height sets the size */
-.logo-lockup { display: block; height: var(--logo-h); width: auto; aspect-ratio: 341 / 48; }
+/* the logo: the name in Inter Tight 500, selected like a layer in Figma (the same box the headline sits in
+   during the first-visit blueprint intro). The frame is sized from the capitals, so the space is equal on
+   all 4 sides. The name follows the nav colour; the frame and handles stay blue and white. */
+.logo-word {
+  --pad: 0.3em;
+  position: relative;
+  display: inline-block;
+  font-size: 26px;
+  line-height: 1;
+  white-space: nowrap;
+  /* without text-box trimming, Inter Tight's line box leaves 0.137em above the capitals and below the baseline */
+  padding: calc(var(--pad) - 0.137em) calc(var(--pad) + 0.02em) calc(var(--pad) - 0.137em) var(--pad);
+}
+@supports (text-box: trim-both cap alphabetic) {
+  .logo-word { padding-top: var(--pad); padding-bottom: var(--pad); }
+  .logo-word b { text-box: trim-both cap alphabetic; }
+}
+.logo-word b { display: block; font-weight: 500; letter-spacing: -0.04em; }
+.logo-word { --grow: 0px; }
+.logo-word::before { content: ""; position: absolute; inset: calc(-1 * var(--grow)); border: 1px solid var(--blue); pointer-events: none; transition: inset 0.5s var(--ease-out); }
+.logo-word i { position: absolute; width: 7px; height: 7px; background: #fff; border: 1px solid var(--blue); transform: translate(-50%, -50%); transition: left 0.5s var(--ease-out), top 0.5s var(--ease-out); }
+.logo-word i:nth-of-type(1) { left: calc(0.5px - var(--grow)); top: calc(0.5px - var(--grow)); }
+.logo-word i:nth-of-type(2) { left: calc(100% - 0.5px + var(--grow)); top: calc(0.5px - var(--grow)); }
+.logo-word i:nth-of-type(3) { left: calc(0.5px - var(--grow)); top: calc(100% - 0.5px + var(--grow)); }
+.logo-word i:nth-of-type(4) { left: calc(100% - 0.5px + var(--grow)); top: calc(100% - 0.5px + var(--grow)); }
+/* hover (mouse only): the layer is resized like in Figma. The box grows 4px a side, the handles follow,
+   and a blue size label shows the new width x height under it (the box is 162 x 34 at rest, so 170 x 42) */
+.logo-word::after {
+  content: "170 \00D7  42";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  padding: 3px 5px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition: opacity 0.3s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .logo:hover .logo-word, .logo:focus-visible .logo-word { --grow: 4px; }
+  .logo:hover .logo-word::after, .logo:focus-visible .logo-word::after { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .logo-word::before, .logo-word i, .logo-word::after { transition: none; } }
+@media (max-width: 767px) { .logo-word { font-size: 21px; } .logo-word i { width: 6px; height: 6px; } }
 .nav.on-light .logo { color: var(--paper-ink); }
 
 .nav-links { display: flex; gap: 2px; }
